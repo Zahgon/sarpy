@@ -457,27 +457,11 @@ class _CustomType(Serializable, Arrayable):
         .. Note:: this returns the direct coefficient array. Use the `get_array()` method to get a copy of the
             coefficient array of specified data type.
         """
-
-        return self._coefs
+        pass
 
     @Coefs.setter
     def Coefs(self, value):
-        if value is None:
-            raise ValueError('The coefficient array must be defined.')
-
-        if isinstance(value, (list, tuple)):
-            value = numpy.array(value, dtype=numpy.float64)
-
-        if not isinstance(value, numpy.ndarray):
-            raise ValueError(
-                'Coefs must be a list or numpy.ndarray. Received type {}.'.format(type(value)))
-        elif len(value.shape) != 2:
-            raise ValueError(
-                'Coefs must be two-dimensional. Received numpy.ndarray '
-                'of shape {}.'.format(value.shape))
-        elif not value.dtype.name == 'float64':
-            value = numpy.asarray(value, dtype=numpy.float64)
-        self._coefs = value
+        pass
 
     def __getitem__(self, item):
         return self._coefs[item]
@@ -568,11 +552,11 @@ class KernelCustomType(_CustomType):
 
     @property
     def numRows(self):
-        return self._shape0()
+        pass
 
     @property
     def numCols(self):
-        return self._shape1()
+        pass
 
 
 class FilterKernelType(Serializable):
@@ -622,11 +606,11 @@ class BankCustomType(_CustomType):
 
     @property
     def numPhasings(self):
-        return self._shape0()
+        pass
 
     @property
     def numPoints(self):
-        return self._shape1()
+        pass
 
 
 class FilterBankType(Serializable):
@@ -785,42 +769,25 @@ class LUTInfoType(Serializable, Arrayable):
         The first dimension should correspond to entries (i.e. size of the lookup table), and the
         second dimension should correspond to bands (i.e. number of bands).
         """
-
-        return self._lut_values
+        pass
 
     @LUTValues.setter
     def LUTValues(self, value):
-        if value is None:
-            self._lut_values = None
-            return
-        if isinstance(value, (tuple, list)):
-            value = numpy.array(value, dtype=numpy.uint8)
-        if not isinstance(value, numpy.ndarray) or value.dtype.name not in ('uint8', 'uint16'):
-            raise ValueError(
-                'LUTValues for class LUTInfoType must be a numpy.ndarray of dtype uint8 or uint16.')
-        if value.ndim != 2:
-            raise ValueError('LUTValues for class LUTInfoType must be two-dimensional.')
-        self._lut_values = value
+        pass
 
     @property
     def size(self):
         """
         int: the size of each lookup table
         """
-        if self._lut_values is None:
-            return 0
-        else:
-            return self._lut_values.shape[0]
+        pass
 
     @property
     def numLUTs(self):
         """
         int: The number of lookup tables
         """
-        if self._lut_values is None:
-            return 0
-        else:
-            return self._lut_values.shape[1]
+        pass
 
     def __len__(self):
         if self._lut_values is None:

@@ -175,7 +175,7 @@ class CPHDHeader(CPHDHeaderBase):
 
     @property
     def use_version(self) -> str:
-        return self._use_version
+        pass
 
     def to_string(self):
         """
@@ -335,8 +335,7 @@ class CPHDType(Serializable):
         -------
         List[GeoInfoType]
         """
-
-        return [entry for entry in self._GeoInfo if entry.name == key]
+        pass
 
     def addGeoInfo(self, value):
         """
@@ -350,17 +349,7 @@ class CPHDType(Serializable):
         -------
         None
         """
-
-        if isinstance(value, ElementTree.Element):
-            gi_key = self._child_xml_ns_key.get('GeoInfo', self._xml_ns_key)
-            value = GeoInfoType.from_node(value, self._xml_ns, ns_key=gi_key)
-        elif isinstance(value, dict):
-            value = GeoInfoType.from_dict(value)
-
-        if isinstance(value, GeoInfoType):
-            self._GeoInfo.append(value)
-        else:
-            raise TypeError('Trying to set GeoInfo element with unexpected type {}'.format(type(value)))
+        pass
 
     @classmethod
     def from_node(cls, node, xml_ns, ns_key=None, kwargs=None):
@@ -395,7 +384,7 @@ class CPHDType(Serializable):
         return super(CPHDType, self).to_xml_bytes(urn=urn, tag=tag, check_validity=check_validity, strict=strict)
 
     def to_xml_string(self, urn=None, tag='CPHD', check_validity=False, strict=DEFAULT_STRICT):
-        return self.to_xml_bytes(urn=urn, tag=tag, check_validity=check_validity, strict=strict).decode('utf-8')
+        pass
 
     def version_required(self):
         """
@@ -405,13 +394,7 @@ class CPHDType(Serializable):
         -------
         tuple
         """
-
-        required = (1, 0, 1)
-        for fld in self._fields:
-            val = getattr(self, fld)
-            if val is not None and hasattr(val, 'version_required'):
-                required = max(required, val.version_required())
-        return required
+        pass
 
     def make_file_header(self, xml_offset=1024, use_version=None):
         """
@@ -429,39 +412,7 @@ class CPHDType(Serializable):
         -------
         header : CPHDHeader
         """
-
-        kwargs = OrderedDict()
-        kwargs['use_version'] = _CPHD_DEFAULT_VERSION if use_version is None else use_version
-
-        def _align(val):
-            align_to = 64
-            return int(numpy.ceil(float(val)/align_to)*align_to)
-
-        kwargs['XML_BLOCK_SIZE'] = len(self.to_xml_string())
-        kwargs['XML_BLOCK_BYTE_OFFSET'] = xml_offset
-        block_end = kwargs['XML_BLOCK_BYTE_OFFSET'] + kwargs['XML_BLOCK_SIZE'] + len(CPHD_SECTION_TERMINATOR)
-
-        if self.Data.NumSupportArrays > 0:
-            kwargs['SUPPORT_BLOCK_SIZE'] = self.Data.calculate_support_block_size()
-            kwargs['SUPPORT_BLOCK_BYTE_OFFSET'] = _align(block_end)
-            block_end = kwargs['SUPPORT_BLOCK_BYTE_OFFSET'] + kwargs['SUPPORT_BLOCK_SIZE']
-
-        kwargs['PVP_BLOCK_SIZE'] = self.Data.calculate_pvp_block_size()
-        kwargs['PVP_BLOCK_BYTE_OFFSET'] = _align(block_end)
-        block_end = kwargs['PVP_BLOCK_BYTE_OFFSET'] + kwargs['PVP_BLOCK_SIZE']
-
-        kwargs['SIGNAL_BLOCK_SIZE'] = self.Data.calculate_signal_block_size()
-        kwargs['SIGNAL_BLOCK_BYTE_OFFSET'] = _align(block_end)
-        kwargs['CLASSIFICATION'] = self.CollectionID.Classification
-        kwargs['RELEASE_INFO'] = self.CollectionID.ReleaseInfo
-
-        header = CPHDHeader(**kwargs)
-        header_str = header.to_string()
-        min_xml_offset = len(header_str) + len(CPHD_SECTION_TERMINATOR)
-        if kwargs['XML_BLOCK_BYTE_OFFSET'] < min_xml_offset:
-            header = self.make_file_header(xml_offset=_align(min_xml_offset + 32), use_version=use_version)
-
-        return header
+        pass
 
     def get_pvp_dtype(self):
         """
@@ -473,10 +424,7 @@ class CPHDType(Serializable):
         numpy.dtype
             This will be a compound dtype for a structured array.
         """
-
-        if self.PVP is None:
-            raise ValueError('No PVP defined.')
-        return self.PVP.get_vector_dtype()
+        pass
 
     @classmethod
     def from_xml_file(cls, file_path):
@@ -491,10 +439,7 @@ class CPHDType(Serializable):
         -------
         CPHDType
         """
-
-        root_node, xml_ns = parse_xml_from_file(file_path)
-        ns_key = 'default' if 'default' in xml_ns else None
-        return cls.from_node(root_node, xml_ns=xml_ns, ns_key=ns_key)
+        pass
 
     @classmethod
     def from_xml_string(cls, xml_string):
@@ -509,7 +454,4 @@ class CPHDType(Serializable):
         -------
         CPHDType
         """
-
-        root_node, xml_ns = parse_xml_from_string(xml_string)
-        ns_key = 'default' if 'default' in xml_ns else None
-        return cls.from_node(root_node, xml_ns=xml_ns, ns_key=ns_key)
+        pass

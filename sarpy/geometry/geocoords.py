@@ -261,10 +261,7 @@ def _ecf_to_enu_matrix(orp_coord):
     -------
     numpy.ndarray
     """
-
-    ned_matrix = _ecf_to_ned_matrix(orp_coord)
-    ned_to_enu = numpy.array([[0, 1, 0], [1, 0, 0], [0, 0, -1]], dtype='float64')
-    return ned_matrix.dot(ned_to_enu)
+    pass
 
 
 def ecf_to_enu(ecf_coords, orp_coord, absolute_coords=True):
@@ -283,17 +280,7 @@ def ecf_to_enu(ecf_coords, orp_coord, absolute_coords=True):
     -------
     numpy.ndarray
     """
-
-    if not isinstance(orp_coord, numpy.ndarray):
-        orp_coord = numpy.array(orp_coord, dtype='float64')
-    transform = _ecf_to_enu_matrix(orp_coord)
-    # NB: orp_coord is guaranteed to be shape (3, )
-    ecf_coords, o_shape = _validate(ecf_coords)
-    if absolute_coords:
-        out = (ecf_coords - orp_coord).dot(transform)
-    else:
-        out = ecf_coords.dot(transform)
-    return numpy.reshape(out, o_shape)
+    pass
 
 
 def enu_to_ecf(enu_coords, orp_coord, absolute_coords=True):
@@ -314,14 +301,4 @@ def enu_to_ecf(enu_coords, orp_coord, absolute_coords=True):
     -------
     numpy.ndarray
     """
-
-    if not isinstance(orp_coord, numpy.ndarray):
-        orp_coord = numpy.array(orp_coord, dtype='float64')
-    transform = _ecf_to_enu_matrix(orp_coord).transpose()  # transpose = inverse here
-    # NB: orp_coord is guaranteed to be shape (3, )
-    enu_coords, o_shape = _validate(enu_coords)
-
-    out = enu_coords.dot(transform)
-    if absolute_coords:
-        out += orp_coord
-    return numpy.reshape(out, o_shape)
+    pass

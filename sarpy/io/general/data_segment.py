@@ -297,86 +297,47 @@ class DataSegment(object):
         """
         Tuple[int, ...]: The raw shape.
         """
-
-        return self._raw_shape
+        pass
 
     def _set_raw_shape(self, value: Tuple[int, ...]) -> None:
-        if not isinstance(value, tuple):
-            raise TypeError(
-                'raw_shape must be specified by a tuple of ints, got type `{}`'.format(type(value)))
-        for entry in value:
-            if not isinstance(entry, int):
-                raise TypeError(
-                    'raw_shape must be specified by a tuple of ints, got `{}`'.format(value))
-            if entry <= 0:
-                raise ValueError(
-                    'raw_shape must be specified by a tuple of positive ints, got `{}`'.format(value))
-        self._raw_shape = value
+        pass
 
     @property
     def raw_ndim(self) -> int:
         """
         int: The number of raw dimensions.
         """
-
-        return len(self._raw_shape)
+        pass
 
     @property
     def mode(self) -> str:
         """
         str: The mode.
         """
-
-        return self._mode
+        pass
 
     def _set_mode(self, value: str) -> None:
-        if not isinstance(value, str):
-            raise TypeError('Mode must be a string value')
-        value = value.strip().lower()
-
-        if value not in self._allowed_modes:
-            raise ValueError('mode must be one of {}'.format(self._allowed_modes))
-
-        self._mode = value
+        pass
 
     @property
     def raw_dtype(self) -> numpy.dtype:
         """
         numpy.dtype: The data type of the data returned by the :func:`read_raw` function.
         """
-
-        return self._raw_dtype
+        pass
 
     def _set_raw_dtype(self, value) -> None:
-        if not isinstance(value, numpy.dtype):
-            try:
-                value = numpy.dtype(value)
-            except Exception as e:
-                raise ValueError(
-                    'Tried interpreting raw_dtype value as a numpy.dtype, '
-                    'and failed with error\n\t{}'.format(e))
-        self._raw_dtype = value
+        pass
 
     @property
     def formatted_shape(self) -> Tuple[int, ...]:
         """
         Tuple[int, ...]: The formatted data shape.
         """
-
-        return self._formatted_shape
+        pass
 
     def _set_formatted_shape(self, value: Tuple[int, ...]) -> None:
-        if not isinstance(value, tuple):
-            raise TypeError(
-                'formatted_shape must be specified by a tuple of ints, got type `{}`'.format(type(value)))
-        for entry in value:
-            if not isinstance(entry, int):
-                raise TypeError(
-                    'formatted_shape must be specified by a tuple of ints, got `{}`'.format(value))
-            if entry <= 0:
-                raise ValueError(
-                    'formatted_shape must be specified by a tuple of positive ints, got `{}`'.format(value))
-        self._formatted_shape = value
+        pass
 
     @property
     def formatted_dtype(self) -> numpy.dtype:
@@ -384,26 +345,17 @@ class DataSegment(object):
         numpy.dtype: The data type of the formatted data, which will be returned
         by the :func:`read` function.
         """
-
-        return self._formatted_dtype
+        pass
 
     def _set_formatted_dtype(self, value) -> None:
-        if not isinstance(value, numpy.dtype):
-            try:
-                value = numpy.dtype(value)
-            except Exception as e:
-                raise ValueError(
-                    'Tried interpreting formatted_dtype value as a numpy.dtype, '
-                    'and failed with error\n\t{}'.format(e))
-        self._formatted_dtype = value
+        pass
 
     @property
     def formatted_ndim(self) -> int:
         """
         int: The number of formatted dimensions.
         """
-
-        return len(self._formatted_shape)
+        pass
 
     @property
     def reverse_axes(self) -> Optional[Tuple[int, ...]]:
@@ -412,24 +364,10 @@ class DataSegment(object):
         along which we will reverse as part of transformation to formatted data order.
         If not `None`, then this will be a tuple in strictly increasing order.
         """
-
-        return self._reverse_axes
+        pass
 
     def _set_reverse_axes(self, value: Union[None, int, Tuple[int, ...]]) -> None:
-        if value is None:
-            self._reverse_axes = None
-            return
-
-        if isinstance(value, int):
-            value = (value, )
-        else:
-            value = tuple(sorted(list(set(int(entry) for entry in value))))
-
-        for entry in value:
-            if not (0 <= entry < self.raw_ndim):
-                raise ValueError('reverse_axes entries must be less than raw_ndim')
-
-        self._reverse_axes = value
+        pass
 
     @property
     def transpose_axes(self) -> Tuple[int, ...]:
@@ -439,17 +377,10 @@ class DataSegment(object):
 
         If populated, this must be a permutation of `(0, 1, ..., raw_ndim-1)`.
         """
-
-        return self._transpose_axes
+        pass
 
     def _set_transpose_axes(self, value: Union[None, Tuple[int, ...]]) -> None:
-        if value is None:
-            self._transpose_axes = None
-            return
-        value = tuple([int(entry) for entry in value])
-        if set(value) != set(range(self.raw_ndim)):
-            raise ValueError('transpose_axes must be a permutation of range(raw_ndim), got\n\t{}'.format(value))
-        self._transpose_axes = value
+        pass
 
     @property
     def format_function(self) -> FormatFunction:
@@ -464,17 +395,7 @@ class DataSegment(object):
         return self._format_function
 
     def _set_format_function(self, value: Optional[FormatFunction]) -> None:
-        if value is None:
-            value = IdentityFunction()
-        if not isinstance(value, FormatFunction):
-            raise ValueError('Got unexpected format_function value of type `{}`'.format(type(value)))
-
-        # set our important property values
-        value.set_raw_shape(self.raw_shape)
-        value.set_formatted_shape(self.formatted_shape)
-        value.set_reverse_axes(self.reverse_axes)
-        value.set_transpose_axes(self.transpose_axes)
-        self._format_function = value
+        pass
 
     @property
     def can_write_regular(self) -> bool:
@@ -482,16 +403,14 @@ class DataSegment(object):
         bool: Can this data segment write regular data, which requires a function
         inverse?
         """
-
-        return self.mode == 'w' and self.format_function.has_inverse
+        pass
 
     @property
     def closed(self) -> bool:
         """
         bool: Is the data segment closed? Reading or writing will result in a ValueError
         """
-
-        return self._closed
+        pass
 
     def _validate_closed(self):
         if not hasattr(self, '_closed') or self._closed:
@@ -501,8 +420,7 @@ class DataSegment(object):
         """
         Validate the raw_shape and formatted_shape values.
         """
-
-        self.format_function.validate_shapes()
+        pass
 
     # read related methods
     def verify_raw_subscript(
@@ -562,11 +480,7 @@ class DataSegment(object):
         -------
         Tuple[slice, ...]
         """
-
-        if raw:
-            return verify_subscript(subscript, self._raw_shape)
-        else:
-            return verify_subscript(subscript, self._formatted_shape)
+        pass
 
     def __getitem__(
             self,
@@ -878,31 +792,23 @@ class ReorientationSegment(DataSegment):
 
     @property
     def parent(self) -> DataSegment:
-        return self._parent
+        pass
 
     def _set_parent(self,
                     parent: DataSegment,
                     transpose_axes: Union[None, Tuple[int, ...]]) -> Tuple[int, ...]:
-        if transpose_axes is None:
-            trans_axes = tuple(range(parent.formatted_ndim))
-        else:
-            if len(transpose_axes) != parent.formatted_ndim:
-                raise ValueError('transpose_axes must have length {}'.format(parent.formatted_ndim))
-            trans_axes = transpose_axes
-        self._parent = parent
-        return tuple([parent.formatted_shape[index] for index in trans_axes])
+        pass
 
     @property
     def close_parent(self) -> bool:
         """
         bool: Call parent.close() when close is called?
         """
-
-        return self._close_parent
+        pass
 
     @close_parent.setter
     def close_parent(self, value):
-        self._close_parent = bool(value)
+        pass
 
     def read_raw(
             self,
@@ -1046,35 +952,32 @@ class SubsetSegment(DataSegment):
 
     @property
     def parent(self) -> DataSegment:
-        return self._parent
+        pass
 
     @property
     def formatted_subset_definition(self) -> Tuple[slice, ...]:
         """
         Tuple[slice]: The subset definition, in formatted coordinates.
         """
-
-        return self._formatted_subset_definition
+        pass
 
     @property
     def raw_subset_definition(self) -> Tuple[slice, ...]:
         """
         Tuple[slice]: The subset definition, in raw coordinates.
         """
-
-        return self._raw_subset_definition
+        pass
 
     @property
     def close_parent(self) -> bool:
         """
         bool: Call parent.close() when close is called?
         """
-
-        return self._close_parent
+        pass
 
     @close_parent.setter
     def close_parent(self, value):
-        self._close_parent = bool(value)
+        pass
 
     def _validate_subset_definition(
             self,
@@ -1093,45 +996,7 @@ class SubsetSegment(DataSegment):
         raw_shape : Tuple[int, ...]
         formatted_shape : Tuple[int, ...]
         """
-
-        raw_shape = []
-        formatted_shape = []
-        original_indices = []
-        raw_indices = []
-
-        coordinate_basis = coordinate_basis.strip().lower()
-        if coordinate_basis == 'raw':
-            raw_def = self.parent.verify_raw_subscript(subset_definition)
-            form_def = self.parent.format_function.transform_raw_slice(raw_def)
-        elif coordinate_basis == 'formatted':
-            form_def = self.parent.verify_formatted_subscript(subset_definition)
-            raw_def = self.parent.format_function.transform_formatted_slice(form_def)
-        else:
-            raise ValueError('Got unexpected coordinate basis `{}`'.format(coordinate_basis))
-
-        for index, entry in enumerate(form_def):
-            this_size = get_slice_result_size(entry)
-            if self._squeeze and this_size == 1:
-                logger.info('Entry at index {} of subset definition yields a single entry'.format(index))
-                original_indices.append(-1)
-            else:
-                formatted_shape.append(this_size)
-                original_indices.append(index)
-
-        self._formatted_subset_definition = form_def
-        self._raw_subset_definition = raw_def
-        self._original_formatted_indices = tuple(original_indices)
-
-        for index, entry in enumerate(raw_def):
-            this_size = get_slice_result_size(entry)
-            if self._squeeze and this_size == 1:
-                logger.info('Raw slice at index {} of subset definition yields a single entry'.format(index))
-                raw_indices.append(-1)
-            else:
-                raw_shape.append(this_size)
-                raw_indices.append(index)
-        self._original_raw_indices = tuple(raw_indices)
-        return tuple(raw_shape), tuple(formatted_shape)
+        pass
 
     def _get_parent_subscript(
             self,
@@ -1427,49 +1292,25 @@ class BandAggregateSegment(DataSegment):
         """
         int: The band dimension, in raw data after the transpose operation.
         """
-
-        return self._band_dimension
+        pass
 
     def _set_band_dimension(
             self,
             value: int,
             reverse_axes: Union[None, int, Sequence[int]],
             transpose_axes: Union[None, Tuple[int, ...]]) -> None:
-        if not isinstance(value, int):
-            raise TypeError('band_dimension must be an integer')
-        if value < 0:
-            raise TypeError('band_dimension must be non-negative')
-
-        if transpose_axes is not None:
-            if value != transpose_axes[value]:
-                raise ValueError('band_dimension is not permitted to be changed by transpose_axes.')
-
-        if reverse_axes is None:
-            pass
-        elif isinstance(reverse_axes, int):
-            if value == reverse_axes:
-                raise ValueError('Reversal along the band dimension is not permitted')
-        else:
-            if value in reverse_axes:
-                raise ValueError('Reversal along the band dimension is not permitted')
-
-        if self._band_dimension is not None:
-            if value != self._band_dimension:
-                raise ValueError('band_dimension is read only once set')
-            return  # nothing to be done
-        self._band_dimension = value
+        pass
 
     @property
     def close_children(self) -> bool:
         """
         bool: Call child.close() when close is called?
         """
-
-        return self._close_children
+        pass
 
     @close_children.setter
     def close_children(self, value):
-        self._close_children = bool(value)
+        pass
 
     @property
     def children(self) -> Tuple[DataSegment, ...]:
@@ -1480,50 +1321,20 @@ class BandAggregateSegment(DataSegment):
         -------
         Tuple[DataSegment, ...]
         """
-
-        return self._children
+        pass
 
     def _set_children(
             self,
             children: Sequence[DataSegment],
             transpose_axes: Optional[Tuple[int, ...]]) -> Tuple[numpy.dtype, Tuple[int, ...], Tuple[int, ...], str]:
-        if len(children) < 2:
-            raise ValueError('Cannot define a BandAggregateSegment based on fewer than 2 segments.')
-
-        child_shape = children[0].formatted_shape
-        the_dtype = children[0].formatted_dtype
-        the_mode = children[0].mode
-
-        if transpose_axes is None:
-            transpose_axes = tuple(range(0, len(child_shape) + 1))
-
-        raw_shape = [entry for entry in child_shape]
-        raw_shape.insert(self.band_dimension, len(children))
-        raw_shape = tuple(raw_shape)
-
-        form_shape = tuple(raw_shape[entry] for entry in transpose_axes)
-
-        use_children = []
-        for child in children:
-            if child.formatted_shape != child_shape:
-                raise ValueError('All children must have the same formatted shape')
-            if child.formatted_dtype != the_dtype:
-                raise ValueError('All children must have the same formatted dtype')
-            if child.mode != the_mode:
-                raise ValueError('All children must have the same mode')
-            if child.mode == 'w' and not child.can_write_regular:
-                raise ValueError('write mode requires that all children can write regular data')
-            use_children.append(child)
-        self._children = tuple(use_children)
-        return the_dtype, raw_shape, form_shape, the_mode
+        pass
 
     @property
     def bands(self) -> int:
         """
         int: The number of bands (child data segments)
         """
-
-        return len(self.children)
+        pass
 
     def read_raw(
             self,
@@ -1709,12 +1520,11 @@ class BlockAggregateSegment(DataSegment):
         """
         bool: Call child.close() when close is called?
         """
-
-        return self._close_children
+        pass
 
     @close_children.setter
     def close_children(self, value):
-        self._close_children = bool(value)
+        pass
 
     @property
     def children(self) -> Tuple[DataSegment, ...]:
@@ -1725,8 +1535,7 @@ class BlockAggregateSegment(DataSegment):
         -------
         Tuple[DataSegment, ...]
         """
-
-        return self._children
+        pass
 
     def _set_children(
             self,
@@ -1734,42 +1543,7 @@ class BlockAggregateSegment(DataSegment):
             child_arrangement: Sequence[Tuple[slice, ...]],
             coordinate_basis: str) -> None:
 
-        if len(children) != len(child_arrangement):
-            raise ValueError('We must have the same number of children as child_arrangement entries')
-
-        coordinate_basis = coordinate_basis.strip().lower()
-        if coordinate_basis == 'raw':
-            raw_arrangement = [self.verify_raw_subscript(entry) for entry in child_arrangement]
-            formatted_arrangement = [self.format_function.transform_raw_slice(entry) for entry in raw_arrangement]
-        elif coordinate_basis == 'formatted':
-            formatted_arrangement = [self.verify_formatted_subscript(entry) for entry in child_arrangement]
-            raw_arrangement = [self.format_function.transform_formatted_slice(entry) for entry in formatted_arrangement]
-        else:
-            raise ValueError('Got unexpected coordinate basis `{}`'.format(coordinate_basis))
-
-        for i, (child, raw_def, form_def) in enumerate(zip(children, raw_arrangement, formatted_arrangement)):
-            if child.formatted_dtype != self.raw_dtype:
-                raise ValueError(
-                    'Each child.formatted_dtype must be identical to\n\t'
-                    'self.raw_dtype = {}'.format(self.raw_dtype))
-
-            for entry in raw_def:
-                if entry.step not in [1, -1]:
-                    raise ValueError('Each entry of child_arrangement must have step +/-1.')
-            for entry in form_def:
-                if entry.step not in [1, -1]:
-                    raise ValueError('Each entry of child_arrangement must have step +/-1.')
-
-            # verify the shape is sensible
-            _, result_shape = get_subscript_result_size(raw_def, self.raw_shape)
-            if result_shape != child.formatted_shape:
-                raise ValueError(
-                    'child_arrangement definition expects child {} to have formatted_shape {},\n\t'
-                    'but it has formatted_shape {}'.format(i, result_shape, child.formatted_shape))
-
-        self._children = tuple(children)
-        self._raw_child_arrangement = tuple(raw_arrangement)
-        self._formatted_child_arrangement = tuple(formatted_arrangement)
+        pass
 
     def read_raw(
             self,
@@ -1985,8 +1759,7 @@ class NumpyArraySegment(DataSegment):
         -------
         numpy.ndarray
         """
-
-        return self._underlying_array
+        pass
 
     def read_raw(
             self,
@@ -2148,12 +1921,11 @@ class NumpyMemmapSegment(NumpyArraySegment):
         """
         bool: Close the file object when complete?
         """
-
-        return self._close_file
+        pass
 
     @close_file.setter
     def close_file(self, value):
-        self._close_file = bool(value)
+        pass
 
     def flush(self) -> None:
         try:
@@ -2252,34 +2024,25 @@ class HDF5DatasetSegment(DataSegment):
         """
         bool: Close the file object when complete?
         """
-
-        return self._close_file
+        pass
 
     @close_file.setter
     def close_file(self, value):
-        self._close_file = bool(value)
+        pass
 
     @property
     def file_object(self) -> h5pyFile:
-        return self._file_object
+        pass
 
     def _set_file_object(self, value) -> None:
-        if isinstance(value, str):
-            value = h5py.File(value, mode='r')
-        if not isinstance(value, h5py.File):
-            raise ValueError('Requires a path to a hdf5 file or h5py.File object')
-        self._file_object = value
+        pass
 
     @property
     def data_set(self) -> h5pyDataset:
-        return self._data_set
+        pass
 
     def _set_data_set(self, value) -> None:
-        if isinstance(value, str):
-            value = self.file_object[value]
-        if not isinstance(value, h5py.Dataset):
-            raise ValueError('Requires a dataset path or h5py.Dataset object')
-        self._data_set = value
+        pass
 
     def read_raw(
             self,
@@ -2400,21 +2163,18 @@ class FileReadDataSegment(DataSegment):
         """
         bool: Close the file object when complete?
         """
-
-        return self._close_file
+        pass
 
     @close_file.setter
     def close_file(self, value):
-        self._close_file = bool(value)
+        pass
 
     @property
     def file_object(self) -> BinaryIO:
-        return self._file_object
+        pass
 
     def _set_file_object(self, value) -> None:
-        if not is_file_like(value):
-            raise ValueError('Requires a file-like object')
-        self._file_object = value
+        pass
 
     @property
     def data_offset(self) -> int:
@@ -2422,14 +2182,10 @@ class FileReadDataSegment(DataSegment):
         int: The offset of the data in bytes from the start of the file-like
         object.
         """
-
-        return self._data_offset
+        pass
 
     def _set_data_offset(self, value: int) -> None:
-        value = int(value)
-        if value < 0:
-            raise ValueError('data_offset must be non-negative.')
-        self._data_offset = value
+        pass
 
     def read_raw(
             self,

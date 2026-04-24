@@ -79,7 +79,7 @@ class RSMDCAType(TREElement):
         self.add_loop('DERCOVs', self.dercov_count(), DERCOV, value)
 
     def dercov_count(self):  # type: () -> int
-        return int((self.NPART+1)*self.NPART/2)
+        pass
 
 
 class RSMDCA(TREExtension):

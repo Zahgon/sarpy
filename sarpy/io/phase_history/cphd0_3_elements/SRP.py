@@ -76,49 +76,19 @@ class SRPTyp(Serializable):
         """
         str: The type of SRP.
         """
-        if self.FIXEDPT is not None:
-            return 'FIXEDPT'
-        elif self.PVTPOLY is not None:
-            return 'PVTPOLY'
-        elif self.PVVPOLY is not None:
-            return 'PVVPOLY'
-        else:
-            return self._SRPType
+        pass
 
     @SRPType.setter
     def SRPType(self, value):
-        if self.FIXEDPT is not None or self.PVTPOLY is not None or self.PVVPOLY is not None:
-            self._SRPType = None
-        else:
-            value = parse_str(value, 'SRPType', self).upper()
-            if value in ('FIXEDPT', 'PVTPOLY', 'PVVPOLY', 'STEPPED'):
-                self._SRPType = value
-            else:
-                logger.warning(
-                    'Got {} for the SRPType field of class SRPTyp.\n\t'
-                    'It is required to be one of {}.\n\t'
-                    'Setting to None, which is required to be fixed.'.format(
-                        value, ('FIXEDPT', 'PVTPOLY', 'PVVPOLY', 'STEPPED')))
-                self._SRPType = None
+        pass
 
     @property
     def NumSRPs(self):
         """
         None|int: The number of SRPs.
         """
-
-        if self.FIXEDPT is not None:
-            return self.FIXEDPT.size
-        elif self.PVTPOLY is not None:
-            return self.PVTPOLY.size
-        elif self.PVVPOLY is not None:
-            return self.PVVPOLY.size
-        else:
-            return self._NumSRPs
+        pass
 
     @NumSRPs.setter
     def NumSRPs(self, value):
-        if self.FIXEDPT is not None or self.PVTPOLY is not None or self.PVVPOLY is not None:
-            self._NumSRPs = None
-        else:
-            self._NumSRPs = parse_int(value, 'NumSRPs', self)
+        pass

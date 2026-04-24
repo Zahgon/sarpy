@@ -59,8 +59,7 @@ class CPHDTypeReader(BaseReader):
         """
         None|CPHDType1_0|CPHDType0_3: the cphd meta_data.
         """
-
-        return self._cphd_meta
+        pass
 
     def read_support_array(
             self,

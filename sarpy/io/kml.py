@@ -73,20 +73,7 @@ class Document(object):
             return xml
 
     def _set_file(self, file_name):
-        if isinstance(file_name, str):
-            fext = os.path.splitext(file_name)[1]
-            if fext not in ['.kml', '.kmz']:
-                logger.warning('file extension should be one of .kml or .kmz, got {}. This will be treated as a kml file.'.format(fext))
-            if fext == '.kmz':
-                self._archive = zipfile.ZipFile(file_name, 'w', zipfile.ZIP_DEFLATED)
-            else:
-                self._file = open(file_name, 'w')
-        elif isinstance(file_name, zipfile.ZipFile):
-            self._archive = file_name
-        elif hasattr(file_name, 'write'):
-            self._file = file_name
-        else:
-            raise TypeError('file_name must be a file path, file-like object, or a zipfile.Zipfile instance')
+        pass
 
     def close(self):
         if self._closed:
@@ -130,10 +117,7 @@ class Document(object):
         -------
         None
         """
-
-        if self._archive is None:
-            raise ValueError('No archive defined.')
-        self._archive.write(file_path, archive_path, zipfile.ZIP_DEFLATED)
+        pass
 
     def write_string_to_archive(self, archive_path, val):
         """
@@ -452,22 +436,7 @@ class Document(object):
 
         The style is created, and appended at root level. The corresponding styleUrl is '#defaultStyle'
         """
-
-        line = {'color': 'ff505050', 'width': '1.0'}
-        label = {'color': 'ffc0c0c0', 'scale': '1.0'}
-        icon = {'color': 'ffff5050', 'scale': '1.0'}
-        poly = {'color': '80ff5050'}
-        self.add_style(
-            'default_high',
-            line_style=line, label_style=label, icon_style=icon, poly_style=poly)
-
-        line['width'] = '0.75'
-        label['scale'] = '0.75'
-        icon['scale'] = '0.75'
-        self.add_style(
-            'default_low',
-            line_style=line, label_style=label, icon_style=icon, poly_style=poly)
-        self.add_style_map('defaultStyle', 'default_high', 'default_low')
+        pass
 
     def add_color_ramp(self, colors, high_size=1.0, low_size=0.5, icon_ref=None, name_stem='sty'):
         """
@@ -490,30 +459,7 @@ class Document(object):
         -------
         None
         """
-
-        hline = {'width': 2*high_size}
-        hlabel = {'scale': high_size}
-        hicon = {'scale': high_size}
-        lline = {'width': 2*low_size}
-        llabel = {'scale': low_size}
-        licon = {'scale': low_size}
-        if icon_ref is not None:
-            hicon['icon_ref'] = icon_ref
-            licon['icon_ref'] = icon_ref
-        for i in range(colors.shape[0]):
-            col = '{3:02x}{2:02x}{1:02x}{0:02x}'.format(*colors[i, :])
-            for di in [hline, hlabel, hicon, lline, llabel, licon]:
-                di['color'] = col
-            self.add_style(
-                '{0!s}{1:d}_high'.format(name_stem, i),
-                line_style=hline, label_style=hlabel, icon_style=hicon)
-            self.add_style(
-                '{0!s}{1:d}_low'.format(name_stem, i),
-                line_style=lline, label_style=llabel, icon_style=licon)
-            self.add_style_map(
-                '{0!s}{1:d}'.format(name_stem, i),
-                '{0!s}{1:d}_high'.format(name_stem, i),
-                '{0!s}{1:d}_low'.format(name_stem, i))
+        pass
 
     # extended data handling
     def add_schema(self, schema_id, field_dict, short_name=None):
@@ -545,24 +491,7 @@ class Document(object):
         -------
         None
         """
-
-        types = ['string', 'int', 'uint', 'short', 'ushort', 'float', 'double', 'bool']
-        sch = self._create_new_node(None, 'Schema')
-        sch.setAttribute('id', schema_id)
-        if short_name is not None:
-            sch.setAttribute('name', short_name)
-        for name in field_dict:
-            sf = self._doc.createElement('SimpleField')
-            typ, dname = field_dict[name]
-            sf.setAttribute('name', name)
-            if typ in types:
-                sf.setAttribute('type', typ)
-                sch.appendChild(sf)
-            else:
-                logger.warning(
-                    "Schema '{0!s}' has field '{1!s}' of unrecognized type '{2!s}',\n\t"
-                    "which is being excluded.".format(schema_id, name, typ))
-            self._add_text_node(sf, 'displayName', dname)
+        pass
 
     def _add_extended_data(self, par, **params):
         """
@@ -616,39 +545,7 @@ class Document(object):
         -------
         minidom.Element
         """
-
-        overlay = self._create_new_node(par, 'ScreenOverlay')
-        if 'id' in params:
-            overlay.setAttribute('id', params['id'])
-
-        for opt in ['name', 'Snippet', 'styleUrl', 'rotation']:
-            self._add_conditional_text_node(overlay, opt, params)
-        self._add_conditional_cdata_node(overlay, 'description', params)
-
-        # extended data
-        if ('schemaUrl' in params) and ('ExtendedData' in params):
-            self._add_extended_data(overlay, **params)
-
-        # overlay parameters
-        for opt in ['overlayXY', 'screenXY', 'size', 'rotationXY']:
-            olp = self._doc.createElement(opt)
-            good = True
-            for att in ['x', 'y', 'xunits', 'yunits']:
-                key = '{}:{}'.format(opt, att)
-                if key in params:
-                    olp.setAttribute(att, params[key])
-                else:
-                    logger.error(
-                        'params is missing required key {},\n\t'
-                        'so we are aborting screen overlay parameters construction. '
-                        'This screen overlay will likely not render correctly.'.format(key))
-                    good = False
-            if good:
-                overlay.appendChild(olp)
-        # icon
-        ic = self._create_new_node(overlay, 'Icon')
-        self._add_text_node(ic, 'href', image_ref)
-        return overlay
+        pass
 
     # direct kml geometries
     def add_multi_geometry(self, par=None, **params):
@@ -848,14 +745,7 @@ class Document(object):
         -------
             minidom.Element
         """
-
-        if par is None:
-            par = self.add_container(**params)
-        gx_multitrack = self._create_new_node(par, 'gx:MultiTrack')
-
-        for opt in ['gx:interpolate', 'extrude', 'tessellate', 'altitudeMode']:
-            self._add_conditional_text_node(gx_multitrack, opt, params)
-        return gx_multitrack
+        pass
 
     def add_gx_track(self, coords, whens, angles=None, par=None, **params):
         """

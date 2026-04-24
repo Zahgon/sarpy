@@ -70,14 +70,7 @@ class GroundTruthConstructor(object):
         ----------
         the_fiducial : TheFiducialType
         """
-
-        if not isinstance(the_fiducial, TheFiducialType):
-            raise TypeError('Requires an object of type `TheFiducialType`, got `{}`'.format(type(the_fiducial)))
-        if the_fiducial.ImageLocation is not None:
-            raise ValueError('The fiducial has ImageLocation already set.')
-        if the_fiducial.SlantPlane is not None or the_fiducial.GroundPlane is not None:
-            raise ValueError('The fiducial already has the SlantPlane or GroundPlane set.')
-        self._fiducials.append(the_fiducial)
+        pass
 
     def add_fiducial_from_arguments(
             self,
@@ -95,13 +88,7 @@ class GroundTruthConstructor(object):
         FiducialType : None|str
         GeoLocation : FiducialGeoLocation
         """
-
-        self.add_fiducial(
-            TheFiducialType(
-                Name=Name,
-                SerialNumber=SerialNumber,
-                FiducialType=FiducialType,
-                GeoLocation=GeoLocation))
+        pass
 
     def add_object(
             self,
@@ -113,14 +100,7 @@ class GroundTruthConstructor(object):
         ----------
         the_object : TheObjectType
         """
-
-        if not isinstance(the_object, TheObjectType):
-            raise TypeError('Requires an object of type `TheObjectType`, got `{}`'.format(type(the_object)))
-        if the_object.ImageLocation is not None:
-            raise ValueError('The object has ImageLocation already set.')
-        if the_object.SlantPlane is not None or the_object.GroundPlane is not None:
-            raise ValueError('The object already has the SlantPlane or GroundPlane set.')
-        self._objects.append(the_object)
+        pass
 
     def add_object_from_arguments(
             self,
@@ -188,37 +168,7 @@ class GroundTruthConstructor(object):
         TerrainTexture : None|str
         SeasonalCover : None|str
         """
-
-        self.add_object(
-            TheObjectType(SystemName=SystemName,
-                          SystemComponent=SystemComponent,
-                          NATOName=NATOName,
-                          Function=Function,
-                          Version=Version,
-                          DecoyType=DecoyType,
-                          SerialNumber=SerialNumber,
-                          ObjectClass=ObjectClass,
-                          ObjectSubClass=ObjectSubClass,
-                          ObjectTypeClass=ObjectTypeClass,
-                          ObjectType=ObjectType,
-                          ObjectLabel=ObjectLabel,
-                          Size=Size,
-                          Orientation=Orientation,
-                          Articulation=Articulation,
-                          Configuration=Configuration,
-                          Accessories=Accessories,
-                          PaintScheme=PaintScheme,
-                          Camouflage=Camouflage,
-                          Obscuration=Obscuration,
-                          ObscurationPercent=ObscurationPercent,
-                          ImageLevelObscuration=ImageLevelObscuration,
-                          GeoLocation=GeoLocation,
-                          TargetToClutterRatio=TargetToClutterRatio,
-                          VisualQualityMetric=VisualQualityMetric,
-                          UnderlyingTerrain=UnderlyingTerrain,
-                          OverlyingTerrain=OverlyingTerrain,
-                          TerrainTexture=TerrainTexture,
-                          SeasonalCover=SeasonalCover))
+        pass
 
     def get_final_structure(self) -> ResearchType:
         """
@@ -238,20 +188,7 @@ class GroundTruthConstructor(object):
         -------
         ResearchType
         """
-
-        return ResearchType(
-            DetailCollectionInfo=self._collection_info,
-            DetailSubCollectionInfo=self._subcollection_info,
-            DetailFiducialInfo=FiducialInfoType(
-                NumberOfFiducialsInScene=len(self._fiducials),
-                NumberOfFiducialsInImage=len(self._fiducials),
-                LabelSource=self._label_source,
-                Fiducials=self._fiducials),
-            DetailObjectInfo=ObjectInfoType(
-                NumberOfObjectsInScene=len(self._objects),
-                NumberOfObjectsInImage=len(self._objects),
-                LabelSource=self._label_source,
-                Objects=self._objects)).copy()
+        pass
 
     def localize_for_sicd(
             self,
@@ -285,18 +222,7 @@ class GroundTruthConstructor(object):
         -------
         ResearchType
         """
-
-        out_research = self.get_final_structure()
-        out_research.apply_sicd(
-            sicd,
-            base_sicd_file,
-            layover_shift=layover_shift,
-            populate_in_periphery=populate_in_periphery,
-            include_out_of_range=include_out_of_range,
-            padding_fraction=padding_fraction,
-            minimum_pad=minimum_pad,
-            md5_checksum=md5_checksum)
-        return out_research
+        pass
 
     def localize_for_sicd_reader(
             self,
@@ -328,17 +254,7 @@ class GroundTruthConstructor(object):
         -------
         ResearchType
         """
-
-        out_research = self.get_final_structure()
-        out_research.apply_sicd_reader(
-            sicd_reader,
-            layover_shift=layover_shift,
-            populate_in_periphery=populate_in_periphery,
-            include_out_of_range=include_out_of_range,
-            padding_fraction=padding_fraction,
-            minimum_pad=minimum_pad,
-            populate_md5=populate_md5)
-        return out_research
+        pass
 
 
 class AnalystTruthConstructor(object):
@@ -405,16 +321,14 @@ class AnalystTruthConstructor(object):
         """
         ImageInfoType: The basic image info object derived from the sicd
         """
-
-        return self._image_info
+        pass
 
     @property
     def sensor_info(self) -> SensorInfoType:
         """
         SensorInfoType: The basic sensor info object derived from the sicd.
         """
-
-        return self._sensor_info
+        pass
 
     def add_fiducial(self, the_fiducial: TheFiducialType) -> None:
         """
@@ -424,13 +338,7 @@ class AnalystTruthConstructor(object):
         ----------
         the_fiducial : TheFiducialType
         """
-
-        if not isinstance(the_fiducial, TheFiducialType):
-            raise TypeError('Requires an object of type `TheFiducialType`, got `{}`'.format(type(the_fiducial)))
-        if the_fiducial.GeoLocation is not None:
-            raise ValueError('The fiducial has GeoLocation already set.')
-        the_fiducial.set_geo_location_from_sicd(self._sicd, projection_type=self._projection_type, **self._proj_kwargs)
-        self._fiducials.append(the_fiducial)
+        pass
 
     def add_fiducial_from_arguments(
             self,
@@ -448,13 +356,7 @@ class AnalystTruthConstructor(object):
         FiducialType : None|str
         ImageLocation : FiducialImageLocation
         """
-
-        self.add_fiducial(
-            TheFiducialType(
-                Name=Name,
-                SerialNumber=SerialNumber,
-                FiducialType=FiducialType,
-                ImageLocation=ImageLocation))
+        pass
 
     def add_object(
             self,
@@ -472,16 +374,7 @@ class AnalystTruthConstructor(object):
         minimum_pad : float|int
             The minimum number of pixels by which to pad for the chip
         """
-
-        if not isinstance(the_object, TheObjectType):
-            raise TypeError('Requires an object of type `TheObjectType`, got `{}`'.format(type(the_object)))
-        if the_object.GeoLocation is not None:
-            raise ValueError('The object has GeoLocation already set.')
-        the_object.set_geo_location_from_sicd(
-            self._sicd, projection_type=self._projection_type, **self._proj_kwargs)
-        the_object.set_chip_details_from_sicd(
-            self._sicd, populate_in_periphery=True, padding_fraction=padding_fraction, minimum_pad=minimum_pad)
-        self._objects.append(the_object)
+        pass
 
     def add_object_from_arguments(
             self,
@@ -554,39 +447,7 @@ class AnalystTruthConstructor(object):
         TerrainTexture : None|str
         SeasonalCover : None|str
         """
-
-        self.add_object(
-            TheObjectType(SystemName=SystemName,
-                          SystemComponent=SystemComponent,
-                          NATOName=NATOName,
-                          Function=Function,
-                          Version=Version,
-                          DecoyType=DecoyType,
-                          SerialNumber=SerialNumber,
-                          ObjectClass=ObjectClass,
-                          ObjectSubClass=ObjectSubClass,
-                          ObjectTypeClass=ObjectTypeClass,
-                          ObjectType=ObjectType,
-                          ObjectLabel=ObjectLabel,
-                          Size=Size,
-                          Orientation=Orientation,
-                          Articulation=Articulation,
-                          Configuration=Configuration,
-                          Accessories=Accessories,
-                          PaintScheme=PaintScheme,
-                          Camouflage=Camouflage,
-                          Obscuration=Obscuration,
-                          ObscurationPercent=ObscurationPercent,
-                          ImageLevelObscuration=ImageLevelObscuration,
-                          ImageLocation=ImageLocation,
-                          TargetToClutterRatio=TargetToClutterRatio,
-                          VisualQualityMetric=VisualQualityMetric,
-                          UnderlyingTerrain=UnderlyingTerrain,
-                          OverlyingTerrain=OverlyingTerrain,
-                          TerrainTexture=TerrainTexture,
-                          SeasonalCover=SeasonalCover),
-            padding_fraction=padding_fraction,
-            minimum_pad=minimum_pad)
+        pass
 
     def get_final_structure(self) -> ResearchType:
         """
@@ -597,22 +458,7 @@ class AnalystTruthConstructor(object):
         -------
         ResearchType
         """
-
-        return ResearchType(
-            DetailCollectionInfo=self._collection_info,
-            DetailSubCollectionInfo=self._subcollection_info,
-            DetailImageInfo=self._image_info,
-            DetailSensorInfo=self._sensor_info,
-            DetailFiducialInfo=FiducialInfoType(
-                NumberOfFiducialsInScene=len(self._fiducials),
-                NumberOfFiducialsInImage=len(self._fiducials),
-                LabelSource=self._label_source,
-                Fiducials=self._fiducials),
-            DetailObjectInfo=ObjectInfoType(
-                NumberOfObjectsInScene=len(self._objects),
-                NumberOfObjectsInImage=len(self._objects),
-                LabelSource=self._label_source,
-                Objects=self._objects))
+        pass
 
 
 def convert_afrl_to_native(
@@ -631,36 +477,4 @@ def convert_afrl_to_native(
     -------
     FileLabelCollection
     """
-
-    def _convert_object_to_json(t_object: TheObjectType) -> LabelFeature:
-        # extract the "properties"
-        geometry, geometry_properties = t_object.get_image_geometry_object_for_sicd(include_chip=include_chip)
-        feature = LabelFeature(
-            geometry=geometry,
-            properties=LabelProperties(
-                name=t_object.SystemName,
-                geometry_properties=geometry_properties))
-        feature.add_annotation_metadata(LabelMetadata(label_id=t_object.ObjectLabel))
-        return feature
-
-    if not isinstance(research, ResearchType):
-        raise TypeError('Expected ResearchType, got type `{}`'.format(type(research)))
-    if research.DetailObjectInfo is None or \
-            research.DetailObjectInfo.Objects is None or \
-            len(research.DetailObjectInfo.Objects) == 0:
-        raise ValueError('Nothing to be done')
-
-    # create our adhoc containers
-    label_schema = LabelSchema(version='AdHoc')
-    annotation_collection = LabelCollection()
-    for the_object in research.DetailObjectInfo.Objects:
-        new_key = the_object.ObjectLabel
-        if new_key not in label_schema.labels:
-            label_schema.add_entry(new_key, new_key)
-        annotation_collection.add_feature(_convert_object_to_json(the_object))
-
-    # finalize the collection
-    return FileLabelCollection(
-        label_schema,
-        annotations=annotation_collection,
-        image_file_name=research.DetailImageInfo.DataFilename)
+    pass

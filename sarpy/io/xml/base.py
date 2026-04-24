@@ -275,11 +275,7 @@ def validate_xml_from_file(xml_path, xsd_path, output_logger=None):
         `True` if valid, `False` otherwise. Failure reasons will be
         logged at `'error'` level by the module.
     """
-
-    with open(xml_path, 'rb') as fi:
-        xml_bytes = fi.read()
-
-    return validate_xml_from_string(xml_bytes, xsd_path, output_logger=output_logger)
+    pass
 
 
 ###
@@ -651,81 +647,7 @@ def parse_serializable(value, name, instance, the_type):
 
 
 def parse_serializable_array(value, name, instance, child_type, child_tag):
-    if value is None:
-        return None
-    if isinstance(value, child_type):
-        # this is the child element
-        return numpy.array([value, ], dtype='object')
-    elif isinstance(value, numpy.ndarray):
-        if value.dtype.name != 'object':
-            if issubclass(child_type, Arrayable):
-                return numpy.array([child_type.from_array(array) for array in value], dtype='object')
-            else:
-                raise ValueError(
-                    'Attribute {} of array type functionality belonging to class {} got an ndarray of dtype {},'
-                    'and child type is not a subclass of Arrayable.'.format(
-                        name, instance.__class__.__name__, value.dtype))
-        elif len(value.shape) != 1:
-            raise ValueError(
-                'Attribute {} of array type functionality belonging to class {} got an ndarray of shape {},'
-                'but requires a one dimensional array.'.format(
-                    name, instance.__class__.__name__, value.shape))
-        elif not isinstance(value[0], child_type):
-            raise TypeError(
-                'Attribute {} of array type functionality belonging to class {} got an ndarray containing '
-                'first element of incompatible type {}.'.format(
-                    name, instance.__class__.__name__, type(value[0])))
-        return value
-    elif isinstance(value, ElementTree.Element):
-        xml_ns = getattr(instance, '_xml_ns', None)
-        if hasattr(instance, '_child_xml_ns_key'):
-            # noinspection PyProtectedMember
-            xml_ns_key = instance._child_xml_ns_key.get(name, getattr(instance, '_xml_ns_key', None))
-        else:
-            xml_ns_key = getattr(instance, '_xml_ns_key', None)
-        # this is the parent node from XML deserialization
-        size = int(value.attrib.get('size', -1))  # NB: Corner Point arrays don't have
-        # extract child nodes at top level
-        child_nodes = find_children(value, child_tag, xml_ns, xml_ns_key)
-
-        if size == -1:  # fill in, if it's missing
-            size = len(child_nodes)
-        if len(child_nodes) != size:
-            raise ValueError(
-                'Attribute {} of array type functionality belonging to class {} got a ElementTree element '
-                'with size attribute {}, but has {} child nodes with tag {}.'.format(
-                    name, instance.__class__.__name__, size, len(child_nodes), child_tag))
-        new_value = numpy.empty((size, ), dtype='object')
-        for i, entry in enumerate(child_nodes):
-            new_value[i] = child_type.from_node(entry, xml_ns, ns_key=xml_ns_key)
-        return new_value
-    elif isinstance(value, (list, tuple)):
-        # this would arrive from users or json deserialization
-        if len(value) == 0:
-            return numpy.empty((0,), dtype='object')
-        elif isinstance(value[0], child_type):
-            return numpy.array(value, dtype='object')
-        elif isinstance(value[0], dict):
-            # NB: charming errors are possible here if something stupid has been done.
-            return numpy.array([child_type.from_dict(node) for node in value], dtype='object')
-        elif isinstance(value[0], (numpy.ndarray, list, tuple)):
-            if issubclass(child_type, Arrayable):
-                return numpy.array([child_type.from_array(array) for array in value], dtype='object')
-            elif hasattr(child_type, 'Coefs'):
-                return numpy.array([child_type(Coefs=array) for array in value], dtype='object')
-            else:
-                raise ValueError(
-                    'Attribute {} of array type functionality belonging to class {} got a list '
-                    'containing elements type {} and construction failed.'.format(
-                        name, instance.__class__.__name__, type(value[0])))
-        else:
-            raise TypeError(
-                'Attribute {} of array type functionality belonging to class {} got a list containing first '
-                'element of incompatible type {}.'.format(name, instance.__class__.__name__, type(value[0])))
-    else:
-        raise TypeError(
-            'Attribute {} of array type functionality belonging to class {} got incompatible type {}.'.format(
-                name, instance.__class__.__name__, type(value)))
+    pass
 
 
 def parse_serializable_list(value, name, instance, child_type):
@@ -766,27 +688,7 @@ def parse_serializable_list(value, name, instance, child_type):
 
 
 def parse_parameters_collection(value, name, instance):
-    if value is None:
-        return None
-    if isinstance(value, dict):
-        return value
-    elif isinstance(value, list):
-        out = OrderedDict()
-        if len(value) == 0:
-            return out
-        if isinstance(value[0], ElementTree.Element):
-            for entry in value:
-                out[entry.attrib['name']] = get_node_value(entry)
-            return out
-        else:
-            raise TypeError(
-                'Field {} of list type functionality belonging to class {} got a '
-                'list containing first element of incompatible type '
-                '{}.'.format(name, instance.__class__.__name__, type(value[0])))
-    else:
-        raise TypeError(
-            'Field {} of class {} got incompatible type {}.'.format(
-                name, instance.__class__.__name__, type(value)))
+    pass
 
 
 ##################
@@ -929,10 +831,7 @@ class Serializable(object):
         -------
         None
         """
-        # Extend this to include format function capabilities. Maybe numeric_format is not the right name?
-        if attribute not in self._fields:
-            raise ValueError('attribute {} is not permitted for class {}'.format(attribute, self.__class__.__name__))
-        self._numeric_format[attribute] = format_string
+        pass
 
     def _get_formatter(self, attribute):
         """Return a formatting function for the given attribute. This will default to `str` if no other
@@ -1575,8 +1474,7 @@ class Serializable(object):
         str
             xml string from :func:`ElementTree.tostring()` call.
         """
-
-        return self.to_xml_bytes(urn=urn, tag=tag, check_validity=check_validity, strict=strict).decode('utf-8')
+        pass
 
 
 class Arrayable(object):
@@ -1741,11 +1639,7 @@ class SerializableArray(object):
         """
         int: the size of the array.
         """
-
-        if self._array is None:
-            return 0
-        else:
-            return self._array.size
+        pass
 
     def get_array(self, dtype='object', **kwargs):
         """Gets an array representation of the class instance.
@@ -1788,28 +1682,10 @@ class SerializableArray(object):
         -------
         None
         """
-
-        if coords is None:
-            self._array = None
-            return
-        array = parse_serializable_array(
-            coords, 'coords', self, self._child_type, self._child_tag)
-        if not (self._minimum_length <= array.size <= self._maximum_length):
-            raise ValueError(
-                'Field {} is required to be an array with {} <= length <= {}, and input of length {} '
-                'was received'.format(self._name, self._minimum_length, self._maximum_length, array.size))
-
-        self._array = array
-        self._check_indices()
+        pass
 
     def _check_indices(self):
-        if not self._set_index:
-            return
-        for i, entry in enumerate(self._array):
-            try:
-                setattr(entry, self._index_var_name, i+1)
-            except (AttributeError, ValueError, TypeError):
-                continue
+        pass
 
     def to_node(self, doc, tag, ns_key=None, parent=None, check_validity=False, strict=DEFAULT_STRICT):
         if self.size == 0:
@@ -1897,10 +1773,7 @@ class ParametersCollection(object):
         return default
 
     def set_collection(self, value):
-        if value is None:
-            self._dict = None
-        else:
-            self._dict = parse_parameters_collection(value, self._name, self)
+        pass
 
     def get_collection(self):
         return self._dict

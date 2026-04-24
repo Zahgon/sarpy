@@ -30,32 +30,15 @@ def _parse_type(typ_string, leng, value, start):
     -------
     str|int|bytes|float
     """
-
-    byt = value[start:start + leng]
-    if typ_string == 's':
-        return byt.decode('utf-8').strip()
-    if typ_string == 'd':
-        return int(byt)
-    if typ_string == 'ieee754_binary32':
-        return struct.unpack('>f', byt)[0]
-    if typ_string == 'b':
-        return byt
-    raise ValueError(f'Got unrecognized type string {typ_string}')
+    pass
 
 
 def _str_encoder(val, formatspec):
-    return f'{val:{formatspec}}'.encode('utf-8')
+    pass
 
 
 def _create_encoder(typ_string, leng):
-    if typ_string == 's':
-        return functools.partial(_str_encoder, formatspec=f'{leng}s')
-    if typ_string == 'd':
-        return functools.partial(_str_encoder, formatspec=f'0{leng}d')
-    if typ_string == 'b':
-        return lambda x: x
-    if typ_string == 'ieee754_binary32':
-        return functools.partial(struct.pack, '>f')
+    pass
 
 
 class TREElement(object):
@@ -93,22 +76,7 @@ class TREElement(object):
         -------
         None
         """
-
-        if hasattr(self, attribute):
-            logger.error(
-                'This instance of TRE element {} already has an attribute {},\n\t'
-                'but the `add_field()` method is being called for this attribute name again.\n\t'
-                'This is almost certainly an error.'.format(self.__class__, attribute))
-
-        try:
-            val = _parse_type(typ_string, leng, value, self._bytes_length)
-            setattr(self, attribute, val)
-        except Exception as e:
-            raise ValueError(
-                'Failed creating field {} with exception \n\t{}'.format(attribute, e))
-        self._bytes_length += leng
-        self._field_ordering.append(attribute)
-        self._field_encoders[attribute] = _create_encoder(typ_string, leng)
+        pass
 
     def add_loop(self, attribute, length, child_type, value, *args):
         """
@@ -131,15 +99,7 @@ class TREElement(object):
         -------
         None
         """
-
-        try:
-            obj = TRELoop(length, child_type, value, self._bytes_length, *args)
-            setattr(self, attribute, obj)
-        except Exception as e:
-            raise ValueError(
-                'Failed creating loop {} of type {} with exception\n\t{}'.format(attribute, child_type, e))
-        self._bytes_length += obj.get_bytes_length()
-        self._field_ordering.append(attribute)
+        pass
 
     def _attribute_to_bytes(self, attribute):
         """
@@ -213,14 +173,7 @@ class TREElement(object):
         -------
         dict|list
         """
-
-        out = OrderedDict()
-        for fld in self._field_ordering:
-            value = getattr(self, fld)
-            if isinstance(value, TREElement):
-                out[fld] = value.to_json()
-            else:
-                out[fld] = value
+        pass
 
 
 class TRELoop(TREElement):
@@ -276,8 +229,7 @@ class TRELoop(TREElement):
         -------
         dict|list
         """
-
-        return [entry.to_json() for entry in self._data]
+        pass
 
 
 class TREExtension(TRE):
@@ -301,33 +253,24 @@ class TREExtension(TRE):
 
     @property
     def TAG(self):
-        return self._tag_value
+        pass
 
     @property
     def DATA(self):  # type: () -> _data_type
-        return self._data
+        pass
 
     @DATA.setter
     def DATA(self, value):
         # type: (Union[bytes, _data_type]) -> None
-        if isinstance(value, self._data_type):
-            self._data = value
-        elif isinstance(value, bytes):
-            self._data = self._data_type(value)
-        else:
-            raise TypeError(
-                'data must be of {} type or a bytes array. '
-                'Got {}'.format(self._data_type, type(value)))
+        pass
 
     @property
     def EL(self):
-        if self._data is None:
-            return 0
-        return self._data.get_bytes_length()
+        pass
 
     @classmethod
     def minimum_length(cls):
-        return 11
+        pass
 
     def get_bytes_length(self):
         return 11 + self.EL

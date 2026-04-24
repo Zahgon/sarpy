@@ -42,14 +42,7 @@ def check_classification(parent_package, results_dict=None):
 
 
 def log_package_classification(parent_package, dest=sys.stdout):
-    global print_func
-    print_func = functools.partial(print, file=dest)
-
-    results_dict = check_classification(parent_package)
-    for class_str in sorted(results_dict.keys()):
-        print_func(class_str)
-        for entry in results_dict[class_str]:
-            print_func('\t', entry)
+    pass
 
 
 if __name__ == '__main__':

@@ -145,5 +145,4 @@ def get_pass_number(minutes, orbits_per_day):
     -------
     str
     """
-
-    return '{0:02d}'.format(int(round(minutes*orbits_per_day/1440.)))
+    pass

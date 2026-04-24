@@ -52,32 +52,18 @@ class ColorDisplayRemapType(Serializable, Arrayable):
         `uint8` or `uint16`. The first dimension should correspond to entries (i.e. size of the lookup table), and the
         second dimension must have size 3 and corresponds to `RGB` bands.
         """
-
-        return self._remap_lut
+        pass
 
     @RemapLUT.setter
     def RemapLUT(self, value):
-        if value is None:
-            self._remap_lut = None
-            return
-        if isinstance(value, (tuple, list)):
-            value = numpy.array(value, dtype=numpy.uint8)
-        if not isinstance(value, numpy.ndarray) or value.dtype.name not in ('uint8', 'uint16'):
-            raise ValueError(
-                'RemapLUT for class ColorDisplayRemapType must be a numpy.ndarray of dtype uint8 or uint16.')
-        if value.ndim != 2 and value.shape[1] != 3:
-            raise ValueError('RemapLUT for class ColorDisplayRemapType must be an N x 3 array.')
-        self._remap_lut = value
+        pass
 
     @property
     def size(self):
         """
         int: the size of the lookup table
         """
-        if self._remap_lut is None:
-            return 0
-        else:
-            return self._remap_lut.shape[0]
+        pass
 
     def __len__(self):
         if self._remap_lut is None:
@@ -228,22 +214,11 @@ class MonochromeDisplayRemapType(Serializable):
         where the dtype must be `uint8`. Used during the "Product Generation Option" portion of the SIPS
         display chain. Required for 8-bit data, and not to be used for 16-bit data.
         """
-
-        return self._remap_lut
+        pass
 
     @RemapLUT.setter
     def RemapLUT(self, value):
-        if value is None:
-            self._remap_lut = None
-            return
-        if isinstance(value, (tuple, list)):
-            value = numpy.array(value, dtype=numpy.uint8)
-        if not isinstance(value, numpy.ndarray) or value.dtype.name != 'uint8':
-            raise ValueError(
-                'RemapLUT for class MonochromeDisplayRemapType must be a numpy.ndarray of dtype uint8.')
-        if value.ndim != 1:
-            raise ValueError('RemapLUT for class MonochromeDisplayRemapType must be a one-dimensional array.')
-        self._remap_lut = value
+        pass
 
     @classmethod
     def from_node(cls, node, xml_ns, ns_key=None, kwargs=None):
@@ -473,16 +448,4 @@ class ProductDisplayType(Serializable):
         -------
         int
         """
-
-        if self.PixelType == 'MONO8I':
-            return 1
-        elif self.PixelType == 'MONO8LU':
-            return 1
-        elif self.PixelType == 'MONO16I':
-            return 2
-        elif self.PixelType == 'RGB8LU':
-            return 1
-        elif self.PixelType == 'RGB24I':
-            return 3
-        else:
-            raise ValueError('Got unhandled pixel type `{}`'.format(self.PixelType))
+        pass

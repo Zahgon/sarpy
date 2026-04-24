@@ -147,11 +147,7 @@ def _parse_float(val, default):
     -------
     float
     """
-
-    if val is None:
-        return default
-    else:
-        return float(val)
+    pass
 
 
 def _parse_str(val, length, default, name, instance):
@@ -202,22 +198,7 @@ def _parse_bytes(val, length, default, name, instance):
     -------
     int
     """
-
-    if val is None:
-        return default
-    elif isinstance(val, bytes):
-        if len(val) <= length:
-            return val
-        else:
-            logger.warning(
-                'Got string input value of length {} for attribute {} of class {}, '
-                'which is longer than the allowed length {}, so '
-                'truncating'.format(len(val), name, instance.__class__.__name__, length))
-            return val[:length]
-    else:
-        raise TypeError(
-            'Expected type int or bytes for attribute {} of class {}, '
-            'and got {}'.format(name, instance.__class__.__name__, type(val)))
+    pass
 
 
 def _parse_nitf_element(val, nitf_type, default_args, name, instance):
@@ -258,25 +239,13 @@ class _BasicDescriptor(object):
         self._format_docstring()
 
     def _format_docstring(self):
-        docstring = self.__doc__
-        if docstring is None:
-            docstring = ''
-        if (self._typ_string is not None) and (not docstring.startswith(self._typ_string)):
-            docstring = '{} {}'.format(self._typ_string, docstring)
-
-        suff = self._docstring_suffix()
-        if suff is not None:
-            docstring = '{} {}'.format(docstring, suff)
-
-        if not self.required:
-            docstring = '{} {}'.format(docstring, ' **Conditional.**')
-        self.__doc__ = docstring
+        pass
 
     def _docstring_suffix(self):
-        return None
+        pass
 
     def _get_default(self, instance):
-        return None
+        pass
 
     def __get__(self, instance, owner):
         """The getter.
@@ -348,11 +317,10 @@ class _StringDescriptor(_BasicDescriptor):
             name, required, length, docstring=docstring)
 
     def _get_default(self, instance):
-        return self._default_value
+        pass
 
     def _docstring_suffix(self):
-        if self._default_value is not None and len(self._default_value) > 0:
-            return ' Default value is :code:`{}`.'.format(self._default_value)
+        pass
 
     def __set__(self, instance, value):
 
@@ -375,13 +343,10 @@ class _StringEnumDescriptor(_BasicDescriptor):
             self._default_value = None
 
     def _get_default(self, instance):
-        return self._default_value
+        pass
 
     def _docstring_suffix(self):
-        suff = ' Takes values in :code:`{}`.'.format(self.values)
-        if self._default_value is not None and len(self._default_value) > 0:
-            suff += ' Default value is :code:`{}`.'.format(self._default_value)
-        return suff
+        pass
 
     def __set__(self, instance, value):
         if value is None:
@@ -419,11 +384,10 @@ class _IntegerDescriptor(_BasicDescriptor):
             name, required, length, docstring=docstring)
 
     def _get_default(self, instance):
-        return self._default_value
+        pass
 
     def _docstring_suffix(self):
-        if self._default_value is not None:
-            return ' Default value is :code:`{}`.'.format(self._default_value)
+        pass
 
     def __set__(self, instance, value):
         if super(_IntegerDescriptor, self).__set__(instance, value):  # the None handler...kinda hacky
@@ -443,11 +407,10 @@ class _FloatDescriptor(_BasicDescriptor):
             name, required, length, docstring=docstring)
 
     def _get_default(self, instance):
-        return self._default_value
+        pass
 
     def _docstring_suffix(self):
-        if self._default_value is not None:
-            return ' Default value is :code:`{}`.'.format(self._default_value)
+        pass
 
     def __set__(self, instance, value):
         if super(_FloatDescriptor, self).__set__(instance, value):  # the None handler...kinda hacky
@@ -467,7 +430,7 @@ class _RawDescriptor(_BasicDescriptor):
             name, required, length, docstring=docstring)
 
     def _get_default(self, instance):
-        return self._default_value
+        pass
 
     def __set__(self, instance, value):
         if super(_RawDescriptor, self).__set__(instance, value):  # the None handler...kinda hacky
@@ -487,9 +450,7 @@ class _NITFElementDescriptor(_BasicDescriptor):
         super(_NITFElementDescriptor, self).__init__(name, required, None, docstring=docstring)
 
     def _get_default(self, instance):
-        if self._default_args is not None:
-            return self.the_type(**self._default_args)
-        return None
+        pass
 
     def __set__(self, instance, value):
         if super(_NITFElementDescriptor, self).__set__(instance, value):  # the None handler...kinda hacky
@@ -523,8 +484,7 @@ class NITFElement(BaseNITFElement):
         -------
         int
         """
-
-        return sum(cls._lengths.values())
+        pass
 
     def _get_attribute_length(self, fld):
         if fld not in self._ordering:
@@ -649,22 +609,7 @@ class NITFElement(BaseNITFElement):
         return cls(**fields)
 
     def to_json(self):
-        out = OrderedDict()
-        for fld in self._ordering:
-            if self._get_attribute_length(fld) == 0:
-                continue
-            value = getattr(self, fld)
-            if value is None:
-                out[fld] = ''
-            elif isinstance(value, (str, bytes, int)):
-                out[fld] = value
-            elif isinstance(value, BaseNITFElement):
-                out[fld] = value.to_json()
-            else:
-                logger.error(
-                    'Got unhandled type `{}` for json serialization for '
-                    'attribute `{}` of class {}'.format(type(value), fld, self.__class__))
-        return out
+        pass
 
 
 class NITFLoop(NITFElement):
@@ -710,7 +655,7 @@ class NITFLoop(NITFElement):
 
     @classmethod
     def minimum_length(cls):
-        return cls._count_size
+        pass
 
     @classmethod
     def _parse_count(cls, value, start):
@@ -743,7 +688,7 @@ class NITFLoop(NITFElement):
         return self._counts_bytes() + b''.join(entry.to_bytes() for entry in self._values)
 
     def to_json(self):
-        return [entry.to_json() for entry in self._values]
+        pass
 
 
 class Unstructured(NITFElement):
@@ -766,27 +711,11 @@ class Unstructured(NITFElement):
 
     @property
     def data(self):  # type: () -> Union[None, bytes, NITFElement, TREList]
-        return self._data
+        pass
 
     @data.setter
     def data(self, value):
-        if value is None:
-            self._data = None
-            return
-
-        if not isinstance(value, (bytes, NITFElement)):
-            raise TypeError(
-                'data requires bytes or NITFElement type. '
-                'Got type {}'.format(type(value)))
-        siz_lim = 10**self._size_len - 1
-        if isinstance(value, bytes):
-            len_cond = (len(value) > siz_lim)
-        else:
-            len_cond = value.get_bytes_length() > siz_lim
-        if len_cond:
-            raise ValueError('The provided data is longer than {}'.format(siz_lim))
-        self._data = value
-        self._populate_data()
+        pass
 
     def _populate_data(self):
         """
@@ -801,7 +730,7 @@ class Unstructured(NITFElement):
 
     @classmethod
     def minimum_length(cls):
-        return cls._size_len
+        pass
 
     def _get_attribute_bytes(self, attribute):
         if attribute == 'data':
@@ -883,7 +812,7 @@ class _ItemArrayHeaders(BaseNITFElement):
 
     @classmethod
     def minimum_length(cls):
-        return 3
+        pass
 
     @classmethod
     def from_bytes(cls, value, start):
@@ -926,9 +855,7 @@ class _ItemArrayHeaders(BaseNITFElement):
         return out.encode('utf-8')
 
     def to_json(self):
-        return OrderedDict([
-            ('subheader_sizes', self.subhead_sizes.tolist()),
-            ('item_sizes', self.item_sizes.tolist())])
+        pass
 
 
 ######
@@ -971,7 +898,7 @@ class TRE(BaseNITFElement):
 
     @classmethod
     def minimum_length(cls):
-        return 11
+        pass
 
     @classmethod
     def from_bytes(cls, value, start):
@@ -987,12 +914,7 @@ class TRE(BaseNITFElement):
         return UnknownTRE.from_bytes(value, start)
 
     def to_json(self):
-        out = OrderedDict([('tag', self.TAG), ('length', self.EL)])
-        if isinstance(self.DATA, bytes):
-            out['data'] = self.DATA
-        else:
-            out['data'] = self.DATA.to_json()
-        return out
+        pass
 
 
 class UnknownTRE(TRE):
@@ -1021,21 +943,19 @@ class UnknownTRE(TRE):
 
     @property
     def TAG(self):
-        return self._TAG
+        pass
 
     @property
     def DATA(self):  # type: () -> bytes
-        return self._data
+        pass
 
     @DATA.setter
     def DATA(self, value):
-        if not isinstance(value, bytes):
-            raise TypeError('data must be a bytes instance. Got {}'.format(type(value)))
-        self._data = value
+        pass
 
     @property
     def EL(self):
-        return len(self._data)
+        pass
 
     def get_bytes_length(self):
         return 11 + self.EL
@@ -1066,23 +986,11 @@ class TREList(NITFElement):
     @property
     def tres(self):
         # type: () -> List[TRE]
-        return self._tres
+        pass
 
     @tres.setter
     def tres(self, value):
-        if value is None:
-            self._tres = []
-            return
-
-        if not isinstance(value, (list, tuple)):
-            raise TypeError('tres must be a list or tuple')
-
-        for i, entry in enumerate(value):
-            if not isinstance(entry, TRE):
-                raise TypeError(
-                    'Each entry of tres must be of type TRE. '
-                    'Entry {} is type {}'.format(i, type(entry)))
-        self._tres = value
+        pass
 
     def _get_attribute_bytes(self, attribute):
         if attribute == 'tres':
@@ -1138,14 +1046,12 @@ class TREList(NITFElement):
             raise TypeError('Got unhandled type {}'.format(type(item)))
 
     def to_json(self):
-        return [entry.to_json() for entry in self._tres]
+        pass
 
 
 class TREHeader(Unstructured):
     def _populate_data(self):
-        if isinstance(self._data, bytes):
-            data = TREList.from_bytes(self._data, 0)
-            self._data = data
+        pass
 
 
 class UserHeaderType(Unstructured):
@@ -1162,27 +1068,18 @@ class UserHeaderType(Unstructured):
 
     @property
     def OFL(self):  # type: () -> int
-        return self._ofl
+        pass
 
     @OFL.setter
     def OFL(self, value):
-        if value is None:
-            self._ofl = 0
-            return
-
-        value = int(value)
-        if not (0 <= value <= 999):
-            raise ValueError('ofl requires an integer value in the range 0-999.')
-        self._ofl = value
+        pass
 
     def _populate_data(self):
-        if isinstance(self._data, bytes):
-            data = TREList.from_bytes(self._data, 0)
-            self._data = data
+        pass
 
     @classmethod
     def minimum_length(cls):
-        return cls._size_len
+        pass
 
     def _get_attribute_bytes(self, attribute):
         if attribute == 'data':

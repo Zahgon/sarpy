@@ -149,8 +149,7 @@ class SIDDType(Serializable):
         -------
         None|sarpy.geometry.point_projection.COAProjection
         """
-
-        return self._coa_projection
+        pass
 
     @property
     def NITF(self):
@@ -162,8 +161,7 @@ class SIDDType(Serializable):
         -------
         Dict
         """
-
-        return self._NITF
+        pass
 
     def can_project_coordinates(self):
         """
@@ -209,17 +207,7 @@ class SIDDType(Serializable):
         -------
         None
         """
-
-        if not self.can_project_coordinates():
-            logger.error('The COAProjection object cannot be defined.')
-            return
-
-        if self._coa_projection is not None and not override:
-            return
-
-        self._coa_projection = point_projection.COAProjection.from_sidd(
-            self, delta_arp=delta_arp, delta_varp=delta_varp, range_bias=range_bias,
-            adj_params_frame=adj_params_frame)
+        pass
 
     def project_ground_to_image(self, coords, **kwargs):
         """
@@ -280,10 +268,7 @@ class SIDDType(Serializable):
         --------
         sarpy.geometry.point_projection.ground_to_image_geo
         """
-
-        if 'use_structure_coa' not in kwargs:
-            kwargs['use_structure_coa'] = True
-        return point_projection.ground_to_image_geo(coords, self, ordering=ordering, **kwargs)
+        pass
 
     def project_image_to_ground(self, im_points, projection_type='HAE', **kwargs):
         """
@@ -368,12 +353,7 @@ class SIDDType(Serializable):
         -------
         dict
         """
-
-        return OrderedDict([
-            ('DESSHSI', _SIDD_SPECIFICATION_IDENTIFIER),
-            ('DESSHSV', _SIDD_SPECIFICATION_VERSION),
-            ('DESSHSD', _SIDD_SPECIFICATION_DATE),
-            ('DESSHTN', _SIDD_URN)])
+        pass
 
     @classmethod
     def from_node(cls, node, xml_ns, ns_key='default', kwargs=None):
@@ -397,7 +377,7 @@ class SIDDType(Serializable):
         return super(SIDDType, self).to_xml_bytes(urn=urn, tag=tag, check_validity=check_validity, strict=strict)
 
     def to_xml_string(self, urn=None, tag='SIDD', check_validity=False, strict=DEFAULT_STRICT):
-        return self.to_xml_bytes(urn=urn, tag=tag, check_validity=check_validity, strict=strict).decode('utf-8')
+        pass
 
     def copy(self):
         """
@@ -425,10 +405,7 @@ class SIDDType(Serializable):
         -------
         SIDDType
         """
-
-        root_node, xml_ns = parse_xml_from_file(file_path)
-        ns_key = 'default' if 'default' in xml_ns else None
-        return cls.from_node(root_node, xml_ns=xml_ns, ns_key=ns_key)
+        pass
 
     @classmethod
     def from_xml_string(cls, xml_string):
@@ -443,7 +420,4 @@ class SIDDType(Serializable):
         -------
         SIDDType
         """
-
-        root_node, xml_ns = parse_xml_from_string(xml_string)
-        ns_key = 'default' if 'default' in xml_ns else None
-        return cls.from_node(root_node, xml_ns=xml_ns, ns_key=ns_key)
+        pass

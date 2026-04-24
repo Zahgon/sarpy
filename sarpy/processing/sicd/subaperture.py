@@ -136,13 +136,7 @@ def subaperture_processing_array(
     -------
     numpy.ndarray
     """
-
-    array = _validate_input(array)
-    dimension = _validate_dimension(dimension)
-
-    return subaperture_processing_phase_history(
-        fftshift(fft(array, axis=dimension), axes=dimension),
-        aperture_indices, output_resolution, dimension=dimension)
+    pass
 
 
 def subaperture_processing_phase_history(
@@ -237,45 +231,33 @@ class SubapertureCalculator(FFTCalculator):
         """
         int: The frame count.
         """
-
-        return self._frame_count
+        pass
 
     @frame_count.setter
     def frame_count(self, value):
-        value = int(value)
-        if value < 1:
-            raise ValueError('frame_count must be a positive integer.')
-        self._frame_count = value
+        pass
 
     @property
     def aperture_fraction(self) -> float:
         """
         float: The relative aperture fraction size.
         """
-        return self._aperture_fraction
+        pass
 
     @aperture_fraction.setter
     def aperture_fraction(self, value):
-        value = float(value)
-        if not (0 < value < 1):
-            raise ValueError(
-                'aperture_fraction must be in the range (0, 1), got {}'.format(value))
-        self._aperture_fraction = value
+        pass
 
     @property
     def method(self) -> str:
         """
         str: The subaperture method.
         """
-
-        return self._method
+        pass
 
     @method.setter
     def method(self, value):
-        value = value.upper()
-        if value not in _METHOD_VALUES:
-            raise ValueError('method must be one of {}, got {}'.format(_METHOD_VALUES, value))
-        self._method = value
+        pass
 
     def _parse_frame_argument(self, the_frame):
         if the_frame is None:
@@ -551,7 +533,7 @@ class SubapertureOrthoIterator(OrthorectificationIterator):
     @property
     def calculator(self) -> SubapertureCalculator:
         # noinspection PyTypeChecker
-        return self._calculator
+        pass
 
     def _depth_first_iteration(self) -> Tuple[numpy.ndarray, Tuple[int, int], int]:
         if not self._depth_first:
@@ -665,9 +647,7 @@ class SubapertureOrthoIterator(OrthorectificationIterator):
         frame: int
             The frame index.
         """
-
-        # NB: this is the Python 2 pattern for iteration
-        return self.__next__()
+        pass
 
 
 class ApertureFilter(object):
@@ -710,26 +690,22 @@ class ApertureFilter(object):
         """
         bool: Apply deskew to calculated value.
         """
-
-        return self._deskew_calculator.apply_deskew
+        pass
 
     @apply_deskew.setter
     def apply_deskew(self, value):
-        self._deskew_calculator.apply_deskew = value
-        self._set_normalized_phase_history()
+        pass
 
     @property
     def apply_deweighting(self) -> bool:
         """
         bool: Apply deweighting to calculated values.
         """
-
-        return self._deskew_calculator.apply_deweighting
+        pass
 
     @apply_deweighting.setter
     def apply_deweighting(self, val):
-        self._deskew_calculator.apply_deweighting = val
-        self._set_normalized_phase_history()
+        pass
 
     def _get_fft_complex_data(self, cdata: numpy.ndarray) -> numpy.ndarray:
         """
@@ -743,8 +719,7 @@ class ApertureFilter(object):
         -------
         numpy.ndarray
         """
-
-        return fftshift(fft2_sicd(cdata, self.sicd))
+        pass
 
     def _get_fft_phase_data(self, ph_data: numpy.ndarray) -> numpy.ndarray:
         """
@@ -766,27 +741,21 @@ class ApertureFilter(object):
         """
         SICDType: The associated SICD structure.
         """
-
-        return self._deskew_calculator.sicd
+        pass
 
     @property
     def dimension(self) -> int:
         """
         int: The processing dimension.
         """
-
-        return self._deskew_calculator.dimension
+        pass
 
     @property
     def data_size(self) -> Optional[Tuple[int, int]]:
         """
         None|(int, int): The feasible data size
         """
-
-        if self._sub_image_bounds is None:
-            return None
-        row_bounds, col_bounds = self._sub_image_bounds
-        return int(row_bounds[1] - row_bounds[0]), int(col_bounds[1] - col_bounds[0])
+        pass
 
     @dimension.setter
     def dimension(self, val):
@@ -799,24 +768,18 @@ class ApertureFilter(object):
         -------
         None
         """
-
-        self._deskew_calculator.dimension = val
-        self._set_normalized_phase_history()
+        pass
 
     @property
     def flip_x_axis(self) -> bool:
-        try:
-            return self.sicd.SCPCOA.SideOfTrack == "L"
-        except AttributeError:
-            return False
+        pass
 
     @property
     def sub_image_bounds(self) -> Tuple[Tuple[int, int], ...]:
         """
         Tuple[Tuple[int, int], ...]: The sub-image bounds used for processing.
         """
-
-        return self._sub_image_bounds
+        pass
 
     def set_sub_image_bounds(
             self,
@@ -837,28 +800,14 @@ class ApertureFilter(object):
         -------
         None
         """
-
-        def validate_entry(entry):
-            if len(entry) != 2:
-                raise ValueError('Bounds must have length 2. Got {}'.format(entry))
-            out = (int(entry[0]), int(entry[1]))
-            if out[0] >= out[1]:
-                raise ValueError('Bounds must have int(bound[0]) < int(bound[1]). Got {}'.format(entry))
-            return out
-
-        if row_bounds is None or col_bounds is None:
-            self._sub_image_bounds = None
-        else:
-            self._sub_image_bounds = (validate_entry(row_bounds), validate_entry(col_bounds))
-        self._set_normalized_phase_history()
+        pass
 
     @property
     def normalized_phase_history(self) -> Optional[numpy.ndarray]:
         """
         None|numpy.ndarray: The normalized phase history
         """
-
-        return self._normalized_phase_history
+        pass
 
     def _set_normalized_phase_history(self) -> None:
         """
@@ -868,35 +817,11 @@ class ApertureFilter(object):
         -------
         None
         """
-
-        if self._sub_image_bounds is None:
-            self._normalized_phase_history = None
-            return
-
-        row_bounds, col_bounds = self._sub_image_bounds
-        underlying_size = self._deskew_calculator.data_size
-        if row_bounds[0] < 0 or row_bounds[1] > underlying_size[0]:
-            raise ValueError(
-                'Desired row_bounds given as {}, and underlying data size is {}'.format(row_bounds, underlying_size))
-        if col_bounds[0] < 0 or col_bounds[1] > underlying_size[1]:
-            raise ValueError(
-                'Desired col_bounds given as {}, and underlying data size is {}'.format(col_bounds, underlying_size))
-
-        deskewed_data = self._deskew_calculator[row_bounds[0]:row_bounds[1], col_bounds[0]:col_bounds[1]]
-        self._normalized_phase_history = self._get_fft_complex_data(deskewed_data)
+        pass
 
     @property
     def polar_angles(self) -> numpy.ndarray:
-        angle_width = (1 / self.sicd.Grid.Col.SS) / self.sicd.Grid.Row.KCtr
-        if self.sicd.Grid.Col.KCtr:
-            angle_ctr = self.sicd.Grid.Col.KCtr
-        else:
-            angle_ctr = 0
-        angle_limits = angle_ctr + numpy.array([-1, 1]) * angle_width / 2
-        if self.flip_x_axis:
-            angle_limits = angle_limits[1], angle_limits[0]
-        angles = numpy.linspace(angle_limits[0], angle_limits[1], self.normalized_phase_history.shape[1])
-        return numpy.rad2deg(numpy.arctan(angles))
+        pass
 
     @property
     def frequencies(self) -> numpy.ndarray:
@@ -907,15 +832,7 @@ class ApertureFilter(object):
         -------
         numpy.array
         """
-
-        freq_width = (1 / self.sicd.Grid.Row.SS) * (speed_of_light / 2)
-        freq_ctr = self.sicd.Grid.Row.KCtr * (speed_of_light / 2)
-        freq_limits = freq_ctr + (numpy.array([-1, 1]) * freq_width / 2)
-        if self.sicd.PFA:
-            freq_limits = freq_limits / self.sicd.PFA.SpatialFreqSFPoly[0]
-        freq_limits = freq_limits/1e9
-        frequencies = numpy.linspace(freq_limits[1], freq_limits[0], self.normalized_phase_history.shape[0])
-        return frequencies
+        pass
 
     def __getitem__(self, item) -> Optional[numpy.ndarray]:
         if self.normalized_phase_history is None:

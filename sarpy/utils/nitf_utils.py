@@ -57,36 +57,18 @@ def _filter_files(input_path):
     -------
     bool
     """
-
-    if not os.path.isfile(input_path):
-        return False
-    _, fext = os.path.splitext(input_path)
-    with open(input_path, 'rb') as fi:
-        check = fi.read(9)
-    return check in [b'NITF02.10', b'NITF02.00']
+    pass
 
 
 def _create_default_output_file(input_file, output_directory=None):
-    if not isinstance(input_file, str):
-        if output_directory is None:
-            return os.path.expanduser('~/Desktop/header_dump.txt')
-        else:
-            return os.path.join(output_directory, 'header_dump.txt')
-
-    if output_directory is None:
-        return os.path.splitext(input_file)[0] + '.header_dump.txt'
-    else:
-        return os.path.join(output_directory, os.path.splitext(os.path.split(input_file)[1])[0] + '.header_dump.txt')
+    pass
 
 
 def _decode_effort(value):
     # type: (bytes) -> Union[bytes, str]
 
     # noinspection PyBroadException
-    try:
-        return value.decode()
-    except Exception:
-        return value
+    pass
 
 
 ############
@@ -94,198 +76,97 @@ def _decode_effort(value):
 
 def _print_element_field(elem, field, prefix=''):
     # type: (Union[None, NITFElement], Union[None, str], str) -> None
-    if elem is None or field is None:
-        return
-
-    value = getattr(elem, field, None)
-    if value is None:
-        value = ''
-    print_func('{}{} = {}'.format(prefix, field, value))
+    pass
 
 
 def _print_element(elem, prefix=''):
     # type: (Union[None, NITFElement], str) -> None
-    if elem is None:
-        return
-
-    # noinspection PyProtectedMember
-    for field in elem._ordering:
-        _print_element_field(elem, field, prefix=prefix)
+    pass
 
 
 def _print_element_list(elem_list, prefix=''):
     # type: (Union[None, List[NITFElement]], str) -> None
-    if elem_list is None:
-        return
-
-    for i, elem in enumerate(elem_list):
-        _print_element(elem, prefix='{}[{}].'.format(prefix, i))
+    pass
 
 
 def _print_tre_element(field, value, prefix=''):
     # type: (Union[None, str], Union[str, int, bytes], str) -> None
-    if field is None:
-        return
-
-    if value is None:
-        value = ''
-    print_func('{}{} = {}'.format(prefix, field, value))
+    pass
 
 
 def _print_tre_list(elem_list, prefix=''):
     # type: (Union[None, List, TREList], str) -> None
 
-    if elem_list is None:
-        return
-
-    for i, elem in enumerate(elem_list):
-        _print_tre_dict(elem, '{}[{}].'.format(prefix, i))
+    pass
 
 
 def _print_tre_dict(elem_dict, prefix=''):
     # type: (Union[None, Dict], str) -> None
-    if elem_dict is None:
-        return
-
-    for field, value in elem_dict.items():
-        if isinstance(value, list):
-            _print_tre_list(value, '{}{}'.format(prefix, field))
-        else:
-            _print_tre_element(field, value, prefix)
+    pass
 
 
 def _print_tres(tres):
     # type: (Union[TREList, List[TRE]]) -> None
-    for tre in tres:
-        print_func('')
-        if isinstance(tre.DATA, TREElement):
-            _print_tre_dict(tre.DATA.to_dict(), prefix='{}.'.format(tre.TAG))
-        else:
-            # Unknown TRE
-            _print_tre_element('DATA', _decode_effort(tre.DATA), prefix='{}.'.format(tre.TAG))
+    pass
 
 
 def _print_file_header(hdr):
     # type: (Union[NITFHeader, NITFHeader0]) -> None
 
     # noinspection PyProtectedMember
-    for field in hdr._ordering:
-        if field == 'Security':
-            _print_element(getattr(hdr, field, None), prefix='FS')
-        elif field == 'FBKGC':
-            value = getattr(hdr, field, None)
-            print_func('FBKGC = {} {} {}'.format(value[0], value[1], value[2]))
-        elif field in [
-            'ImageSegments', 'GraphicsSegments', 'SymbolSegments', 'LabelSegments',
-            'TextSegments', 'DataExtensions', 'ReservedExtensions']:
-            pass
-        elif field in ['UserHeader', 'ExtendedHeader']:
-            value = getattr(hdr, field, None)
-            assert(isinstance(value, UserHeaderType))
-            if value and value.data and value.data.tres:
-                _print_tres(value.data.tres)
-        else:
-            _print_element_field(hdr, field)
+    pass
 
 
 def _print_mask_header(hdr):
     # type: (Union[None, MaskSubheader]) -> None
-    if hdr is None:
-        return
-
-    print_func('----- Mask Subheader (part of image data segment) -----')
-    # noinspection PyProtectedMember
-    for field in hdr._ordering:
-        if field in ['BMR', 'TMR']:
-            value = getattr(hdr, field, None)
-            if value is None:
-                continue
-            else:
-                for the_band, subarray in enumerate(value):
-                    print_func('{}BND{} = {}'.format(field, the_band, subarray))
-        else:
-            _print_element_field(hdr, field, prefix='')
+    pass
 
 
 def _print_image_header(hdr):
     # type: (Union[ImageSegmentHeader, ImageSegmentHeader0]) -> None
 
     # noinspection PyProtectedMember
-    for field in hdr._ordering:
-        if field == 'Security':
-            _print_element(getattr(hdr, field, None), prefix='IS')
-        elif field in ['Comments', 'Bands']:
-            _print_element_list(getattr(hdr, field, None), prefix='{}'.format(field))
-        elif field in ['UserHeader', 'ExtendedHeader']:
-            value = getattr(hdr, field, None)
-            assert(isinstance(value, UserHeaderType))
-            if value and value.data and value.data.tres:
-                _print_tres(value.data.tres)
-        else:
-            _print_element_field(hdr, field)
-    _print_mask_header(hdr.mask_subheader)
+    pass
 
 
 def _print_basic_header(hdr, prefix):
     # noinspection PyProtectedMember
-    for field in hdr._ordering:
-        if field == 'Security':
-            _print_element(getattr(hdr, field, None), prefix=prefix)
-        elif field in ['UserHeader', 'ExtendedHeader']:
-            value = getattr(hdr, field, None)
-            assert(isinstance(value, UserHeaderType))
-            if value and value.data and value.data.tres:
-                _print_tres(value.data.tres)
-        else:
-            _print_element_field(hdr, field)
+    pass
 
 
 def _print_graphics_header(hdr):
     # type: (GraphicsSegmentHeader) -> None
-    _print_basic_header(hdr, 'SS')
+    pass
 
 
 def _print_symbol_header(hdr):
     # type: (SymbolSegmentHeader) -> None
-    _print_basic_header(hdr, 'SS')
+    pass
 
 
 def _print_label_header(hdr):
     # type: (LabelSegmentHeader) -> None
-    _print_basic_header(hdr, 'LS')
+    pass
 
 
 def _print_text_header(hdr):
     # type: (Union[TextSegmentHeader, TextSegmentHeader0]) -> None
-    _print_basic_header(hdr, 'TS')
+    pass
 
 
 def _print_extension_header(hdr, prefix):
     # noinspection PyProtectedMember
-    for field in hdr._ordering:
-        if field == 'Security':
-            _print_element(getattr(hdr, field, None), prefix=prefix)
-        elif field in ['UserHeader', 'ExtendedHeader']:
-            value = getattr(hdr, field, None)
-            if isinstance(value, (DESUserHeader, RESUserHeader)):
-                if value.data:
-                    # Unknown user-defined subheader
-                    print_func('{}SHF = {}'.format(prefix, _decode_effort(value.data)))
-            else:
-                # e.g., XMLDESSubheader
-                _print_element(value, prefix='{}SHF.'.format(prefix))
-        else:
-            _print_element_field(hdr, field)
+    pass
 
 
 def _print_des_header(hdr):
     # type: (Union[DataExtensionHeader, DataExtensionHeader0]) -> None
-    _print_extension_header(hdr, 'DES')
+    pass
 
 
 def _print_res_header(hdr):
     # type: (Union[ReservedExtensionHeader, ReservedExtensionHeader0]) -> None
-    _print_extension_header(hdr, 'RES')
+    pass
 
 
 def print_nitf(file_name, dest=sys.stdout):
@@ -298,106 +179,7 @@ def print_nitf(file_name, dest=sys.stdout):
     file_name : str|BinaryIO
     dest : TextIO
     """
-
-    # Configure print function for desired destination
-    #    - e.g., stdout, string buffer, file
-    global print_func
-    print_func = functools.partial(print, file=dest)
-
-    details = NITFDetails(file_name)
-
-    if isinstance(file_name, str):
-        print_func('')
-        print_func('Details for file {}'.format(file_name))
-        print_func('')
-
-    print_func('----- File Header -----')
-    _print_file_header(details.nitf_header)
-    print_func('')
-
-    if details.img_subheader_offsets is not None:
-        for img_subhead_num in range(details.img_subheader_offsets.size):
-            print_func('----- Image {} -----'.format(img_subhead_num))
-            hdr = details.parse_image_subheader(img_subhead_num)
-            _print_image_header(hdr)
-            print_func('')
-
-    if details.graphics_subheader_offsets is not None:
-        for graphics_subhead_num in range(details.graphics_subheader_offsets.size):
-            print_func('----- Graphic {} -----'.format(graphics_subhead_num))
-            hdr = details.parse_graphics_subheader(graphics_subhead_num)
-            _print_graphics_header(hdr)
-            data = details.get_graphics_bytes(graphics_subhead_num)
-            print_func('GSDATA = {}'.format(_decode_effort(data)))
-            print_func('')
-
-    if details.symbol_subheader_offsets is not None:
-        for symbol_subhead_num in range(details.symbol_subheader_offsets.size):
-            print_func('----- Symbol {} -----'.format(symbol_subhead_num))
-            hdr = details.parse_symbol_subheader(symbol_subhead_num)
-            _print_symbol_header(hdr)
-            data = details.get_symbol_bytes(symbol_subhead_num)
-            print_func('SSDATA = {}'.format(_decode_effort(data)))
-            print_func('')
-
-    if details.label_subheader_offsets is not None:
-        for label_subhead_num in range(details.label_subheader_offsets.size):
-            print_func('----- Label {} -----'.format(label_subhead_num))
-            hdr = details.parse_label_subheader(label_subhead_num)
-            _print_label_header(hdr)
-            data = details.get_label_bytes(label_subhead_num)
-            print_func('LSDATA = {}'.format(_decode_effort(data)))
-            print_func('')
-
-    if details.text_subheader_offsets is not None:
-        for text_subhead_num in range(details.text_subheader_offsets.size):
-            print_func('----- Text {} -----'.format(text_subhead_num))
-            hdr = details.parse_text_subheader(text_subhead_num)
-            _print_text_header(hdr)
-            data = details.get_text_bytes(text_subhead_num)
-            print_func('TSDATA = {}'.format(_decode_effort(data)))
-            print_func('')
-
-    if details.des_subheader_offsets is not None:
-        for des_subhead_num in range(details.des_subheader_offsets.size):
-            print_func('----- DES {} -----'.format(des_subhead_num))
-            hdr = details.parse_des_subheader(des_subhead_num)
-            _print_des_header(hdr)
-            data = details.get_des_bytes(des_subhead_num)
-
-            des_id = hdr.DESID if details.nitf_version == '02.10' else hdr.DESTAG
-
-            if des_id.strip() in ['XML_DATA_CONTENT', 'SICD_XML', 'SIDD_XML']:
-                xml_str = minidom.parseString(
-                    data.decode()).toprettyxml(indent='    ', newl='\n')
-                # NB: this may or not exhibit platform dependent choices in which codec (i.e. latin-1 versus utf-8)
-                print_func('DESDATA =')
-                for line_num, xml_entry in enumerate(xml_str.splitlines()):
-                    if line_num == 0:
-                        # Remove xml that gets inserted by minidom, if it's not actually there
-                        if (not data.startswith(b'<?xml version')) and xml_entry.startswith('<?xml version'):
-                            continue
-                        print_func(xml_entry)
-                    elif xml_entry.strip() != '':
-                        # Remove extra new lines if XML is already formatted
-                        print_func(xml_entry)
-            elif des_id.strip() in ['TRE_OVERFLOW', 'Registered Extensions', 'Controlled Extensions']:
-                tres = TREList.from_bytes(data, 0)
-                print_func('DESDATA = ')
-                _print_tres(tres)
-            else:
-                # Unknown user-defined data
-                print_func('DESDATA = {}'.format(_decode_effort(data)))
-            print_func('')
-
-    if details.res_subheader_offsets is not None:
-        for res_subhead_num in range(details.res_subheader_offsets.size):
-            print_func('----- RES {} -----'.format(res_subhead_num))
-            hdr = details.parse_res_subheader(res_subhead_num)
-            _print_res_header(hdr)
-            data = details.get_res_bytes(res_subhead_num)
-            print_func('RESDATA = {}'.format(_decode_effort(data)))
-            print_func('')
+    pass
 
 
 ##########
@@ -424,24 +206,7 @@ def dump_nitf_file(file_name, dest, over_write=True):
     None|str
         There is only a return value if `dest=='string'`.
     """
-
-    if dest == 'stdout':
-        print_nitf(file_name, dest=sys.stdout)
-        return
-    if dest == 'string':
-        out = StringIO()
-        print_nitf(file_name, dest=out)
-        value = out.getvalue()
-        out.close()  # free the buffer
-        return value
-
-    the_out_file = _create_default_output_file(file_name) if dest == 'default' else dest
-    if not os.path.exists(the_out_file) or over_write:
-        with open(the_out_file, 'w') as the_file:
-            print_nitf(file_name, dest=the_file)
-    else:
-        with open(the_out_file, 'a') as the_file:
-            print_nitf(file_name, dest=the_file)
+    pass
 
 
 if __name__ == '__main__':

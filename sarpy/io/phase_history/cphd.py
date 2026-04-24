@@ -83,8 +83,7 @@ class AmpScalingFunction(ComplexFormatFunction):
         -------
         Optional[numpy.ndarray]
         """
-
-        return self._amplitude_scaling
+        pass
 
     def set_amplitude_scaling(
             self,
@@ -100,39 +99,10 @@ class AmpScalingFunction(ComplexFormatFunction):
         -------
         None
         """
-
-        if array is None:
-            self._amplitude_scaling = None
-            return
-
-        if self.order != 'IQ':
-            raise ValueError(
-                'CPHD requires data in IQ order.')
-
-        if not isinstance(array, numpy.ndarray):
-            raise ValueError('requires a numpy.ndarray, got {}'.format(type(array)))
-        if array.ndim != 1:
-            raise ValueError('requires a one dimensional array')
-        if array.dtype.name not in ['float32', 'float64']:
-            raise ValueError('requires a numpy.ndarray of float32 or 64 dtype, got {}'.format(array.dtype))
-        if array.dtype.name != 'float32':
-            array = numpy.asarray(array, dtype=numpy.float32)
-
-        self._amplitude_scaling = array
-        self._validate_amplitude_scaling()
+        pass
 
     def _validate_amplitude_scaling(self) -> None:
-        if self._amplitude_scaling is None or self._raw_shape is None:
-            return
-
-        if self.band_dimension not in [-1, self.raw_ndim-1]:
-            raise ValueError('Use of scaling multiplier requires band is the final dimension')
-        if self.transpose_axes is not None or self.reverse_axes is not None:
-            raise ValueError('Use of scaling multiplier requires null reverse_axes and transpose_axes')
-        if self._amplitude_scaling.size != self.raw_shape[0]:
-            raise ValueError(
-                'Use of scaling multiplier requires the array length\n\t'
-                'and the first dimension of raw_shape match.')
+        pass
 
     def _forward_functional_step(
             self,
@@ -161,8 +131,7 @@ class AmpScalingFunction(ComplexFormatFunction):
         return ComplexFormatFunction._reverse_functional_step(self, data, subscript)
 
     def validate_shapes(self) -> None:
-        ComplexFormatFunction.validate_shapes(self)
-        self._validate_amplitude_scaling()
+        pass
 
 
 class CPHDDetails(object):
@@ -221,54 +190,42 @@ class CPHDDetails(object):
         """
         str: The CPHD filename.
         """
-
-        return self._file_name
+        pass
 
     @property
     def file_object(self) -> BinaryIO:
         """
         BinaryIO: The binary file object
         """
-        # noinspection PyTypeChecker
-        return self._file_object
+        pass
 
     @property
     def cphd_version(self) -> str:
         """
         str: The CPHD version.
         """
-
-        return self._cphd_version
+        pass
 
     @property
     def cphd_meta(self) -> Union[CPHDType1, CPHDType0_3]:
         """
         CPHDType1|CPHDType0_3: The CPHD metadata object, which is version dependent.
         """
-
-        return self._cphd_meta
+        pass
 
     @property
     def cphd_header(self) -> Union[CPHDHeader1, CPHDHeader0_3]:
         """
         CPHDHeader1|CPHDHeader0_3: The CPHD header object, which is version dependent.
         """
-
-        return self._cphd_header
+        pass
 
     def _extract_version(self) -> None:
         """
         Extract the version number from the file. This will advance the file
         object to the end of the initial header line.
         """
-
-        self.file_object.seek(0, os.SEEK_SET)
-        head_line = self.file_object.readline().strip()
-        parts = head_line.split(b'/')
-        if len(parts) != 2:
-            raise ValueError('Cannot extract CPHD version number from line {}'.format(head_line))
-        cphd_version = parts[1].strip().decode('utf-8')
-        self._cphd_version = cphd_version
+        pass
 
     def _extract_header(self) -> None:
         """
@@ -276,28 +233,13 @@ class CPHDDetails(object):
         to the header location. This will advance to the file object to the end of
         the header section.
         """
-
-        if self.cphd_version.startswith('0.3'):
-            self._cphd_header = CPHDHeader0_3.from_file_object(self._file_object)
-        elif self.cphd_version.startswith('1.'):
-            self._cphd_header = CPHDHeader1.from_file_object(self._file_object)
-        else:
-            raise ValueError(_unhandled_version_text.format(self.cphd_version))
+        pass
 
     def _extract_cphd(self) -> None:
         """
         Extract and interpret the CPHD structure from the file.
         """
-
-        xml = self.get_cphd_bytes()
-        if self.cphd_version.startswith('0.3'):
-            the_type = CPHDType0_3
-        elif self.cphd_version.startswith('1.'):
-            the_type = CPHDType1
-        else:
-            raise ValueError(_unhandled_version_text.format(self.cphd_version))
-
-        self._cphd_meta = the_type.from_xml_string(xml)
+        pass
 
     def get_cphd_bytes(self) -> bytes:
         """
@@ -307,24 +249,7 @@ class CPHDDetails(object):
         -------
         bytes
         """
-
-        header = self.cphd_header
-        if header is None:
-            raise ValueError('No cphd_header populated.')
-
-        if self.cphd_version.startswith('0.3'):
-            assert isinstance(header, CPHDHeader0_3)
-            # extract the xml data
-            self.file_object.seek(header.XML_BYTE_OFFSET, os.SEEK_SET)
-            xml = self.file_object.read(header.XML_DATA_SIZE)
-        elif self.cphd_version.startswith('1.'):
-            assert isinstance(header, CPHDHeader1)
-            # extract the xml data
-            self.file_object.seek(header.XML_BLOCK_BYTE_OFFSET, os.SEEK_SET)
-            xml = self.file_object.read(header.XML_BLOCK_SIZE)
-        else:
-            raise ValueError(_unhandled_version_text.format(self.cphd_version))
-        return xml
+        pass
 
     def close(self):
         if self._closed:
@@ -362,30 +287,7 @@ def _validate_cphd_details(
     ValueError
         The CPHD file was the incorrect (specified) version
     """
-
-    if isinstance(cphd_details, str):
-        cphd_details = CPHDDetails(cphd_details)
-
-    if not isinstance(cphd_details, CPHDDetails):
-        raise TypeError('cphd_details is required to be a file path to a CPHD file '
-                        'or CPHDDetails, got type {}'.format(cphd_details))
-    if version is not None:
-        if isinstance(version, str) and not cphd_details.cphd_version.startswith(version):
-            raise ValueError(
-                'This CPHD file is required to be version {},\n\t'
-                'got {}'.format(version, cphd_details.cphd_version))
-        else:
-            val = False
-            for entry in version:
-                if cphd_details.cphd_version.startswith(entry):
-                    val = True
-                    break
-            if not val:
-                raise ValueError(
-                    'This CPHD file is required to be one of version {},\n\t'
-                    'got {}'.format(version, cphd_details.cphd_version))
-
-    return cphd_details
+    pass
 
 
 ##########
@@ -425,28 +327,25 @@ class CPHDReader(CPHDTypeReader):
         """
         CPHDDetails: The cphd details object.
         """
-
-        return self._cphd_details
+        pass
 
     @property
     def cphd_version(self) -> str:
         """
         str: The CPHD version.
         """
-
-        return self.cphd_details.cphd_version
+        pass
 
     @property
     def cphd_header(self) -> Union[CPHDHeader1, CPHDHeader0_3]:
         """
         CPHDHeader1|CPHDHeader0_3: The CPHD header object, which is version dependent.
         """
-
-        return self.cphd_details.cphd_header
+        pass
 
     @property
     def file_name(self) -> str:
-        return self.cphd_details.file_name
+        pass
 
     def read_pvp_variable(
             self,
@@ -518,16 +417,14 @@ class CPHDReader1(CPHDReader):
         """
         CPHDType1: The CPHD structure.
         """
-
-        return self._cphd_meta
+        pass
 
     @property
     def cphd_header(self) -> CPHDHeader1:
         """
         CPHDHeader1: The CPHD header object.
         """
-
-        return self.cphd_details.cphd_header
+        pass
 
     def _create_data_segments(self) -> List[DataSegment]:
         """
@@ -537,45 +434,7 @@ class CPHDReader1(CPHDReader):
         -------
         List[DataSegment]
         """
-
-        data_segments = []
-
-        data = self.cphd_meta.Data
-        sample_type = data.SignalArrayFormat
-
-        compressed = data.SignalCompressionID
-        if compressed is not None:
-            raw_dtype = numpy.dtype('B')
-        elif sample_type == "CF8":
-            raw_dtype = numpy.dtype('>f4')
-        elif sample_type == "CI4":
-            raw_dtype = numpy.dtype('>i2')
-        elif sample_type == "CI2":
-            raw_dtype = numpy.dtype('>i1')
-        else:
-            raise ValueError('Got unhandled signal array format {}'.format(sample_type))
-
-        block_offset = self.cphd_header.SIGNAL_BLOCK_BYTE_OFFSET
-        for entry in data.Channels:
-            amp_sf = self.read_pvp_variable('AmpSF', entry.Identifier)
-            if compressed:
-                raw_shape = (entry.CompressedSignalSize,)
-                formatted_shape = raw_shape
-                formatted_dtype = 'byte'
-                format_function = None
-            else:
-                raw_shape = (entry.NumVectors, entry.NumSamples, 2)
-                formatted_shape = raw_shape[:2]
-                formatted_dtype = 'complex64'
-                format_function = AmpScalingFunction(raw_dtype, amplitude_scaling=amp_sf)
-
-            data_offset = entry.SignalArrayByteOffset
-            data_segments.append(
-                NumpyMemmapSegment(
-                    self.cphd_details.file_object, block_offset+data_offset,
-                    raw_dtype, raw_shape, formatted_dtype=formatted_dtype, formatted_shape = formatted_shape,
-                    format_function=format_function, close_file=False))
-        return data_segments
+        pass
 
     def _create_pvp_memmaps(self) -> None:
         """
@@ -585,24 +444,7 @@ class CPHDReader1(CPHDReader):
         -------
         None
         """
-
-        self._pvp_memmap = None
-        if self.cphd_meta.Data.Channels is None:
-            logger.error('No Data.Channels defined.')
-            return
-        if self.cphd_meta.PVP is None:
-            logger.error('No PVP object defined.')
-            return
-
-        pvp_dtype = self.cphd_meta.PVP.get_vector_dtype()
-        self._pvp_memmap = OrderedDict()
-        self._channel_map = OrderedDict()
-        for i, entry in enumerate(self.cphd_meta.Data.Channels):
-            self._channel_map[entry.Identifier] = i
-            offset = self.cphd_header.PVP_BLOCK_BYTE_OFFSET + entry.PVPArrayByteOffset
-            shape = (entry.NumVectors, )
-            self._pvp_memmap[entry.Identifier] = numpy.memmap(
-                self.cphd_details.file_name, dtype=pvp_dtype, mode='r', offset=offset, shape=shape)
+        pass
 
     def _create_support_array_memmaps(self) -> None:
         """
@@ -612,23 +454,7 @@ class CPHDReader1(CPHDReader):
         -------
         None
         """
-
-        if self.cphd_meta.Data.SupportArrays is None:
-            self._support_array_memmap = None
-            return
-
-        self._support_array_memmap = OrderedDict()
-        for i, entry in enumerate(self.cphd_meta.Data.SupportArrays):
-            # extract the support array metadata details
-            details = self.cphd_meta.SupportArray.find_support_array(entry.Identifier)
-            # determine array byte offset
-            offset = self.cphd_header.SUPPORT_BLOCK_BYTE_OFFSET + entry.ArrayByteOffset
-            # determine numpy dtype and depth of array
-            dtype, depth = details.get_numpy_format()
-            # set up the numpy memory map
-            shape = (entry.NumRows, entry.NumCols) if depth == 1 else (entry.NumRows, entry.NumCols, depth)
-            self._support_array_memmap[entry.Identifier] = numpy.memmap(
-                self.cphd_details.file_name, dtype=dtype, mode='r', offset=offset, shape=shape)
+        pass
 
     def _validate_index(self, index: Union[int, str]) -> int:
         """
@@ -687,41 +513,17 @@ class CPHDReader1(CPHDReader):
             index: Union[int, str],
             *ranges: Sequence[Union[None, int, Tuple[int, ...], slice]]) -> numpy.ndarray:
         # find the support array identifier
-        if isinstance(index, int):
-            the_entry = self.cphd_meta.Data.SupportArrays[index]
-            index = the_entry.Identifier
-        if not isinstance(index, str):
-            raise TypeError('Got unexpected type {} for identifier'.format(type(index)))
-
-        the_memmap = self._support_array_memmap[index]
-
-        if len(ranges) == 0:
-            return numpy.copy(the_memmap[:])
-
-        # noinspection PyTypeChecker
-        subscript = verify_subscript(ranges, the_memmap.shape)
-        return numpy.copy(the_memmap[subscript])
+        pass
 
     def read_support_block(self) -> Dict[str, numpy.ndarray]:
-        if self.cphd_meta.Data.SupportArrays:
-            return {
-                sa.Identifier: self.read_support_array(sa.Identifier)
-                for sa in self.cphd_meta.Data.SupportArrays}
-        else:
-            return {}
+        pass
 
     def read_pvp_variable(
             self,
             variable: str,
             index: Union[int, str],
             the_range: Union[None, int, Tuple[int, ...], slice] = None) -> Optional[numpy.ndarray]:
-        index_key = self._validate_index_key(index)
-        the_memmap = self._pvp_memmap[index_key]
-        the_slice = verify_slice(the_range, the_memmap.shape[0])
-        if variable in the_memmap.dtype.fields:
-            return numpy.copy(the_memmap[variable][the_slice])
-        else:
-            return None
+        pass
 
     def read_pvp_array(
             self,
@@ -733,16 +535,13 @@ class CPHDReader1(CPHDReader):
         return numpy.copy(the_memmap[the_slice])
 
     def read_pvp_block(self) -> Dict[str, numpy.ndarray]:
-        return {chan.Identifier: self.read_pvp_array(chan.Identifier)
-                for chan in self.cphd_meta.Data.Channels}
+        pass
 
     def read_signal_block(self) -> Dict[str, numpy.ndarray]:
-        return {chan.Identifier: numpy.copy(self.read(index=chan.Identifier))
-                for chan in self.cphd_meta.Data.Channels}
+        pass
 
     def read_signal_block_raw(self) -> Dict[Union[int, str], numpy.ndarray]:
-        return {chan.Identifier: numpy.copy(self.read_raw(index=chan.Identifier))
-                for chan in self.cphd_meta.Data.Channels}
+        pass
 
     def read_chip(
             self,
@@ -766,8 +565,7 @@ class CPHDReader1(CPHDReader):
         --------
         :meth:`read`.
         """
-
-        return self.__call__(*ranges, index=index, raw=False, squeeze=squeeze)
+        pass
 
     def read(
             self,
@@ -871,16 +669,14 @@ class CPHDReader0_3(CPHDReader):
         """
         CPHDType0_3: The CPHD structure, which is version dependent.
         """
-
-        return self._cphd_meta
+        pass
 
     @property
     def cphd_header(self) -> CPHDHeader0_3:
         """
         CPHDHeader0_3: The CPHD header object.
         """
-
-        return self.cphd_details.cphd_header
+        pass
 
     def _validate_index(self, index: int) -> int:
         """
@@ -901,31 +697,7 @@ class CPHDReader0_3(CPHDReader):
         return int_index
 
     def _create_data_segment(self) -> List[DataSegment]:
-        data_segments = []
-
-        data = self.cphd_meta.Data
-        sample_type = data.SampleType
-        if sample_type == "RE32F_IM32F":
-            raw_dtype = numpy.dtype('>f4')
-        elif sample_type == "RE16I_IM16I":
-            raw_dtype = numpy.dtype('>i2')
-        elif sample_type == "RE08I_IM08I":
-            raw_dtype = numpy.dtype('>i1')
-        else:
-            raise ValueError('Got unhandled sample type {}'.format(sample_type))
-
-        data_offset = self.cphd_header.CPHD_BYTE_OFFSET
-        for index, entry in enumerate(data.ArraySize):
-            amp_sf = self.read_pvp_variable('AmpSF', index)
-            format_function = AmpScalingFunction(raw_dtype, amplitude_scaling=amp_sf)
-            raw_shape = (entry.NumVectors, entry.NumSamples, 2)
-            data_segments.append(
-                NumpyMemmapSegment(
-                    self.cphd_details.file_object, data_offset,
-                    raw_dtype, raw_shape, formatted_dtype='complex64', formatted_shape=raw_shape[:2],
-                    format_function=format_function, close_file=False))
-            data_offset += raw_shape[0]*raw_shape[1]*2*raw_dtype.itemsize
-        return data_segments
+        pass
 
     def _create_pvp_memmaps(self) -> None:
         """
@@ -935,29 +707,14 @@ class CPHDReader0_3(CPHDReader):
         -------
         None
         """
-
-        self._pvp_memmap = None
-        pvp_dtype = self.cphd_meta.VectorParameters.get_vector_dtype()
-        self._pvp_memmap = []
-        for i, entry in enumerate(self.cphd_meta.Data.ArraySize):
-            offset = self.cphd_header.VB_BYTE_OFFSET + self.cphd_meta.Data.NumBytesVBP*i
-            shape = (entry.NumVectors, )
-            self._pvp_memmap.append(
-                numpy.memmap(
-                    self.cphd_details.file_name, dtype=pvp_dtype, mode='r', offset=offset, shape=shape))
+        pass
 
     def read_pvp_variable(
             self,
             variable: str,
             index: int,
             the_range: Union[None, int, Tuple[int, ...], slice] = None) -> Optional[numpy.ndarray]:
-        int_index = self._validate_index(index)
-        the_memmap = self._pvp_memmap[int_index]
-        the_slice = verify_slice(the_range, the_memmap.shape[0])
-        if variable in the_memmap.dtype.fields:
-            return numpy.copy(the_memmap[variable][the_slice])
-        else:
-            return None
+        pass
 
     def read_pvp_array(
             self,
@@ -977,14 +734,13 @@ class CPHDReader0_3(CPHDReader):
         Dict[int, numpy.ndarray]
             Dictionary of `numpy.ndarray` containing the PVP arrays.
         """
-
-        return {chan: self.read_pvp_array(chan) for chan in range(self.cphd_meta.Data.NumCPHDChannels)}
+        pass
 
     def read_signal_block(self) -> Dict[int, numpy.ndarray]:
-        return {chan: self.read(index=chan) for chan in range(self.cphd_meta.Data.NumCPHDChannels)}
+        pass
 
     def read_signal_block_raw(self) -> Dict[int, numpy.ndarray]:
-        return {chan: self.read_raw(index=chan) for chan in range(self.cphd_meta.Data.NumCPHDChannels)}
+        pass
 
     def __call__(
             self,
@@ -1010,14 +766,7 @@ def is_a(file_name: str) -> Optional[CPHDReader]:
     CPHDReader|None
         Appropriate `CPHDTypeReader` instance if CPHD file, `None` otherwise
     """
-
-    try:
-        cphd_details = CPHDDetails(file_name)
-        logger.info('File {} is determined to be a CPHD version {} file.'.format(file_name, cphd_details.cphd_version))
-        return CPHDReader(cphd_details)
-    except SarpyIOError:
-        # we don't want to catch parsing errors, for now?
-        return None
+    pass
 
 
 ###########
@@ -1040,52 +789,33 @@ class ElementDetails(object):
         """
         int: The item offset.
         """
-
-        return self._item_offset
+        pass
 
     @item_offset.setter
     def item_offset(self, value: int) -> None:
-        value = int(value)
-        if self._item_offset is not None and self._item_offset != value:
-            raise ValueError("item_offset is read only after being initially defined.")
-        self._item_offset = value
+        pass
 
     @property
     def item_bytes(self) -> Optional[bytes]:
         """
         None|bytes: The item bytes.
         """
-
-        return self._item_bytes
+        pass
 
     @item_bytes.setter
     def item_bytes(self, value: bytes) -> None:
-        if self._item_bytes is not None:
-            raise ValueError("item_bytes is read only after being initially defined.")
-        if value is None:
-            self._item_bytes = None
-            return
-
-        if not isinstance(value, bytes):
-            raise TypeError('item_bytes must be of type bytes')
-        self._item_bytes = value
+        pass
 
     @property
     def item_written(self) -> bool:
         """
         bool: Has the item been written?
         """
-
-        return self._item_written
+        pass
 
     @item_written.setter
     def item_written(self, value: bool):
-        value = bool(value)
-        if self._item_written and not value:
-            raise ValueError(
-                'item_written has already been set to True,\n\t'
-                'it cannot be reverted to False')
-        self._item_written = value
+        pass
 
     def write_item(self, file_object: BinaryIO) -> None:
         """
@@ -1144,90 +874,54 @@ class CPHDWritingDetails(object):
 
     @property
     def header(self) -> CPHDHeader1:
-        return self._header
+        pass
 
     def _set_header(self, check_older_version: bool):
-        if check_older_version:
-            use_version_tuple = self.meta.version_required()
-        else:
-            use_version_tuple = get_default_tuple()
-        use_version_string = '{}.{}.{}'.format(*use_version_tuple)
-        self._header = self.meta.make_file_header(use_version=use_version_string)
+        pass
 
     @property
     def use_version(self) -> str:
-        return self.header.use_version
+        pass
 
     @property
     def meta(self) -> CPHDType1:
         """
         CPHDType1: The metadata
         """
-
-        return self._meta
+        pass
 
     @meta.setter
     def meta(self, value):
-        if self._meta is not None:
-            raise ValueError('meta is read only once initialized.')
-        if not isinstance(value, CPHDType1):
-            raise TypeError('meta must be of type {}'.format(CPHDType1))
-        self._meta = value
+        pass
 
     def _populate_pvp_details(self) -> None:
-        if self._pvp_details is not None:
-            raise ValueError('pvp_details can not be initialized again')
-        pvp_details = []
-        for i, entry in enumerate(self.meta.Data.Channels):
-            self._channel_map[entry.Identifier] = i
-            offset = self.header.PVP_BLOCK_BYTE_OFFSET + entry.PVPArrayByteOffset
-            pvp_details.append(ElementDetails(offset))
-        self._pvp_details = tuple(pvp_details)
+        pass
 
     def _populate_support_details(self) -> None:
-        if self._support_details is not None:
-            raise ValueError('support_details can not be initialized again')
-
-        if self.meta.Data.SupportArrays is None:
-            self._signal_details = None
-            return
-
-        support_details = []
-        for i, entry in enumerate(self.meta.Data.SupportArrays):
-            self._support_map[entry.Identifier] = i
-            offset = self.header.SUPPORT_BLOCK_BYTE_OFFSET + entry.ArrayByteOffset
-            support_details.append(ElementDetails(offset))
-        self._support_details = tuple(support_details)
+        pass
 
     def _populate_signal_details(self) -> None:
-        if self._signal_details is not None:
-            raise ValueError('signal_details can not be initialized again')
-
-        signal_details = []
-        for i, entry in enumerate(self.meta.Data.Channels):
-            offset = self.header.SIGNAL_BLOCK_BYTE_OFFSET + entry.SignalArrayByteOffset
-            signal_details.append(ElementDetails(offset))
-        self._signal_details = tuple(signal_details)
+        pass
 
     @property
     def pvp_details(self) -> Optional[Tuple[ElementDetails, ...]]:
-        return self._pvp_details
+        pass
 
     @property
     def support_details(self) -> Optional[Tuple[ElementDetails, ...]]:
-        return self._support_details
+        pass
 
     @property
     def signal_details(self) -> Optional[Tuple[ElementDetails, ...]]:
-        return self._signal_details
+        pass
 
     @property
     def channel_map(self) -> Dict[str, int]:
-        return self._channel_map
+        pass
 
     @property
     def support_map(self) -> Optional[Dict[str, int]]:
-        return self._support_map
+        pass
 
     def _write_items(
             self,
@@ -1377,27 +1071,22 @@ class CPHDWriter1(BaseWriter):
 
     @property
     def writing_details(self) -> CPHDWritingDetails:
-        return self._writing_details
+        pass
 
     @writing_details.setter
     def writing_details(self, value):
-        if self._writing_details is not None:
-            raise ValueError('writing_details is read-only')
-        if not isinstance(value, CPHDWritingDetails):
-            raise TypeError('writing_details must be of type {}'.format(CPHDWritingDetails))
-        self._writing_details = value
+        pass
 
     @property
     def file_name(self) -> Optional[str]:
-        return self._file_name
+        pass
 
     @property
     def meta(self) -> CPHDType1:
         """
         CPHDType1: The metadata
         """
-
-        return self.writing_details.meta
+        pass
 
     @staticmethod
     def _verify_dtype(
@@ -1413,27 +1102,7 @@ class CPHDWriter1(BaseWriter):
         exp_dtype : numpy.dtype
         purpose : str
         """
-
-        if obs_dtype.fields is None or exp_dtype.fields is None:
-            raise ValueError('structure array dtype required.')
-
-        observed_dtype = sorted(
-            [(field, dtype_info) for field, dtype_info in obs_dtype.fields.items()],
-            key=lambda x: x[1][1])
-        expected_dtype = sorted(
-            [(field, dtype_info) for field, dtype_info in exp_dtype.fields.items()],
-            key=lambda x: x[1][1])
-        if len(observed_dtype) != len(expected_dtype):
-            raise ValueError('Observed dtype for {} does not match the expected dtype.'.format(purpose))
-        for obs_entry, exp_entry in zip(observed_dtype, expected_dtype):
-            if obs_entry[1][1] != exp_entry[1][1]:
-                raise ValueError(
-                    'Observed dtype for {} does not match the expected dtype\nobserved {}\nexpected {}.'.format(
-                        purpose, observed_dtype, expected_dtype))
-            if obs_entry[0] != exp_entry[0]:
-                logger.warning(
-                    'Got mismatched field names (observed {}, expected {}) for {}.'.format(
-                        obs_entry[0], exp_entry[0], purpose))
+        pass
 
     def _validate_channel_index(self, index: Union[int, str]) -> int:
         """
@@ -1495,17 +1164,7 @@ class CPHDWriter1(BaseWriter):
         -------
         int
         """
-
-        if isinstance(index, str):
-            if index in self.writing_details.support_map:
-                return self.writing_details.support_map[index]
-            else:
-                raise KeyError('Cannot find support array for identifier {}'.format(index))
-        else:
-            int_index = int(index)
-            if not (0 <= int_index < len(self.meta.Data.SupportArrays)):
-                raise ValueError(_index_range_text.format(len(self.meta.Data.SupportArrays)))
-            return int_index
+        pass
 
     def _validate_support_key(self, index: Union[int, str]) -> str:
         """
@@ -1519,93 +1178,10 @@ class CPHDWriter1(BaseWriter):
         -------
         str
         """
-
-        if isinstance(index, str):
-            if index in self.writing_details.support_map:
-                return index
-            else:
-                raise KeyError('Cannot find support array for identifier {}'.format(index))
-        else:
-            int_index = int(index)
-            if not (0 <= int_index < len(self.meta.Data.SupportArrays)):
-                raise ValueError(_index_range_text.format(len(self.meta.Data.SupportArrays)))
-            return self.meta.Data.SupportArrays[int_index].Identifier
+        pass
 
     def _initialize_data(self) -> List[DataSegment]:
-        self._pvp_memmaps = {}
-        # set up the PVP memmaps
-        pvp_dtype = self.meta.PVP.get_vector_dtype()
-        for i, entry in enumerate(self.meta.Data.Channels):
-            # create the pvp mem map
-            offset = self.writing_details.pvp_details[i].item_offset
-            shape = (entry.NumVectors, )
-            if self._in_memory:
-                self._pvp_memmaps[entry.Identifier] = numpy.empty(shape, dtype=pvp_dtype)
-            else:
-                self._pvp_memmaps[entry.Identifier] = numpy.memmap(
-                    self._file_name, dtype=pvp_dtype, mode='r+', offset=offset, shape=shape)
-
-        self._support_memmaps = {}
-        if self.meta.Data.SupportArrays is not None:
-            for i, entry in enumerate(self.meta.Data.SupportArrays):
-                # extract the support array metadata details
-                details = self.meta.SupportArray.find_support_array(entry.Identifier)
-                offset = self.writing_details.support_details[i].item_offset
-                # determine numpy dtype and depth of array
-                dtype, depth = details.get_numpy_format()
-                # set up the numpy memory map
-                shape = (entry.NumRows, entry.NumCols) if depth == 1 else (entry.NumRows, entry.NumCols, depth)
-                if self._in_memory:
-                    self._support_memmaps[entry.Identifier] = numpy.empty(shape, dtype=dtype)
-                else:
-                    self._support_memmaps[entry.Identifier] = numpy.memmap(
-                        self._file_name, dtype=dtype, mode='r+', offset=offset, shape=shape)
-
-        # set up the signal data_segment (this is used for formatting issues)
-        no_amp_sf = (self.meta.PVP.AmpSF is None)
-        self._signal_data_segments = {}
-        self._can_write_regular_data = {}
-        signal_data_segments = []
-        signal_array_format = self.meta.Data.SignalArrayFormat
-        compressed = getattr(self.meta.Data, 'SignalCompressionID', None)
-        if compressed is not None:
-            signal_dtype = numpy.dtype('B')
-        elif signal_array_format == 'CI2':
-            signal_dtype = numpy.dtype('>i1')
-        elif signal_array_format == 'CI4':
-            signal_dtype = numpy.dtype('>i2')
-        elif signal_array_format == 'CF8':
-            signal_dtype = numpy.dtype('>f4')
-        else:
-            raise ValueError('Got unhandled SignalArrayFormat {}'.format(signal_array_format))
-        for i, entry in enumerate(self.meta.Data.Channels):
-            self._can_write_regular_data[entry.Identifier] = no_amp_sf or compressed
-            if compressed:
-                raw_shape = (entry.CompressedSignalSize,)
-                formatted_shape = raw_shape
-                formatted_dtype = 'byte'
-                format_function = None
-            else:
-                raw_shape = (entry.NumVectors, entry.NumSamples, 2)
-                formatted_shape = raw_shape[:2]
-                formatted_dtype = 'complex64'
-                format_function = AmpScalingFunction(signal_dtype)
-
-            offset = self.writing_details.signal_details[i].item_offset
-            if self._in_memory:
-                underlying_array = numpy.full(raw_shape, 0, dtype=signal_dtype)
-                data_segment = NumpyArraySegment(
-                    underlying_array, formatted_dtype, formatted_shape=formatted_shape,
-                    format_function=format_function, mode='w')
-            else:
-                data_segment = NumpyMemmapSegment(
-                    self._file_object.name, offset, signal_dtype, raw_shape,
-                    formatted_dtype=formatted_dtype, formatted_shape=formatted_shape,
-                    format_function=format_function, mode='w', close_file=False)
-            signal_data_segments.append(data_segment)
-
-            self._signal_data_segments[entry.Identifier] = data_segment
-        return signal_data_segments
+        pass
 
     def write_support_array(self,
                             identifier: Union[int, str],
@@ -1618,27 +1194,7 @@ class CPHDWriter1(BaseWriter):
         identifier : int|str
         data : numpy.ndarray
         """
-
-        self._validate_closed()
-
-        int_index = self._validate_support_index(identifier)
-        identifier = self._validate_support_key(identifier)
-
-        out_array = self._support_memmaps[identifier]
-        if data.shape != out_array.shape:
-            raise ValueError(
-                'Support data shape {} is not compatible with\n\t'
-                'that provided in metadata {}'.format(data.shape, out_array.shape))
-
-        # write the data
-        out_array[:] = data
-        # mark it as written
-        details = self.writing_details.support_details[int_index]
-        if self._in_memory:
-            # TODO: we can delete the memmap now?
-            details.item_bytes = out_array.tobytes()
-        else:
-            details.item_written = True
+        pass
 
     def write_pvp_array(self,
                         identifier: Union[int, str],
@@ -1651,37 +1207,7 @@ class CPHDWriter1(BaseWriter):
         identifier : int|str
         data : numpy.ndarray
         """
-
-        self._validate_closed()
-
-        def validate_dtype():
-            self._verify_dtype(data.dtype, self._pvp_memmaps[identifier].dtype, 'PVP channel {}'.format(identifier))
-
-        int_index = self._validate_channel_index(identifier)
-        identifier = self._validate_channel_key(identifier)
-        entry = self.meta.Data.Channels[int_index]
-        validate_dtype()
-
-        if data.ndim != 1:
-            raise ValueError('Provided data is required to be one dimensional')
-        if data.shape[0] != entry.NumVectors:
-            raise ValueError('Provided data must have size determined by NumVectors')
-
-        if self.meta.PVP.AmpSF is not None and self.meta.Data.SignalCompressionID is None:
-            amp_sf = numpy.copy(data['AmpSF'][:])
-            # noinspection PyUnresolvedReferences
-            self._signal_data_segments[identifier].format_function.set_amplitude_scaling(amp_sf)
-            self._can_write_regular_data[identifier] = True
-
-        # write the data
-        self._pvp_memmaps[identifier][list(data.dtype.names)] = data[list(data.dtype.names)]
-        # mark it as written
-        details = self.writing_details.pvp_details[int_index]
-        if self._in_memory:
-            # TODO: we can likely delete the memmap now?
-            details.item_bytes = self._pvp_memmaps[identifier].tobytes()
-        else:
-            details.item_written = True
+        pass
 
     def write_support_block(self, support_block: Dict[Union[int, str], numpy.ndarray]) -> None:
         """
@@ -1692,11 +1218,7 @@ class CPHDWriter1(BaseWriter):
         support_block: dict
             Dictionary of `numpy.ndarray` containing the support arrays.
         """
-
-        expected_support_ids = {s.Identifier for s in self.meta.Data.SupportArrays}
-        assert expected_support_ids == set(support_block), 'support_block keys do not match those in meta'
-        for identifier, array in support_block.items():
-            self.write_support_array(identifier, array)
+        pass
 
     def write_pvp_block(self, pvp_block: Dict[Union[int, str], numpy.ndarray]) -> None:
         """
@@ -1707,11 +1229,7 @@ class CPHDWriter1(BaseWriter):
         pvp_block: dict
             Dictionary of `numpy.ndarray` containing the PVP arrays.
         """
-
-        expected_channels = {c.Identifier for c in self.meta.Data.Channels}
-        assert expected_channels == set(pvp_block), 'pvp_block keys do not match those in meta'
-        for identifier, array in pvp_block.items():
-            self.write_pvp_array(identifier, array)
+        pass
 
     def write_signal_block(self, signal_block: Dict[Union[int, str], numpy.ndarray]) -> None:
         """
@@ -1722,11 +1240,7 @@ class CPHDWriter1(BaseWriter):
         signal_block: dict
             Dictionary of `numpy.ndarray` containing the signal arrays in complex64 format.
         """
-
-        expected_channels = {c.Identifier for c in self.meta.Data.Channels}
-        assert expected_channels == set(signal_block), 'signal_block keys do not match those in meta'
-        for identifier, array in signal_block.items():
-            self.write(array, index=identifier)
+        pass
 
     def write_signal_block_raw(self, signal_block):
         """
@@ -1738,11 +1252,7 @@ class CPHDWriter1(BaseWriter):
             Dictionary of `numpy.ndarray` containing the raw formatted
             (i.e. file storage format) signal arrays.
         """
-
-        expected_channels = {c.Identifier for c in self.meta.Data.Channels}
-        assert expected_channels == set(signal_block), 'signal_block keys do not match those in meta'
-        for identifier, array in signal_block.items():
-            self.write_raw(array, index=identifier)
+        pass
 
     def write_file(
             self,
@@ -1764,11 +1274,7 @@ class CPHDWriter1(BaseWriter):
         support_block: None|Dict[str, numpy.ndarray]
             Dictionary of `numpy.ndarray` containing the support arrays.
         """
-
-        self.write_pvp_block(pvp_block)
-        if support_block:
-            self.write_support_block(support_block)
-        self.write_signal_block(signal_block)
+        pass
 
     def write_file_raw(
             self,
@@ -1790,11 +1296,7 @@ class CPHDWriter1(BaseWriter):
         support_block: None|Dict[str, numpy.ndarray]
             Dictionary of `numpy.ndarray` containing the support arrays.
         """
-
-        self.write_pvp_block(pvp_block)
-        if support_block:
-            self.write_support_block(support_block)
-        self.write_signal_block_raw(signal_block)
+        pass
 
     def write_chip(
             self,

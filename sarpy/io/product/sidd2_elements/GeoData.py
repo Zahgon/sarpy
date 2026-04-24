@@ -91,8 +91,7 @@ class GeoDataType(Serializable):
         """
         List[GeoInfoType]: list of GeoInfos.
         """
-
-        return self._GeoInfos
+        pass
 
     def getGeoInfo(self, key):
         """
@@ -106,8 +105,7 @@ class GeoDataType(Serializable):
         -------
         List[GeoInfoType]
         """
-
-        return [entry for entry in self._GeoInfos if entry.name == key]
+        pass
 
     def setGeoInfo(self, value):
         """
@@ -121,16 +119,7 @@ class GeoDataType(Serializable):
         -------
         None
         """
-        if isinstance(value, ElementTree.Element):
-            gi_key = self._child_xml_ns_key.get('GeoInfos', self._xml_ns_key)
-            value = GeoInfoType.from_node(value, self._xml_ns, ns_key=gi_key)
-        elif isinstance(value, dict):
-            value = GeoInfoType.from_dict(value)
-
-        if isinstance(value, GeoInfoType):
-            self._GeoInfos.append(value)
-        else:
-            raise TypeError('Trying to set GeoInfo element with unexpected type {}'.format(type(value)))
+        pass
 
     @classmethod
     def from_node(cls, node, xml_ns, ns_key=None, kwargs=None):

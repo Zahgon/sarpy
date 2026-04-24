@@ -91,10 +91,10 @@ class ConsistencyChecker(object):
                 func_name = [func_name]
 
             def matches_prefix(requested, actual):
-                return actual.startswith(requested)
+                pass
 
             def matches_exact(requested, actual):
-                return requested == actual
+                pass
 
             qualifier = matches_prefix if allow_prefix else matches_exact
             funcs = []
@@ -184,11 +184,7 @@ class ConsistencyChecker(object):
         formatted : str
             Formatted stack level containing line number and line text
         """
-
-        stack = _exception_stack()
-        frame = stack[depth]
-        return ("line#{lineno}: {line}".format(lineno=frame['lineno'], line=frame['line'])
-                + '\n' + '\n'.join(str(x) for x in e.args))
+        pass
 
     @contextlib.contextmanager
     def need(self, details=None):
@@ -199,9 +195,7 @@ class ConsistencyChecker(object):
         details : None|str
             Text describing the scope of checks
         """
-
-        with self._crave('Error', details=details):
-            yield
+        pass
 
     @contextlib.contextmanager
     def want(self, details=None):
@@ -212,9 +206,7 @@ class ConsistencyChecker(object):
         details : None|str
             Text describing the scope of checks
         """
-
-        with self._crave('Warning', details=details):
-            yield
+        pass
 
     @contextlib.contextmanager
     def _crave(self, level, details, depth=2):
@@ -230,18 +222,7 @@ class ConsistencyChecker(object):
         depth : int
             Depth in the exception stack to look for check information
         """
-
-        try:
-            yield
-            if self._active_check is not None:
-                self._add_item_to_current(level, True, '', details=details)
-        except AssertionError as e:
-            if self._active_check is None:
-                raise
-            if not details:
-                stack = _exception_stack()
-                details = stack[depth]['line']
-            self._add_item_to_current(level, False, self._format_assertion(e, depth=depth), details=details)
+        pass
 
     @contextlib.contextmanager
     def precondition(self, details=None):
@@ -253,16 +234,7 @@ class ConsistencyChecker(object):
         details : None|str
             Text describing the scope of checks
         """
-
-        try:
-            yield
-        except AssertionError as e:
-            if self._active_check is None:
-                return
-            if not details:
-                stack = _exception_stack()
-                details = stack[1]['line']
-            self._add_item_to_current('No-Op', True, self._format_assertion(e), details=details)
+        pass
 
     def all(self):
         """
@@ -273,8 +245,7 @@ class ConsistencyChecker(object):
         Dict
             Unfiltered dictionary of all (Passed, Failed, Skipped) results
         """
-
-        return self._all_check_results
+        pass
 
     def failures(self, omit_passed_sub=False):
         """
@@ -308,8 +279,7 @@ class ConsistencyChecker(object):
         Dict
             Dictionary containing checks that are not wholly No-Op
         """
-        return {k: v for k, v in self.all().items()
-                if v['passed'] and any(d['severity'] != 'No-Op' for d in v['details'])}
+        pass
 
     def skips(self):
         """
@@ -320,8 +290,7 @@ class ConsistencyChecker(object):
         Dict
             Dictionary containing checks that are wholly No-Op
         """
-        return {k: v for k, v in self.all().items()
-                if v['passed'] and all(d['severity'] == 'No-Op' for d in v['details'])}
+        pass
 
     def print_result(self, include_passed_asserts=True, color=True, include_passed_checks=False, width=120,
                      skip_detail=False, fail_detail=False, pass_detail=False):
@@ -437,7 +406,7 @@ class Approx:
         return f"{self.value} ± {tol}"
 
     def _isclose(self, rhs):
-        return np.isclose(rhs, self.value, rtol=self.rtol, atol=self.atol)
+        pass
 
 
 def in_color(string, *color):

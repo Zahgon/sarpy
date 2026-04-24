@@ -107,28 +107,19 @@ class TxFrequencyProcType(Serializable, Arrayable):
         """
         None|float: The center frequency.
         """
-
-        if self.MinProc is None or self.MaxProc is None:
-            return None
-        return 0.5*(self.MinProc + self.MaxProc)
+        pass
 
     @property
     def bandwidth(self) -> Optional[float]:
         """
         None|float: The bandwidth in Hz.
         """
-
-        if self.MinProc is None or self.MaxProc is None:
-            return None
-        return self.MaxProc - self.MinProc
+        pass
 
     def _apply_reference_frequency(
             self,
             reference_frequency: float):
-        if self.MinProc is not None:
-            self.MinProc += reference_frequency
-        if self.MaxProc is not None:
-            self.MaxProc += reference_frequency
+        pass
 
     def _basic_validity_check(self) -> bool:
         condition = super(TxFrequencyProcType, self)._basic_validity_check()
@@ -534,18 +525,7 @@ class ImageFormationType(Serializable):
         -------
         None
         """
-
-        if RadarCollection is not None and RadarCollection.TxFrequency is not None and \
-                RadarCollection.TxFrequency.Min is not None and RadarCollection.TxFrequency.Max is not None:
-            # this is based on the assumption that the entire transmitted bandwidth was processed.
-            if self.TxFrequencyProc is None:
-                self.TxFrequencyProc = TxFrequencyProcType(
-                    MinProc=RadarCollection.TxFrequency.Min, MaxProc=RadarCollection.TxFrequency.Max)
-                # how would it make sense to set only one end?
-            elif self.TxFrequencyProc.MinProc is None:
-                self.TxFrequencyProc.MinProc = RadarCollection.TxFrequency.Min
-            elif self.TxFrequencyProc.MaxProc is None:
-                self.TxFrequencyProc.MaxProc = RadarCollection.TxFrequency.Max
+        pass
 
     def _apply_reference_frequency(self, reference_frequency: float):
         """
@@ -561,10 +541,7 @@ class ImageFormationType(Serializable):
         -------
         None
         """
-
-        if self.TxFrequencyProc is not None:
-            # noinspection PyProtectedMember
-            self.TxFrequencyProc._apply_reference_frequency(reference_frequency)
+        pass
 
     def get_polarization(self) -> str:
         """
@@ -614,5 +591,4 @@ class ImageFormationType(Serializable):
         -------
         tuple
         """
-
-        return polstring_version_required(self.TxRcvPolarizationProc)
+        pass

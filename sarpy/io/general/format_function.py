@@ -142,42 +142,28 @@ class FormatFunction(object):
         """
         None|Tuple[int, ...]: The expected full possible raw shape.
         """
-
-        return self._raw_shape
+        pass
 
     def set_raw_shape(self, value: Optional[Tuple[int, ...]]) -> None:
-        if self._raw_shape is not None:
-            if value is None or value != self._raw_shape:
-                raise ValueError('raw_shape is read only once set')
-            return  # nothing to be done
-        self._raw_shape = value
+        pass
 
     @property
     def raw_ndim(self) -> int:
-        if self.raw_shape is None:
-            raise ValueError('raw_shape must be set')
-        return len(self._raw_shape)
+        pass
 
     @property
     def formatted_shape(self) -> Optional[Tuple[int, ...]]:
         """
         None|Tuple[int, ...]: The expected output shape basis.
         """
-
-        return self._formatted_shape
+        pass
 
     def set_formatted_shape(self, value: Optional[Tuple[int, ...]]) -> None:
-        if self._formatted_shape is not None:
-            if value is None or value != self._formatted_shape:
-                raise ValueError('formatted_shape is read only once set')
-            return  # nothing to be done
-        self._formatted_shape = value
+        pass
 
     @property
     def formatted_ndim(self) -> int:
-        if self.formatted_shape is None:
-            raise ValueError('formatted_shape must be set')
-        return len(self._formatted_shape)
+        pass
 
     @property
     def reverse_axes(self) -> Optional[Tuple[int, ...]]:
@@ -186,15 +172,10 @@ class FormatFunction(object):
         along which we will reverse as part of transformation to output data order.
         If not `None`, then this will be a tuple in strictly increasing order.
         """
-
-        return self._reverse_axes
+        pass
 
     def set_reverse_axes(self, value: Optional[Tuple[int, ...]]) -> None:
-        if self._reverse_axes is not None:
-            if value is None or value != self._reverse_axes:
-                raise ValueError('reverse_axes is read only once set')
-            return  # nothing to be done
-        self._reverse_axes = value
+        pass
 
     @property
     def transpose_axes(self) -> Tuple[int, ...]:
@@ -202,29 +183,16 @@ class FormatFunction(object):
         None|Tuple[int, ...]: The transpose order for switching from raw order to
         output order, prior to applying any format function.
         """
-
-        return self._transpose_axes
+        pass
 
     def set_transpose_axes(self, value: Optional[Tuple[int, ...]]) -> None:
-        if self._transpose_axes is not None:
-            if value is None or value != self._transpose_axes:
-                raise ValueError('transpose_axes is read only once set')
-            return  # nothing to be done
-        if value is None:
-            return  # nothing to be done
-
-        self._transpose_axes = value
-        # inverts the transpose axes mapping
-        self._reverse_transpose_axes = tuple([value.index(i) for i in range(len(value))])
+        pass
 
     def _get_populated_transpose_axes(self) -> Tuple[int, ...]:
-        trans_axes = tuple(range(len(self.raw_shape))) if self.transpose_axes is None else \
-            self.transpose_axes
-        return trans_axes
+        pass
 
     def _verify_shapes_set(self) -> None:
-        if self.raw_shape is None or self.formatted_shape is None:
-            raise ValueError('raw_shape and formatted_shape must both be set.')
+        pass
 
     def _reverse_and_transpose(
             self,
@@ -452,21 +420,7 @@ class IdentityFunction(FormatFunction):
     has_inverse = True
 
     def validate_shapes(self) -> None:
-        self._verify_shapes_set()
-        if self.raw_ndim != self.formatted_ndim:
-            raise ValueError('raw_shape and formatted_shape must have the same length ')
-
-        trans_axes = self._get_populated_transpose_axes()
-        if self.raw_ndim != len(trans_axes):
-            raise ValueError('raw_shape and transpose_axes must have the same length ')
-
-        # we should have formatted_shape[i] == raw_shape[trans_axes[i]]
-        expected_formatted_shape = tuple([self.raw_shape[index] for index in trans_axes])
-        if expected_formatted_shape != self.formatted_shape:
-            raise ValueError(
-                'Input_shape `{}` and transpose_axes `{}` yields expected output shape `{}`\n\t'
-                'got formatted_shape `{}`'.format(
-                    self.raw_shape, self.transpose_axes, expected_formatted_shape, self.formatted_shape))
+        pass
 
     def transform_formatted_slice(
             self,
@@ -492,23 +446,7 @@ class IdentityFunction(FormatFunction):
     def transform_raw_slice(
             self,
             subscript: Tuple[slice, ...]) -> Tuple[slice, ...]:
-        if len(subscript) != self.raw_ndim:
-            raise ValueError('The length of subscript and raw_shape must match')
-
-        reverse_axes = () if self.reverse_axes is None else self.reverse_axes
-        transpose_axes = tuple(range(len(self.formatted_shape))) if self.transpose_axes is None else \
-            self.transpose_axes
-
-        # we will reorder from raw order into formatted order, using the transpose
-        # axes definition, reversing any axes required according to reverse_axes
-        # definition (in raw order)
-        out = []
-        for i, index in enumerate(transpose_axes):
-            # raw order @ index corresponds to formatted order @ i
-            rev = (index in reverse_axes)
-            shape_limit = self.formatted_shape[i]  # also self.raw_shape[index]
-            out.append(reformat_slice(subscript[index], shape_limit, rev))
-        return tuple(out)
+        pass
 
     def _forward_functional_step(
             self,
@@ -577,119 +515,30 @@ class ComplexFormatFunction(FormatFunction):
         self._set_band_dimension(band_dimension)
 
     def set_raw_shape(self, value: Optional[Tuple[int, ...]]) -> None:
-        FormatFunction.set_raw_shape(self, value)
-        if self._band_dimension is not None:
-            self._set_band_dimension(self._band_dimension)
+        pass
 
     @property
     def band_dimension(self) -> int:
         """
         int: The band dimension, in raw data after the transpose operation.
         """
-
-        return self._band_dimension
+        pass
 
     def _set_band_dimension(self, value: int) -> None:
-        if not isinstance(value, int):
-            raise TypeError('band_dimension must be an integer')
-
-        if self._raw_shape is None:
-            self._band_dimension = value
-            return
-
-        if not (-self.raw_ndim <= value < self.raw_ndim):
-            raise ValueError('band_dimension out of bounds.')
-
-        if value < 0:
-            value = value + self.raw_ndim
-
-        if self._band_dimension is not None:
-            if ((value - self._band_dimension) % self.raw_ndim) != 0:
-                raise ValueError('band_dimension is read only once set')
-        self._band_dimension = value
+        pass
 
     @property
     def order(self) -> str:
         """
         str: The order string, once of `('IQ', 'QI', 'MP', 'PM')`.
         """
-
-        return self._order
+        pass
 
     def _set_order(self, value: str) -> None:
-        if not isinstance(value, str):
-            raise TypeError('order must be an string')
-
-        value = value.strip().upper()
-        if value not in self._allowed_ordering:
-            raise ValueError(
-                'Order is required to be one of {},\n\t'
-                'got `{}`'.format(self._allowed_ordering, value))
-        if self._order is not None:
-            if value != self._order:
-                raise ValueError('order is read only once set')
-        self._order = value
-        if self._order in ['IQ', 'QI']:
-            if self._raw_dtype.name not in [
-                    'int8', 'int16', 'int32', 'float16', 'float32', 'float64']:
-                raise ValueError(
-                    'order is {}, and raw_dtype ({}, {}) must be one of '
-                    'int8, int16, int32, float16, float32, or float64'.format(
-                        self._order, self._raw_dtype, self._raw_dtype.name))
-        elif self._order in ['MP', 'PM']:
-            if self._raw_dtype.name not in [
-                    'uint8', 'uint16', 'uint32', 'float16', 'float32', 'float64']:
-                raise ValueError(
-                    'order is {}, and raw_dtype must be one of '
-                    'uint8, uint16, uint32, float16, float32, or float64'.format(
-                        self._order))
-        else:
-            raise ValueError('Got unhandled ordering value `{}`'.format(
-                self._order))
+        pass
 
     def validate_shapes(self) -> None:
-        self._verify_shapes_set()
-        self._set_band_dimension(self._band_dimension)
-        trans_axes = self._get_populated_transpose_axes()
-        if self.raw_ndim != len(trans_axes):
-            raise ValueError('raw_shape and transpose_axes must have the same length ')
-
-        arranged_shape = tuple([self.raw_shape[index] for index in trans_axes])
-        if (arranged_shape[self.band_dimension] % 2) != 0:
-            raise ValueError(
-                'Input_shape `{}`, transpose_axes `{}` yields rearranged shape `{}`\n\t'
-                'entry in band_dimension `{}` should be even'.format(
-                    self.raw_shape, self.transpose_axes, arranged_shape, self.band_dimension))
-        after_mapping_shape = [entry for entry in arranged_shape]
-        after_mapping_shape[self.band_dimension] = int(after_mapping_shape[self.band_dimension]/2)
-        after_mapping_shape = tuple(after_mapping_shape)
-
-        if self.raw_ndim == self.formatted_ndim:
-            if after_mapping_shape != self.formatted_shape:
-                raise ValueError(
-                    'Input_shape `{}`, transpose_axes `{}`, band dimension `{}` '
-                    'yields expected output shape `{}`\n\t'
-                    'got formatted_shape `{}`'.format(
-                        self.raw_shape, self.transpose_axes, self.band_dimension,
-                        after_mapping_shape, self.formatted_shape))
-        elif self.raw_ndim == self.formatted_ndim + 1:
-            reduced_shape = [entry for entry in after_mapping_shape]
-            reduced_shape.pop(self.band_dimension)
-            reduced_shape = tuple(reduced_shape)
-            if reduced_shape != self.formatted_shape:
-                raise ValueError(
-                    'Input_shape `{}`, transpose_axes `{}`, band dimension `{}` '
-                    'yields expected output shape `{}`\n\t'
-                    'got formatted_shape `{}`'.format(
-                        self.raw_shape, self.transpose_axes, self.band_dimension,
-                        reduced_shape, self.formatted_shape))
-        else:
-            raise ValueError(
-                'Input_shape `{}`, transpose_axes `{}`, band dimension `{}` '
-                'yields expected output shape `{}`\n\t'
-                'got formatted_shape `{}`'.format(
-                    self.raw_shape, self.transpose_axes, self.band_dimension,
-                    arranged_shape, self.formatted_shape))
+        pass
 
     def transform_formatted_slice(
             self,
@@ -746,27 +595,7 @@ class ComplexFormatFunction(FormatFunction):
     def transform_raw_slice(
             self,
             subscript: Tuple[slice, ...]) -> Tuple[slice, ...]:
-        if len(subscript) != self.raw_ndim:
-            raise ValueError('The length of subscript and raw_shape must match')
-
-        reverse_axes = () if self.reverse_axes is None else self.reverse_axes
-        transpose_axes = tuple(range(len(self.formatted_shape))) if self.transpose_axes is None else \
-            self.transpose_axes
-
-        # we will reorder from raw order into formatted order, using the transpose
-        # axes definition, reversing any axes required according to reverse_axes
-        # definition (in raw order)
-        out = []
-        for i, index in enumerate(transpose_axes):
-            # raw order @ index corresponds to formatted order @ i
-            rev = (index in reverse_axes)
-            shape_limit = self.raw_shape[index]  # also self.formatted_shape[i]
-            if index == self.band_dimension and self.formatted_ndim < self.raw_ndim:
-                # the band dimension has collapsed, so omit anything here
-                continue
-            else:
-                out.append(reformat_slice(subscript[index], shape_limit, rev))
-        return tuple(out)
+        pass
 
     def _forward_magnitude_theta(
             self,
@@ -946,24 +775,10 @@ class SingleLUTFormatFunction(FormatFunction):
 
     @property
     def lookup_table(self) -> numpy.ndarray:
-        return self._lookup_table
+        pass
 
     def validate_shapes(self) -> None:
-        self._verify_shapes_set()
-        trans_axes = self._get_populated_transpose_axes()
-        if self.raw_ndim != len(trans_axes):
-            raise ValueError('raw_shape and transpose_axes must have the same length')
-
-        arranged_shape = [self.raw_shape[index] for index in trans_axes]
-        if self.lookup_table.ndim == 2:
-            arranged_shape.append(self.lookup_table.shape[1])
-        arranged_shape = tuple(arranged_shape)
-
-        if arranged_shape != self.formatted_shape:
-            raise ValueError(
-                'Input_shape `{}`, transpose_axes `{}` and lookup table\n\t'
-                'yields expected output shape `{}` got formatted_shape `{}`'.format(
-                    self.raw_shape, self.transpose_axes, arranged_shape, self.formatted_shape))
+        pass
 
     def transform_formatted_slice(
             self,
@@ -990,27 +805,7 @@ class SingleLUTFormatFunction(FormatFunction):
     def transform_raw_slice(
             self,
             subscript: Tuple[slice, ...]) -> Tuple[slice, ...]:
-        if len(subscript) != self.raw_ndim:
-            raise ValueError('The length of subscript and raw_shape must match')
-
-        reverse_axes = () if self.reverse_axes is None else self.reverse_axes
-        transpose_axes = tuple(range(len(self.formatted_shape))) if self.transpose_axes is None else \
-            self.transpose_axes
-
-        # we will reorder from raw order into formatted order, using the transpose
-        # axes definition, reversing any axes required according to reverse_axes
-        # definition (in raw order)
-        out = []
-        for i, index in enumerate(transpose_axes):
-            # raw order @ index corresponds to formatted order @ i
-            rev = (index in reverse_axes)
-            shape_limit = self.formatted_shape[index]  # also self.raw_shape[i]
-            out.append(reformat_slice(subscript[index], shape_limit, rev))
-        if self.raw_ndim < self.formatted_ndim:
-            # 2-d lookup table
-            lim = self.formatted_shape[-1]
-            out.append(slice(0, lim, 1))
-        return tuple(out)
+        pass
 
     def _forward_functional_step(
             self,

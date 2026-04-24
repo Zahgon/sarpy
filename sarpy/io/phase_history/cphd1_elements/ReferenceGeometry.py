@@ -118,10 +118,7 @@ class ReferenceGeometryCore(Serializable):
 
             * 1 if SideOftrack == 'L'
         """
-
-        if self.SideOfTrack is None:
-            return None
-        return -1 if self.SideOfTrack == 'R' else 1
+        pass
 
 
 class MonostaticType(ReferenceGeometryCore):
@@ -200,31 +197,21 @@ class MonostaticType(ReferenceGeometryCore):
         """
         float: The anticipated angle of multipath features on the ground in degrees.
         """
-
-        if self.TwistAngle is None:
-            return None
-        else:
-            return numpy.rad2deg(
-                -numpy.arctan(numpy.tan(numpy.deg2rad(self.TwistAngle)) *
-                              numpy.sin(numpy.deg2rad(self.GrazeAngle))))
+        pass
 
     @property
     def Multipath(self):
         """
         float: The anticipated angle of multipath features in degrees.
         """
-        if self.MultipathGround is None:
-            return None
-        else:
-            return numpy.mod(self.AzimuthAngle - 180 + self.MultipathGround, 360)
+        pass
 
     @property
     def Shadow(self):
         """
         float: The anticipated angle of shadow features in degrees.
         """
-
-        return numpy.mod(self.AzimuthAngle - 180, 360)
+        pass
 
 
 class BistaticTxRcvType(ReferenceGeometryCore):

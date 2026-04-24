@@ -55,36 +55,16 @@ _unhandled_generation_text = 'Unhandled generation `{}`'
 # Helper functions
 
 def _parse_xml(file_name: str, without_ns: bool = False) -> ElementTree.Element:
-    if without_ns:
-        with open(file_name, 'rb') as fi:
-            xml_string = fi.read()
-        # Remove the (first) default namespace definition (xmlns="http://some/namespace") and parse
-        return ElementTree.fromstring(re.sub(b'\\sxmlns="[^"]+"', b'', xml_string, count=1))
-    else:
-        return ElementTree.parse(file_name).getroot()
+    pass
 
 
 def _format_class_str(class_str: str) -> str:
-    if 'UNCLASS' in class_str:
-        return 'UNCLASSIFIED'
-    else:
-        return class_str
+    pass
 
 
 def load_addin():
     """Check for a Radarsat addin module"""
-    try:
-        from sarpy.io.complex import radarsat_addin
-        return radarsat_addin
-    except ImportError:
-        pass
-
-    eps = sarpy._extensions.entry_points(group='sarpy.io.complex.radarsat')
-    if not eps:
-        return None
-    if len(eps) > 1:
-        raise RuntimeError("More than one Radarsat addin found")
-    return list(eps)[0].load()
+    pass
 
 
 def _validate_segment_and_sicd(
@@ -106,14 +86,7 @@ def _validate_segment_and_sicd(
     -------
     None
     """
-
-    sicd_data_size = (the_sicd.ImageData.NumRows, the_sicd.ImageData.NumCols)
-    segment_data_size = data_segment.formatted_shape
-    if sicd_data_size != segment_data_size:
-        raise ValueError(
-            'The {} data segment construction for file {}\n'
-            'got incompatible sicd size `{}` and segment size `{}`'.format(
-                name, the_file, sicd_data_size, segment_data_size))
+    pass
 
 
 def _construct_tiff_segment(
@@ -134,10 +107,7 @@ def _construct_tiff_segment(
     -------
     NativeTiffDataSegment
     """
-
-    segment = NativeTiffDataSegment(the_file, reverse_axes=reverse_axes, transpose_axes=transpose_axes)
-    _validate_segment_and_sicd(the_sicd, segment, 'tiff', the_file)
-    return segment
+    pass
 
 
 def _construct_single_nitf_segment(
@@ -159,17 +129,7 @@ def _construct_single_nitf_segment(
     reader: ComplexNITFReader
     data_segment: DataSegment
     """
-
-    if transpose_axes is not None:
-        transpose_axes = transpose_axes[:2]
-    reader = ComplexNITFReader(the_file, reverse_axes=reverse_axes, transpose_axes=transpose_axes)
-    data_segment = reader.data_segment
-    if not isinstance(data_segment, DataSegment):
-        raise ValueError(
-            'The SLC data for a single polarmetric band was provided '
-            'in a NITF file which has more than a single complex band.')
-    _validate_segment_and_sicd(the_sicd, data_segment, 'Single NITF', the_file)
-    return reader, data_segment
+    pass
 
 
 def _construct_multiple_nitf_segment(
@@ -191,18 +151,7 @@ def _construct_multiple_nitf_segment(
     reader: ComplexNITFReader
     data_segment: Tuple[DataSegment, ...]
     """
-
-    if transpose_axes is not None:
-        transpose_axes = transpose_axes[:2]
-    reader = ComplexNITFReader(the_file, reverse_axes=reverse_axes, transpose_axes=transpose_axes)
-    data_segment = reader.get_data_segment_as_tuple()
-    if len(data_segment) != len(the_sicds):
-        raise ValueError(
-            'The SLC data for {} polarmetric bands was provided '
-            'in a NITF file which has {} single complex band.'.format(len(the_sicds), len(data_segment)))
-    for i, (the_sicd, segment) in enumerate(zip(the_sicds, data_segment)):
-        _validate_segment_and_sicd(the_sicd, segment, 'NITF band {}'.format(i), the_file)
-    return reader, data_segment
+    pass
 
 
 ##############
@@ -284,43 +233,35 @@ class RadarSatDetails(object):
         """
         str: the file name
         """
-
-        return self._file_name
+        pass
 
     @property
     def directory_name(self) -> str:
         """
         str: the package directory name
         """
-
-        return self._directory_name
+        pass
 
     @property
     def satellite(self) -> str:
         """
         str: the satellite name
         """
-
-        return self._satellite
+        pass
 
     @property
     def generation(self) -> str:
         """
         str: RS2 or RCM
         """
-
-        if self._satellite == 'RADARSAT-2':
-            return 'RS2'
-        else:
-            return 'RCM'
+        pass
 
     @property
     def pass_direction(self) -> str:
         """
         str: The pass direction
         """
-
-        return self._find('./sourceAttributes/orbitAndAttitude/orbitInformation/passDirection').text
+        pass
 
     def get_symmetry(self) -> Tuple[Optional[Tuple[int, ...]], Optional[Tuple[int, ...]]]:
         """
@@ -331,31 +272,13 @@ class RadarSatDetails(object):
         reverse_axes : None|Tuple[int, ...]
         transpose_axes : None|Tuple[int, ...]
         """
-
-        look_dir = self._find('./sourceAttributes/radarParameters/antennaPointing').text.upper()[0]
-        if self.generation == 'RS2':
-            line_order = self._find('./imageAttributes/rasterAttributes/lineTimeOrdering').text.upper()
-            sample_order = self._find('./imageAttributes/rasterAttributes/pixelTimeOrdering').text.upper()
-        else:
-            line_order = self._find('./imageReferenceAttributes/rasterAttributes/lineTimeOrdering').text.upper()
-            sample_order = self._find('./imageReferenceAttributes/rasterAttributes/pixelTimeOrdering').text.upper()
-        reverse_cols = not (
-                (line_order == 'DECREASING' and look_dir == 'L') or
-                (line_order != 'DECREASING' and look_dir != 'L'))
-        reverse_axes = []
-        if reverse_cols:
-            reverse_axes.append(0)
-        if sample_order == 'DECREASING':
-            reverse_axes.append(1)
-        reverse_axes = tuple(reverse_axes) if len(reverse_axes) > 0 else None
-        transpose_axes = (1, 0, 2)
-        return reverse_axes, transpose_axes
+        pass
 
     def _find(self, tag: str) -> ElementTree.Element:
-        return self._root_node.find(tag)
+        pass
 
     def _findall(self, tag: str) -> List[ElementTree.Element]:
-        return self._root_node.findall(tag)
+        pass
 
     def _get_tiepoint_nodes(self) -> List[ElementTree.Element]:
         """
@@ -365,8 +288,7 @@ class RadarSatDetails(object):
         -------
         List[ElementTree.Element]
         """
-
-        return self._findall('./imageAttributes/geographicInformation/geolocationGrid/imageTiePoint')
+        pass
 
     def _build_location_spline(self) -> None:
         """
@@ -377,68 +299,7 @@ class RadarSatDetails(object):
         -------
         None
         """
-
-        if self.generation == 'RS2':
-            tie_points = self._findall('./imageAttributes/geographicInformation/geolocationGrid/imageTiePoint')
-        elif self.generation == 'RCM':
-            tie_points = self._findall('./imageReferenceAttributes/geographicInformation/geolocationGrid/imageTiePoint')
-        else:
-            raise ValueError('unexpected generation {}'.format(self.generation))
-
-        lines = []
-        samples = []
-        llh_coords = numpy.zeros((len(tie_points), 3), dtype='float64')
-        grid_row, grid_col = None, None
-        for i, entry in enumerate(tie_points):
-            img_coords = entry.find('./imageCoordinate')
-            geo_coords = entry.find('./geodeticCoordinate')
-            # parse lat/lon/hae
-            llh_coords[i, :] = [
-                float(geo_coords.find('./latitude').text),
-                float(geo_coords.find('./longitude').text),
-                float(geo_coords.find('./height').text)]
-
-            # parse line/sample
-            line = float(img_coords.find('./line').text)
-            sample = float(img_coords.find('./pixel').text)
-            # verify grid structure
-            if i == 0:
-                lines.append(line)
-                samples.append(sample)
-                grid_row = 0
-                grid_col = 0
-                continue
-
-            if sample == samples[0]:
-                # we are starting a new grid column
-                grid_row += 1
-                grid_col = 0
-                lines.append(line)
-            else:
-                grid_col += 1
-                if grid_row == 0:
-                    samples.append(sample)
-
-            # verify that the grid assumption is preserved
-            if grid_col >= len(samples) or grid_row >= len(lines) or \
-                    line != lines[grid_row] or sample != samples[grid_col]:
-                logger.error(
-                    'Failed parsing grid at\n\t'
-                    'grid_col = {}\n\t'
-                    'samples = {}\n\t'
-                    'grid_row = {}\n\t'
-                    'lines = {}\n\t'
-                    'line={}, sample={}'.format(grid_col, samples, grid_row, lines, line, sample))
-                raise ValueError('The grid assumption is invalid at imageTiePoint entry {}'.format(i))
-        lines = numpy.array(lines, dtype='float64')
-        samples = numpy.array(samples, dtype='float64')
-        ecf_coords = geodetic_to_ecf(llh_coords)
-        self._x_spline = RectBivariateSpline(
-            lines, samples, numpy.reshape(ecf_coords[:, 0], (lines.size, samples.size)), kx=3, ky=3, s=0)
-        self._y_spline = RectBivariateSpline(
-            lines, samples, numpy.reshape(ecf_coords[:, 1], (lines.size, samples.size)), kx=3, ky=3, s=0)
-        self._z_spline = RectBivariateSpline(
-            lines, samples, numpy.reshape(ecf_coords[:, 2], (lines.size, samples.size)), kx=3, ky=3, s=0)
+        pass
 
     def _get_image_location(self, line: Union[int, float], sample: Union[int, float]) -> numpy.ndarray:
         """
@@ -455,11 +316,7 @@ class RadarSatDetails(object):
         -------
         numpy.ndarray
         """
-
-        return numpy.array(
-            [float(self._x_spline.ev(line, sample)),
-             float(self._y_spline.ev(line, sample)),
-             float(self._z_spline.ev(line, sample))], dtype='float64')
+        pass
 
     def _parse_state_vectors(self) -> None:
         """
@@ -469,25 +326,7 @@ class RadarSatDetails(object):
         -------
         None
         """
-
-        state_vectors = self._findall(
-            './sourceAttributes/orbitAndAttitude/orbitInformation/stateVector')
-
-        self._state_time = numpy.zeros((len(state_vectors), ), dtype='datetime64[us]')
-        self._state_position = numpy.zeros((len(state_vectors), 3), dtype='float64')
-        self._state_velocity = numpy.zeros((len(state_vectors), 3), dtype='float64')
-
-        for i, state_vec in enumerate(state_vectors):
-            self._state_time[i] = parse_timestring(
-                state_vec.find('timeStamp').text, precision='us')
-            self._state_position[i, :] = [
-                float(state_vec.find('xPosition').text),
-                float(state_vec.find('yPosition').text),
-                float(state_vec.find('zPosition').text)]
-            self._state_velocity[i, :] = [
-                float(state_vec.find('xVelocity').text),
-                float(state_vec.find('yVelocity').text),
-                float(state_vec.find('zVelocity').text)]
+        pass
 
     def _extract_beams_and_bursts(self) -> None:
         """
@@ -497,22 +336,7 @@ class RadarSatDetails(object):
         -------
         None
         """
-
-        radar_params = self._find('./sourceAttributes/radarParameters')
-        self._beams = radar_params.find('./beams').text.strip().split()
-        self._polarizations = radar_params.find('./polarizations').text.strip().split()
-        if self.generation == 'RCM':
-            image_attributes = self._findall('./sceneAttributes/imageAttributes')
-            if 'burst' in image_attributes[0].attrib:
-                self._bursts = [(entry.attrib['beam'], entry.attrib['burst']) for entry in image_attributes]
-                num_lines_processed = 0
-                self._bursts = []
-                for entry in image_attributes:
-                    self._bursts.append((entry.attrib['beam'], entry.attrib['burst']))
-                    nlines = int(entry.find('./numLines').text)
-                    line_offset = int(entry.find('./lineOffset').text)
-                    num_lines_processed = max(num_lines_processed, nlines+line_offset)
-                self._num_lines_processed = num_lines_processed
+        pass
 
     def _get_sicd_radar_mode(self) -> RadarModeType:
         """
@@ -522,20 +346,7 @@ class RadarSatDetails(object):
         -------
         RadarModeType
         """
-
-        mode_id = self._find('./sourceAttributes/beamModeMnemonic').text
-        beam_mode = self._find('./sourceAttributes/beamMode')
-        acq_type = self._find('./sourceAttributes/radarParameters/acquisitionType')
-        if (beam_mode is not None and beam_mode.text.upper().startswith("SPOTLIGHT")) \
-                or (acq_type is not None and acq_type.text.upper().startswith("SPOTLIGHT")) \
-                or 'SL' in mode_id:
-            mode_type = 'SPOTLIGHT'
-        elif mode_id.startswith('SC'):
-            # ScanSAR modes
-            mode_type = 'SPOTLIGHT'
-        else:
-            mode_type = 'STRIPMAP'
-        return RadarModeType(ModeID=mode_id, ModeType=mode_type)
+        pass
 
     def _get_sicd_collection_info(self, start_time: numpy.datetime64) -> Tuple[dict, CollectionInfoType]:
         """
@@ -551,30 +362,7 @@ class RadarSatDetails(object):
             The NITF element dictionary
         collection_info : CollectionInfoType
         """
-
-        radarsat_addin = load_addin()
-
-        collector_name = self.satellite
-        start_time_dt = start_time.astype(datetime)
-        date_str = start_time_dt.strftime('%d%b%y').upper()
-        nitf = {}
-        if self.generation == 'RS2':
-            classification = 'UNCLASSIFIED'
-            core_name = '{}{}{}'.format(date_str, self.generation, self._find('./sourceAttributes/imageId').text)
-        elif self.generation == 'RCM':
-            class_str = self._find('./securityAttributes/securityClassification').text.upper()
-            classification = _format_class_str(class_str) if radarsat_addin is None else \
-                radarsat_addin.extract_radarsat_sec(nitf, class_str)
-            core_name = '{}{}{}'.format(date_str, collector_name.replace('-', ''), start_time_dt.strftime('%H%M%S'))
-        else:
-            raise ValueError(_unhandled_generation_text.format(self.generation))
-
-        return nitf, CollectionInfoType(
-            Classification=classification,
-            CollectorName=collector_name,
-            CoreName=core_name,
-            RadarMode=self._get_sicd_radar_mode(),
-            CollectType='MONOSTATIC')
+        pass
 
     def _get_sicd_image_creation(self) -> ImageCreationType:
         """
@@ -584,14 +372,7 @@ class RadarSatDetails(object):
         -------
         ImageCreationType
         """
-
-        from sarpy.__about__ import __version__
-        processing_info = self._find('./imageGenerationParameters/generalProcessingInformation')
-        return ImageCreationType(
-            Application=processing_info.find('softwareVersion').text,
-            DateTime=processing_info.find('processingTime').text,
-            Site=processing_info.find('processingFacility').text,
-            Profile='sarpy {}'.format(__version__))
+        pass
 
     def _get_sicd_position(self, start_time: numpy.datetime64) -> PositionType:
         """
@@ -605,11 +386,7 @@ class RadarSatDetails(object):
         -------
         PositionType
         """
-
-        # convert to relative time for polynomial fitting
-        T = numpy.array([get_seconds(entry, start_time, precision='us') for entry in self._state_time], dtype='float64')
-        P_x, P_y, P_z = fit_position_xvalidation(T, self._state_position, self._state_velocity, max_degree=8)
-        return PositionType(ARPPoly=XYZPolyType(X=P_x, Y=P_y, Z=P_z))
+        pass
 
     @staticmethod
     def _parse_polarization(str_in: str) -> Tuple[str, str]:
@@ -624,23 +401,10 @@ class RadarSatDetails(object):
         -------
         (str, str)
         """
-
-        if len(str_in) != 2:
-            raise ValueError('Got input string of unexpected length {}'.format(str_in))
-
-        tx_pol = 'RHC' if str_in[0] == 'C' else str_in[0]
-        rcv_pol = 'RHC' if str_in[1] == 'C' else str_in[1]  # probably only H/V
-        return tx_pol, rcv_pol
+        pass
 
     def _get_sicd_polarizations(self) -> Tuple[List[str], List[str]]:
-        tx_pols = []
-        tx_rcv_pols = []
-        for entry in self._polarizations:
-            tx_pol, rcv_pol = self._parse_polarization(entry)
-            if tx_pol not in tx_pols:
-                tx_pols.append(tx_pol)
-            tx_rcv_pols.append('{}:{}'.format(tx_pol, rcv_pol))
-        return tx_pols, tx_rcv_pols
+        pass
 
     def _get_side_of_track(self) -> str:
         """
@@ -650,8 +414,7 @@ class RadarSatDetails(object):
         -------
         str
         """
-
-        return self._find('./sourceAttributes/radarParameters/antennaPointing').text[0].upper()
+        pass
 
     def _get_regular_sicd(self) -> Tuple[List[SICDType], List[str]]:
         """
@@ -664,481 +427,7 @@ class RadarSatDetails(object):
         sicds: List[SICDType]
         files: List[str]
         """
-
-        def get_image_and_geo_data() -> Tuple[ImageDataType, GeoDataType]:
-            if self.generation == 'RS2':
-                pixel_type = 'RE16I_IM16I'
-                cols = int(self._find('./imageAttributes/rasterAttributes/numberOfLines').text)
-                rows = int(self._find('./imageAttributes/rasterAttributes/numberOfSamplesPerLine').text)
-            elif self.generation == 'RCM':
-                cols = int(self._find('./sceneAttributes/imageAttributes/numLines').text)
-                rows = int(self._find('./sceneAttributes/imageAttributes/samplesPerLine').text)
-                bits_per_sample = self._find('./imageReferenceAttributes/rasterAttributes/bitsPerSample').text
-                if bits_per_sample == '32':
-                    pixel_type = 'RE32F_IM32F'
-                elif bits_per_sample == '16':
-                    pixel_type = 'RE16I_IM16I'
-                else:
-                    raise ValueError('Got unhandled bites per sample {}'.format(bits_per_sample))
-            else:
-                raise ValueError(_unhandled_generation_text.format(self.generation))
-            scp_rows = int(0.5*rows)
-            scp_cols = int(0.5*cols)
-            scp_ecf = self._get_image_location(scp_cols, scp_rows)
-            im_data = ImageDataType(
-                NumRows=rows, NumCols=cols, FirstRow=0, FirstCol=0, PixelType=pixel_type,
-                FullImage=(rows, cols), SCPPixel=(scp_rows, scp_cols))
-            t_geo_data = GeoDataType(SCP=SCPType(ECF=scp_ecf))
-            return im_data, t_geo_data
-
-        def get_grid_row() -> DirParamType:
-            if self.generation == 'RS2':
-                row_ss = float(self._find('./imageAttributes/rasterAttributes/sampledPixelSpacing').text)
-                row_irbw = 2*float(self._find('./imageGenerationParameters'
-                                              '/sarProcessingInformation'
-                                              '/totalProcessedRangeBandwidth').text)/speed_of_light
-            elif self.generation == 'RCM':
-                row_ss = float(self._find('./imageReferenceAttributes/rasterAttributes/sampledPixelSpacing').text)
-                row_irbw = 2*float(self._find('./sourceAttributes'
-                                              '/radarParameters'
-                                              '/pulseBandwidth').text)/speed_of_light
-            else:
-                raise ValueError(_unhandled_generation_text.format(self.generation))
-            row_wgt_type = WgtTypeType(
-                WindowName=self._find('./imageGenerationParameters'
-                                      '/sarProcessingInformation'
-                                      '/rangeWindow/windowName').text.upper())
-            if row_wgt_type.WindowName == 'KAISER':
-                row_wgt_type.Parameters = {
-                    'BETA': self._find('./imageGenerationParameters'
-                                       '/sarProcessingInformation'
-                                       '/rangeWindow/windowCoefficient').text}
-            return DirParamType(
-                SS=row_ss, ImpRespBW=row_irbw, Sgn=-1, KCtr=2*center_frequency/speed_of_light,
-                DeltaKCOAPoly=Poly2DType(Coefs=((0,),)), WgtType=row_wgt_type)
-
-        def get_grid_col() -> DirParamType:
-            az_win = self._find('./imageGenerationParameters/sarProcessingInformation/azimuthWindow')
-            col_wgt_type = WgtTypeType(WindowName=az_win.find('./windowName').text.upper())
-            if col_wgt_type.WindowName == 'KAISER':
-                col_wgt_type.Parameters = {'BETA': az_win.find('./windowCoefficient').text}
-            return DirParamType(Sgn=-1, KCtr=0, WgtType=col_wgt_type)
-
-        def get_radar_collection() -> RadarCollectionType:
-            radar_params = self._find('./sourceAttributes/radarParameters')
-            # Ultrafine and spotlight modes have t pulses, otherwise just one.
-            bandwidth_elements = sorted(radar_params.findall('pulseBandwidth'), key=lambda x: x.get('pulse'))
-            pulse_length_elements = sorted(radar_params.findall('pulseLength'), key=lambda x: x.get('pulse'))
-            adc_elements = sorted(radar_params.findall('adcSamplingRate'), key=lambda x: x.get('pulse'))
-            samples_per_echo = float(radar_params.find('samplesPerEchoLine').text)
-            wf_params = []
-            bandwidths = numpy.empty((len(bandwidth_elements),), dtype=numpy.float64)
-            for j, (bwe, ple, adce) in enumerate(zip(bandwidth_elements, pulse_length_elements, adc_elements)):
-                bandwidths[j] = float(bwe.text)
-                samp_rate = float(adce.text)
-                wf_params.append(WaveformParametersType(index=j,
-                                                        TxRFBandwidth=float(bwe.text),
-                                                        TxPulseLength=float(ple.text),
-                                                        ADCSampleRate=samp_rate,
-                                                        RcvWindowLength=samples_per_echo / samp_rate,
-                                                        RcvDemodType='CHIRP',
-                                                        RcvFMRate=0))
-            tot_bw = numpy.sum(bandwidths)
-            tx_freq = (center_frequency-0.5*tot_bw, center_frequency+0.5*tot_bw)
-            t_radar_collection = RadarCollectionType(TxFrequency=tx_freq, Waveform=wf_params)
-            t_radar_collection.Waveform[0].TxFreqStart = tx_freq[0]
-            for j in range(1, len(bandwidth_elements)):
-                t_radar_collection.Waveform[j].TxFreqStart = t_radar_collection.Waveform[j - 1].TxFreqStart + \
-                                                             t_radar_collection.Waveform[j - 1].TxRFBandwidth
-            t_radar_collection.RcvChannels = [
-                ChanParametersType(TxRcvPolarization=entry, index=j+1) for j, entry in enumerate(tx_rcv_pols)]
-            if len(tx_pols) == 1:
-                t_radar_collection.TxPolarization = tx_pols[0]
-            else:
-                t_radar_collection.TxPolarization = 'SEQUENCE'
-                t_radar_collection.TxSequence = [
-                    TxStepType(TxPolarization=entry, index=j+1) for j, entry in enumerate(tx_pols)]
-            return t_radar_collection
-
-        def get_timeline() -> TimelineType:
-            pulse_parts = len(self._findall('./sourceAttributes/radarParameters/pulseBandwidth'))
-            if self.generation == 'RS2':
-                pulse_rep_freq = float(
-                    self._find('./sourceAttributes/radarParameters/pulseRepetitionFrequency').text)
-            elif self.generation == 'RCM':
-                pulse_rep_freq = float(
-                    self._find('./sourceAttributes/radarParameters/prfInformation/pulseRepetitionFrequency').text)
-            else:
-                raise ValueError(_unhandled_generation_text.format(self.generation))
-
-            pulse_rep_freq *= pulse_parts
-            if pulse_parts == 2 and collection_info.RadarMode.ModeType == 'STRIPMAP':
-                # it's not completely clear why we need an additional factor of 2 for strip map
-                pulse_rep_freq *= 2
-            lines_processed = [
-                float(entry.text) for entry in
-                self._findall('./imageGenerationParameters/sarProcessingInformation/numberOfLinesProcessed')]
-            duration = None
-            ipp = None
-            # there should be one entry of num_lines_processed for each transmit/receive polarization
-            # and they should all be the same. Omit if this is not the case.
-            if (len(lines_processed) == len(tx_rcv_pols)) and all(x == lines_processed[0] for x in lines_processed):
-                num_lines_processed = lines_processed[0] * len(tx_pols)
-                duration = num_lines_processed / pulse_rep_freq
-                ipp = IPPSetType(
-                    index=0, TStart=0, TEnd=duration, IPPStart=0, IPPEnd=int(num_lines_processed),
-                    IPPPoly=Poly1DType(Coefs=(0, pulse_rep_freq)))
-            return TimelineType(
-                CollectStart=collect_start, CollectDuration=duration, IPP=[ipp, ])
-
-        def get_image_formation() -> ImageFormationType:
-            pulse_parts = len(self._findall('./sourceAttributes/radarParameters/pulseBandwidth'))
-            return ImageFormationType(
-                # PRFScaleFactor for either polarimetric or multi-step, but not both.
-                RcvChanProc=RcvChanProcType(
-                    NumChanProc=1, PRFScaleFactor=1./max(pulse_parts, len(tx_pols))),
-                ImageFormAlgo='RMA',
-                TStartProc=timeline.IPP[0].TStart,
-                TEndProc=timeline.IPP[0].TEnd,
-                TxFrequencyProc=(
-                    radar_collection.TxFrequency.Min, radar_collection.TxFrequency.Max),
-                STBeamComp='GLOBAL',
-                ImageBeamComp='SV',
-                AzAutofocus='NO',
-                RgAutofocus='NO')
-
-        def get_rma_adjust_grid() -> RMAType:
-            # fetch all the things needed below
-            # generation agnostic
-            doppler_bandwidth = float(
-                self._find('./imageGenerationParameters'
-                           '/sarProcessingInformation'
-                           '/totalProcessedAzimuthBandwidth').text)
-            zero_dop_last_line = \
-                parse_timestring(
-                    self._find('./imageGenerationParameters'
-                               '/sarProcessingInformation'
-                               '/zeroDopplerTimeLastLine').text,
-                    precision='us')
-            zero_dop_first_line = parse_timestring(
-                self._find('./imageGenerationParameters'
-                           '/sarProcessingInformation'
-                           '/zeroDopplerTimeFirstLine').text,
-                precision='us')
-            if self.generation == 'RS2':
-                near_range = float(
-                    self._find('./imageGenerationParameters'
-                               '/sarProcessingInformation'
-                               '/slantRangeNearEdge').text)
-
-                doppler_rate_node = self._find('./imageGenerationParameters'
-                                               '/dopplerRateValues')
-                doppler_rate_coeffs = numpy.array(
-                    [float(entry) for entry in doppler_rate_node.find('./dopplerRateValuesCoefficients').text.split()],
-                    dtype='float64')
-
-                doppler_centroid_node = self._find('./imageGenerationParameters'
-                                                   '/dopplerCentroid')
-            elif self.generation == 'RCM':
-                near_range = float(
-                    self._find('./sceneAttributes/imageAttributes/slantRangeNearEdge').text)
-
-                doppler_rate_node = self._find('./dopplerRate'
-                                               '/dopplerRateEstimate')
-                doppler_rate_coeffs = numpy.array(
-                    [float(entry) for entry in doppler_rate_node.find('./dopplerRateCoefficients').text.split()],
-                    dtype='float64')
-
-                doppler_centroid_node = self._find('./dopplerCentroid'
-                                                   '/dopplerCentroidEstimate')
-            else:
-                raise ValueError(_unhandled_generation_text.format(self.generation))
-
-            doppler_rate_ref_time = float(doppler_rate_node.find('./dopplerRateReferenceTime').text)
-            doppler_cent_coeffs = numpy.array(
-                [float(entry) for entry in
-                 doppler_centroid_node.find('./dopplerCentroidCoefficients').text.split()],
-                dtype='float64')
-            doppler_cent_ref_time = float(
-                doppler_centroid_node.find('./dopplerCentroidReferenceTime').text)
-            doppler_cent_time_est = parse_timestring(
-                doppler_centroid_node.find('./timeOfDopplerCentroidEstimate').text, precision='us')
-
-            look = scpcoa.look
-            if look > 0:
-                # SideOfTrack == 'L'
-                # we explicitly want negative time order
-                if zero_dop_first_line < zero_dop_last_line:
-                    zero_dop_first_line, zero_dop_last_line = zero_dop_last_line, zero_dop_first_line
-            else:
-                # we explicitly want positive time order
-                if zero_dop_first_line > zero_dop_last_line:
-                    zero_dop_first_line, zero_dop_last_line = zero_dop_last_line, zero_dop_first_line
-            col_spacing_zd = get_seconds(zero_dop_last_line, zero_dop_first_line, precision='us') / \
-                (image_data.NumCols - 1)
-            # zero doppler time of SCP relative to collect start
-            time_scp_zd = get_seconds(zero_dop_first_line, collect_start, precision='us') + \
-                image_data.SCPPixel.Col * col_spacing_zd
-
-            inca = INCAType(
-                R_CA_SCP=near_range + (image_data.SCPPixel.Row * grid.Row.SS),
-                FreqZero=center_frequency)
-            # doppler rate calculations
-            velocity = position.ARPPoly.derivative_eval(time_scp_zd, 1)
-            vel_ca_squared = numpy.sum(velocity * velocity)
-            # polynomial representing range as a function of range distance from SCP
-            r_ca = numpy.array([inca.R_CA_SCP, 1], dtype=numpy.float64)
-
-            # the doppler_rate_coeffs represents a polynomial in time, relative to
-            #   doppler_rate_ref_time.
-            # to construct the doppler centroid polynomial, we need to change scales
-            #   to a polynomial in space, relative to SCP.
-            doppler_rate_poly = Poly1DType(Coefs=doppler_rate_coeffs)
-            alpha = 2.0 / speed_of_light
-            t_0 = doppler_rate_ref_time - alpha * inca.R_CA_SCP
-            dop_rate_scaled_coeffs = doppler_rate_poly.shift(t_0, alpha, return_poly=False)
-            # DRateSFPoly is then a scaled multiple of this scaled poly and r_ca above
-            coeffs = -numpy.convolve(dop_rate_scaled_coeffs, r_ca) / (alpha * center_frequency * vel_ca_squared)
-            inca.DRateSFPoly = Poly2DType(Coefs=numpy.reshape(coeffs, (coeffs.size, 1)))
-
-            # modify a few of the other fields
-            ss_scale = abs(numpy.sqrt(vel_ca_squared)*inca.DRateSFPoly[0, 0])
-            grid.Col.SS = abs(col_spacing_zd*ss_scale)
-            grid.Col.ImpRespBW = doppler_bandwidth/ss_scale
-            inca.TimeCAPoly = Poly1DType(Coefs=[time_scp_zd, -look/ss_scale])
-
-            # doppler centroid
-            doppler_cent_poly = Poly1DType(Coefs=doppler_cent_coeffs)
-            alpha = 2.0 / speed_of_light
-            t_0 = doppler_cent_ref_time - alpha * inca.R_CA_SCP
-            scaled_coeffs = doppler_cent_poly.shift(t_0, alpha, return_poly=False)
-
-            # adjust doppler centroid for spotlight, we need to add a second
-            # dimension to DopCentroidPoly
-            if collection_info.RadarMode.ModeType == 'SPOTLIGHT':
-                doppler_cent_est = get_seconds(doppler_cent_time_est, collect_start, precision='us')
-                dop_poly = numpy.zeros((scaled_coeffs.shape[0], 2), dtype=numpy.float64)
-                dop_poly[0, 1] = -look*center_frequency*alpha*numpy.sqrt(vel_ca_squared)/inca.R_CA_SCP
-                dop_poly[1, 1] = -center_frequency*alpha*numpy.sqrt(vel_ca_squared)/(inca.R_CA_SCP ** 2)
-                one_way_time = inca.R_CA_SCP / speed_of_light
-                pos = position.ARPPoly(doppler_cent_est + one_way_time)
-                vel = position.ARPPoly.derivative_eval(doppler_cent_est + one_way_time)
-                los = geo_data.SCP.ECF.get_array() - pos
-                vel_hat = vel / numpy.linalg.norm(vel)
-                dop_poly[:, 0] += -look*(dop_poly[:, 1]*numpy.dot(los, vel_hat))
-                inca.DopCentroidPoly = Poly2DType(Coefs=dop_poly)
-            else:
-                inca.DopCentroidPoly = Poly2DType(Coefs=numpy.reshape(scaled_coeffs, (scaled_coeffs.size, 1)))
-
-            grid.Col.DeltaKCOAPoly = Poly2DType(Coefs=inca.DopCentroidPoly.get_array()*col_spacing_zd/grid.Col.SS)
-            # compute grid.Col.DeltaK1/K2 from DeltaKCOAPoly
-            coeffs = grid.Col.DeltaKCOAPoly.get_array()[:, 0]
-            # get roots
-            roots = polynomial.polyroots(coeffs)
-            # construct range bounds (in meters)
-            range_bounds = (numpy.array([0, image_data.NumRows - 1], dtype=numpy.float64)
-                            - image_data.SCPPixel.Row) * grid.Row.SS
-            possible_ranges = numpy.copy(range_bounds)
-            useful_roots = ((roots > numpy.min(range_bounds)) & (roots < numpy.max(range_bounds)))
-            if numpy.any(useful_roots):
-                possible_ranges = numpy.concatenate((possible_ranges, roots[useful_roots]), axis=0)
-            azimuth_bounds = (numpy.array([0, (image_data.NumCols - 1)], dtype=numpy.float64)
-                              - image_data.SCPPixel.Col) * grid.Col.SS
-            coords_az_2d, coords_rg_2d = numpy.meshgrid(azimuth_bounds, possible_ranges)
-            possible_bounds_deltak = grid.Col.DeltaKCOAPoly(coords_rg_2d, coords_az_2d)
-            grid.Col.DeltaK1 = numpy.min(possible_bounds_deltak) - 0.5 * grid.Col.ImpRespBW
-            grid.Col.DeltaK2 = numpy.max(possible_bounds_deltak) + 0.5 * grid.Col.ImpRespBW
-            # Wrapped spectrum
-            if (grid.Col.DeltaK1 < -0.5 / grid.Col.SS) or (grid.Col.DeltaK2 > 0.5 / grid.Col.SS):
-                grid.Col.DeltaK1 = -0.5 / abs(grid.Col.SS)
-                grid.Col.DeltaK2 = -grid.Col.DeltaK1
-            time_coa_poly = fit_time_coa_polynomial(inca, image_data, grid, dop_rate_scaled_coeffs, poly_order=2)
-            if collection_info.RadarMode.ModeType == 'SPOTLIGHT':
-                # using above was convenience, but not really sensible in spotlight mode
-                grid.TimeCOAPoly = Poly2DType(Coefs=[[time_coa_poly.Coefs[0, 0], ], ])
-                inca.DopCentroidPoly = None
-            elif collection_info.RadarMode.ModeType == 'STRIPMAP':
-                # fit TimeCOAPoly for grid
-                grid.TimeCOAPoly = time_coa_poly
-                inca.DopCentroidCOA = True
-            else:
-                raise ValueError('unhandled ModeType {}'.format(collection_info.RadarMode.ModeType))
-            return RMAType(RMAlgoType='OMEGA_K', INCA=inca)
-
-        def get_radiometric() -> Optional[RadiometricType]:
-            def perform_radiometric_fit(component_file: str) -> numpy.ndarray:
-                comp_struct = _parse_xml(component_file, without_ns=(self.generation != 'RS2'))
-                comp_values = numpy.array(
-                    [float(entry) for entry in comp_struct.find('./gains').text.split()], dtype='float64')
-                comp_values = 1. / (comp_values * comp_values)  # adjust for sicd convention
-                if numpy.all(comp_values == comp_values[0]):
-                    return numpy.array([[comp_values[0], ], ], dtype=numpy.float64)
-                else:
-                    # fit a 1-d polynomial in range
-                    if self.generation == 'RS2':
-                        coords_rg = \
-                            (numpy.arange(image_data.NumRows) - image_data.SCPPixel.Row + image_data.FirstRow)\
-                            * grid.Row.SS
-                    elif self.generation == 'RCM':  # the rows are sub-sampled
-                        start = int(comp_struct.find('./pixelFirstLutValue').text)
-                        num_vs = int(comp_struct.find('./numberOfValues').text)
-                        t_step = int(comp_struct.find('./stepSize').text)
-                        rng_indices = start + numpy.arange(num_vs)*t_step
-                        coords_rg = (rng_indices - image_data.SCPPixel.Row + image_data.FirstRow) * grid.Row.SS
-                    else:
-                        raise ValueError('Unhandled generation {}'.format(self.generation))
-
-                    return numpy.reshape(polynomial.polyfit(coords_rg, comp_values, 3), (-1, 1))
-
-            base_path = os.path.dirname(self.file_name)
-            if self.generation == 'RS2':
-                beta_file = os.path.join(
-                    base_path,
-                    self._find(
-                        './imageAttributes/lookupTable[@incidenceAngleCorrection="Beta Nought"]').text)
-                sigma_file = os.path.join(
-                    base_path,
-                    self._find(
-                        './imageAttributes/lookupTable[@incidenceAngleCorrection="Sigma Nought"]').text)
-                gamma_file = os.path.join(
-                    base_path,
-                    self._find('./imageAttributes/lookupTable[@incidenceAngleCorrection="Gamma"]').text)
-            elif self.generation == 'RCM':
-                beta_file = os.path.join(
-                    base_path, 'calibration',
-                    self._find(
-                        './imageReferenceAttributes/lookupTableFileName[@sarCalibrationType="Beta Nought"]').text)
-                sigma_file = os.path.join(
-                    base_path, 'calibration',
-                    self._find(
-                        './imageReferenceAttributes/lookupTableFileName[@sarCalibrationType="Sigma Nought"]').text)
-                gamma_file = os.path.join(
-                    base_path, 'calibration',
-                    self._find(
-                        './imageReferenceAttributes/lookupTableFileName[@sarCalibrationType="Gamma"]').text)
-            else:
-                raise ValueError(_unhandled_generation_text.format(self.generation))
-
-            if not os.path.isfile(beta_file):
-                logger.error(
-                    msg="Beta calibration information should be located in file {}, "
-                        "which doesn't exist.".format(beta_file))
-                return None
-
-            # perform beta, sigma, gamma fit
-            beta_zero_sf_poly = perform_radiometric_fit(beta_file)
-            sigma_zero_sf_poly = perform_radiometric_fit(sigma_file)
-            gamma_zero_sf_poly = perform_radiometric_fit(gamma_file)
-
-            # construct noise poly
-            noise_level = None
-            if self.generation == 'RS2':
-                # noise is in the main product.xml
-                beta0_element = self._find('./sourceAttributes/radarParameters'
-                                           '/referenceNoiseLevel[@incidenceAngleCorrection="Beta Nought"]')
-            elif self.generation == 'RCM':
-                noise_file = os.path.join(
-                    base_path, 'calibration',
-                    self._find('./imageReferenceAttributes/noiseLevelFileName').text)
-                noise_root = _parse_xml(noise_file, without_ns=True)
-                noise_levels = noise_root.findall('./referenceNoiseLevel')
-                beta0s = [entry for entry in noise_levels if entry.find('sarCalibrationType').text.startswith('Beta')]
-                beta0_element = beta0s[0] if len(beta0s) > 0 else None
-            else:
-                raise ValueError(_unhandled_generation_text.format(self.generation))
-
-            if beta0_element is not None:
-                pfv = float(beta0_element.find('pixelFirstNoiseValue').text)
-                step = float(beta0_element.find('stepSize').text)
-                beta0s = numpy.array(
-                    [float(x) for x in beta0_element.find('noiseLevelValues').text.split()])
-                range_coords = grid.Row.SS * (numpy.arange(len(beta0s)) * step + pfv - image_data.SCPPixel.Row)
-                noise_poly = polynomial.polyfit(
-                    range_coords,
-                    beta0s - 10 * numpy.log10(polynomial.polyval(range_coords, beta_zero_sf_poly[:, 0])), 2)
-                noise_level = NoiseLevelType_(
-                    NoiseLevelType='ABSOLUTE',
-                    NoisePoly=Poly2DType(Coefs=numpy.reshape(noise_poly, (-1, 1))))
-
-            return RadiometricType(BetaZeroSFPoly=beta_zero_sf_poly,
-                                   SigmaZeroSFPoly=sigma_zero_sf_poly,
-                                   GammaZeroSFPoly=gamma_zero_sf_poly,
-                                   NoiseLevel=noise_level)
-
-        def correct_scp() -> None:
-            scp_pixel = base_sicd.ImageData.SCPPixel.get_array()
-            scp_ecf = base_sicd.project_image_to_ground(scp_pixel, projection_type='HAE')
-            base_sicd.update_scp(scp_ecf, coord_system='ECF')
-
-        def get_data_file_names() -> List[str]:
-            base_path = os.path.dirname(self.file_name)
-            image_files = []
-            if self.generation == 'RS2':
-                for pol in self._polarizations:
-                    fname = self._find('./imageAttributes/fullResolutionImageData[@pole="{}"]'.format(pol))
-                    if fname is None:
-                        raise ValueError('Got unexpected image file structure.')
-                    image_files.append(os.path.join(base_path, fname.text))
-            else:
-                img_attribute_node = self._find('./sceneAttributes/imageAttributes')
-                results = img_attribute_node.findall('./ipdf')
-
-                if len(results) == 1:
-                    # there's either a single polarization, or it's one of the NITF files
-                    image_files.append(os.path.join(base_path, results[0].text))
-                else:
-                    for pol in self._polarizations:
-                        fname = None
-                        for entry in results:
-                            if entry.attrib.get('pole', None) == pol:
-                                fname = entry.text
-                        if fname is None:
-                            raise ValueError('Got unexpected image file structure.')
-                        image_files.append(os.path.join(base_path, fname))
-            return image_files
-
-        center_frequency = float(self._find('./sourceAttributes/radarParameters/radarCenterFrequency').text)
-        collect_start = parse_timestring(self._find('./sourceAttributes/rawDataStartTime').text)
-        tx_pols, tx_rcv_pols = self._get_sicd_polarizations()
-
-        nitf, collection_info = self._get_sicd_collection_info(collect_start)
-        image_creation = self._get_sicd_image_creation()
-        position = self._get_sicd_position(collect_start)
-        image_data, geo_data = get_image_and_geo_data()
-        grid = GridType(ImagePlane='SLANT', Type='RGZERO', Row=get_grid_row(), Col=get_grid_col())
-        radar_collection = get_radar_collection()
-        timeline = get_timeline()
-        image_formation = get_image_formation()
-        scpcoa = SCPCOAType(SideOfTrack=self._get_side_of_track())
-        rma = get_rma_adjust_grid()
-        radiometric = get_radiometric()
-        base_sicd = SICDType(
-            CollectionInfo=collection_info,
-            ImageCreation=image_creation,
-            GeoData=geo_data,
-            ImageData=image_data,
-            Position=position,
-            Grid=grid,
-            RadarCollection=radar_collection,
-            Timeline=timeline,
-            ImageFormation=image_formation,
-            SCPCOA=scpcoa,
-            RMA=rma,
-            Radiometric=radiometric,
-            _NITF=nitf)
-        correct_scp()
-        base_sicd.derive()  # derive all the fields
-        base_sicd.populate_rniirs(override=False)
-        # now, make one copy per polarimetric entry, as appropriate
-        the_files = get_data_file_names()
-
-        the_sicds = []
-        for i, (original_pol, sicd_pol) in enumerate(zip(self._polarizations, tx_rcv_pols)):
-            this_sicd = base_sicd.copy()
-            this_sicd.ImageFormation.RcvChanProc.ChanIndices = [i+1, ]
-            this_sicd.ImageFormation.TxRcvPolarizationProc = sicd_pol
-            the_sicds.append(this_sicd)
-        return the_sicds, the_files
+        pass
 
     def _get_scansar_sicd(self, beam: str, burst: str) -> Tuple[List[SICDType], List[str]]:
         """
@@ -1156,397 +445,7 @@ class RadarSatDetails(object):
         sicds: List[SICDType]
         files: List[str]
         """
-
-        def get_image_and_geo_data() -> Tuple[ImageDataType, GeoDataType, int]:
-            img_attributes = self._find('./sceneAttributes/imageAttributes[@burst="{}"]'.format(burst))
-            sample_offset = int(img_attributes.find('./pixelOffset').text)
-            line_offset = int(img_attributes.find('./lineOffset').text)
-            cols = int(img_attributes.find('./numLines').text)
-            rows = int(img_attributes.find('./samplesPerLine').text)
-            bits_per_sample = self._find('./imageReferenceAttributes/rasterAttributes/bitsPerSample').text
-            if bits_per_sample == '32':
-                pixel_type = 'RE32F_IM32F'
-            elif bits_per_sample == '16':
-                pixel_type = 'RE16I_IM16I'
-            else:
-                raise ValueError('Got unhandled bites per sample {}'.format(bits_per_sample))
-            scp_rows = int(0.5*rows)
-            scp_cols = int(0.5*cols)
-            scp_ecf = self._get_image_location(scp_cols+line_offset, scp_rows+sample_offset)
-            im_data = ImageDataType(
-                NumRows=rows, NumCols=cols, FirstRow=0, FirstCol=0, PixelType=pixel_type,
-                FullImage=(rows, cols), SCPPixel=(scp_rows, scp_cols))
-            t_geo_data = GeoDataType(SCP=SCPType(ECF=scp_ecf))
-            return im_data, t_geo_data, sample_offset
-
-        def get_grid_row() -> DirParamType:
-            row_ss = float(self._find('./imageReferenceAttributes/rasterAttributes/sampledPixelSpacing').text)
-            row_irbw = 2*float(self._find('./sourceAttributes'
-                                          '/radarParameters'
-                                          '/pulseBandwidth[@beam="{}"]'.format(beam)).text)/speed_of_light
-            row_wgt_type = WgtTypeType(
-                WindowName=self._find('./imageGenerationParameters'
-                                      '/sarProcessingInformation'
-                                      '/rangeWindow'
-                                      '/windowName').text.upper())
-            if row_wgt_type.WindowName == 'KAISER':
-                row_wgt_type.Parameters = {
-                    'BETA': self._find('./imageGenerationParameters'
-                                       '/sarProcessingInformation'
-                                       '/rangeWindow'
-                                       '/windowCoefficient').text}
-            return DirParamType(
-                SS=row_ss, ImpRespBW=row_irbw, Sgn=-1, KCtr=2*center_frequency/speed_of_light,
-                DeltaKCOAPoly=Poly2DType(Coefs=((0,),)), WgtType=row_wgt_type)
-
-        def get_grid_col() -> DirParamType:
-            az_win = self._find(
-                './imageGenerationParameters/sarProcessingInformation/azimuthWindow[@beam="{}"]'.format(beam))
-            col_wgt_type = WgtTypeType(WindowName=az_win.find('./windowName').text.upper())
-            if col_wgt_type.WindowName == 'KAISER':
-                col_wgt_type.Parameters = {'BETA': az_win.find('./windowCoefficient').text}
-
-            return DirParamType(Sgn=-1, KCtr=0, WgtType=col_wgt_type)
-
-        def get_radar_collection() -> RadarCollectionType:
-            radar_params = self._find('./sourceAttributes/radarParameters')
-            # Ultrafine and spotlight modes have t pulses, otherwise just one.
-            bandwidth_elements = sorted(
-                radar_params.findall('pulseBandwidth[@beam="{}"]'.format(beam)), key=lambda x: x.get('pulse'))
-            pulse_length_elements = sorted(
-                radar_params.findall('pulseLength[@beam="{}"]'.format(beam)), key=lambda x: x.get('pulse'))
-            adc_elements = sorted(
-                radar_params.findall('adcSamplingRate[@beam="{}"]'.format(beam)), key=lambda x: x.get('pulse'))
-            samples_per_echo = float(
-                radar_params.find('samplesPerEchoLine[@beam="{}"]'.format(beam)).text)
-            wf_params = []
-            bandwidths = numpy.empty((len(bandwidth_elements),), dtype=numpy.float64)
-            for j, (bwe, ple, adce) in enumerate(zip(bandwidth_elements, pulse_length_elements, adc_elements)):
-                bandwidths[j] = float(bwe.text)
-                samp_rate = float(adce.text)
-                wf_params.append(WaveformParametersType(index=j,
-                                                        TxRFBandwidth=float(bwe.text),
-                                                        TxPulseLength=float(ple.text),
-                                                        ADCSampleRate=samp_rate,
-                                                        RcvWindowLength=samples_per_echo / samp_rate,
-                                                        RcvDemodType='CHIRP',
-                                                        RcvFMRate=0))
-            tot_bw = numpy.sum(bandwidths)
-            tx_freq = (center_frequency-0.5*tot_bw, center_frequency+0.5*tot_bw)
-            t_radar_collection = RadarCollectionType(TxFrequency=tx_freq, Waveform=wf_params)
-            t_radar_collection.Waveform[0].TxFreqStart = tx_freq[0]
-            for j in range(1, len(bandwidth_elements)):
-                t_radar_collection.Waveform[j].TxFreqStart = t_radar_collection.Waveform[j - 1].TxFreqStart + \
-                                                             t_radar_collection.Waveform[j - 1].TxRFBandwidth
-            t_radar_collection.RcvChannels = [
-                ChanParametersType(TxRcvPolarization=entry, index=j+1) for j, entry in enumerate(tx_rcv_pols)]
-            if len(tx_pols) == 1:
-                t_radar_collection.TxPolarization = tx_pols[0]
-            else:
-                t_radar_collection.TxPolarization = 'SEQUENCE'
-                t_radar_collection.TxSequence = [
-                    TxStepType(TxPolarization=entry, index=j+1) for j, entry in enumerate(tx_pols)]
-            return t_radar_collection
-
-        def get_timeline():
-            # type: () -> TimelineType
-            ipp = IPPSetType(
-                index=0, TStart=0, TEnd=processing_time_span,
-                IPPStart=0, IPPEnd=num_of_pulses - 1,
-                IPPPoly=Poly1DType(Coefs=(0, pulse_rep_freq)))
-
-            return TimelineType(
-                CollectStart=collect_start,
-                CollectDuration=processing_time_span,
-                IPP=[ipp, ])
-
-        def get_image_formation() -> ImageFormationType:
-            pulse_parts = len(
-                self._findall('./sourceAttributes/radarParameters/pulseBandwidth[@beam="{}"]'.format(beam)))
-            return ImageFormationType(
-                # PRFScaleFactor for either polarimetric or multi-step, but not both.
-                RcvChanProc=RcvChanProcType(
-                    NumChanProc=1, PRFScaleFactor=1./max(pulse_parts, len(tx_pols))),
-                ImageFormAlgo='RMA',
-                TStartProc=timeline.IPP[0].TStart,
-                TEndProc=timeline.IPP[0].TEnd,
-                TxFrequencyProc=(
-                    radar_collection.TxFrequency.Min, radar_collection.TxFrequency.Max),
-                STBeamComp='GLOBAL',
-                ImageBeamComp='SV',
-                AzAutofocus='NO',
-                RgAutofocus='NO')
-
-        def get_rma_adjust_grid() -> RMAType:
-            sar_processing_info = self._find('./imageGenerationParameters/sarProcessingInformation')
-
-            doppler_bandwidth = float(sar_processing_info.find('./totalProcessedAzimuthBandwidth').text)
-            zero_dop_last_line = parse_timestring(
-                sar_processing_info.find('./zeroDopplerTimeLastLine').text, precision='us')
-            zero_dop_first_line = parse_timestring(
-                sar_processing_info.find('./zeroDopplerTimeFirstLine').text, precision='us')
-
-            # doppler rate coefficients
-            doppler_rate_coeffs = numpy.array(
-                [float(entry) for entry in dop_rate_estimate_node.find('./dopplerRateCoefficients').text.split()],
-                dtype='float64')
-            doppler_rate_ref_time = float(dop_rate_estimate_node.find('./dopplerRateReferenceTime').text)
-
-            col_spacing_zd = \
-                get_seconds(zero_dop_last_line, zero_dop_first_line, precision='us')/self._num_lines_processed
-            # NB: this will be negative for Ascending
-
-            # zero doppler time of SCP relative to collect start
-            time_scp_zd = 0.5*processing_time_span
-
-            r_ca_scp = numpy.linalg.norm(position.ARPPoly(time_scp_zd) - geo_data.SCP.ECF.get_array())
-            inca = INCAType(R_CA_SCP=r_ca_scp, FreqZero=center_frequency)
-            # doppler rate calculations
-            velocity = position.ARPPoly.derivative_eval(time_scp_zd, der_order=1)
-            vel_ca_squared = numpy.sum(velocity * velocity)
-            # polynomial representing range as a function of range distance from SCP
-            r_ca = numpy.array([inca.R_CA_SCP, 1], dtype='float64')
-
-            # the doppler_rate_coeffs represents a polynomial in time, relative to
-            #   doppler_rate_ref_time.
-            # to construct the doppler centroid polynomial, we need to change scales
-            #   to a polynomial in space, relative to SCP.
-            doppler_rate_poly = Poly1DType(Coefs=doppler_rate_coeffs)
-            alpha = 2.0 / speed_of_light
-            t_0 = doppler_rate_ref_time - alpha*inca.R_CA_SCP
-            dop_rate_scaled_coeffs = doppler_rate_poly.shift(t_0, alpha, return_poly=False)
-            # DRateSFPoly is then a scaled multiple of this scaled poly and r_ca above
-            coeffs = -numpy.convolve(dop_rate_scaled_coeffs, r_ca) / (alpha * center_frequency * vel_ca_squared)
-            inca.DRateSFPoly = Poly2DType(Coefs=numpy.reshape(coeffs, (coeffs.size, 1)))
-
-            look = scpcoa.look
-
-            # modify a few of the other fields
-            ss_scale = abs(numpy.sqrt(vel_ca_squared)*inca.DRateSFPoly[0, 0])
-            grid.Col.SS = abs(col_spacing_zd*ss_scale)
-            grid.Col.ImpRespBW = doppler_bandwidth/ss_scale
-            inca.TimeCAPoly = Poly1DType(Coefs=[time_scp_zd, -look/ss_scale])
-
-            # doppler centroid
-            doppler_cent_coeffs = numpy.array(
-                [float(entry) for entry in
-                 dop_centroid_estimate_node.find('./dopplerCentroidCoefficients').text.split()],
-                dtype='float64')
-            doppler_cent_ref_time = float(
-                dop_centroid_estimate_node.find('./dopplerCentroidReferenceTime').text)
-
-            doppler_cent_poly = Poly1DType(Coefs=doppler_cent_coeffs)
-            alpha = 2.0 / speed_of_light
-            t_0 = doppler_cent_ref_time - alpha * inca.R_CA_SCP
-            scaled_coeffs = doppler_cent_poly.shift(t_0, alpha, return_poly=False)
-
-            # adjust doppler centroid for spotlight, we need to add a second
-            # dimension to DopCentroidPoly
-            if collection_info.RadarMode.ModeType == 'SPOTLIGHT':
-                doppler_cent_est = get_seconds(dop_centroid_est_time, collect_start, precision='us')
-                dop_poly = numpy.zeros((scaled_coeffs.shape[0], 2), dtype=numpy.float64)
-                dop_poly[0, 1] = -look*center_frequency*alpha*numpy.sqrt(vel_ca_squared)/inca.R_CA_SCP
-                dop_poly[1, 1] = -center_frequency*alpha*numpy.sqrt(vel_ca_squared)/(inca.R_CA_SCP**2)
-                one_way_time = inca.R_CA_SCP / speed_of_light
-                use_time = doppler_cent_est + one_way_time
-                pos = position.ARPPoly(use_time)
-                vel = position.ARPPoly.derivative_eval(use_time, der_order=1)
-                los = geo_data.SCP.ECF.get_array() - pos
-                vel_hat = vel / numpy.linalg.norm(vel)
-                dop_poly[:, 0] += -look*(dop_poly[:, 1]*numpy.dot(los, vel_hat))
-                inca.DopCentroidPoly = Poly2DType(Coefs=dop_poly)  # NB: this is set for use in fit-time_coa_poly
-            else:
-                raise ValueError('ScanSAR mode data should be SPOTLIGHT mode')
-
-            grid.Col.DeltaKCOAPoly = Poly2DType(Coefs=inca.DopCentroidPoly.get_array()*col_spacing_zd/grid.Col.SS)
-            # compute grid.Col.DeltaK1/K2 from DeltaKCOAPoly
-            coeffs = grid.Col.DeltaKCOAPoly.get_array()[:, 0]
-            # get roots
-            roots = polynomial.polyroots(coeffs)
-            # construct range bounds (in meters)
-            range_bounds = (numpy.array([0, image_data.NumRows - 1], dtype='float64')
-                            - image_data.SCPPixel.Row) * grid.Row.SS
-            possible_ranges = numpy.copy(range_bounds)
-            useful_roots = ((roots > numpy.min(range_bounds)) & (roots < numpy.max(range_bounds)))
-            if numpy.any(useful_roots):
-                possible_ranges = numpy.concatenate((possible_ranges, roots[useful_roots]), axis=0)
-            azimuth_bounds = (numpy.array([0, (image_data.NumCols - 1)], dtype='float64')
-                              - image_data.SCPPixel.Col) * grid.Col.SS
-            coords_az_2d, coords_rg_2d = numpy.meshgrid(azimuth_bounds, possible_ranges)
-            possible_bounds_deltak = grid.Col.DeltaKCOAPoly(coords_rg_2d, coords_az_2d)
-            grid.Col.DeltaK1 = numpy.min(possible_bounds_deltak) - 0.5 * grid.Col.ImpRespBW
-            grid.Col.DeltaK2 = numpy.max(possible_bounds_deltak) + 0.5 * grid.Col.ImpRespBW
-            # Wrapped spectrum
-            if (grid.Col.DeltaK1 < -0.5 / grid.Col.SS) or (grid.Col.DeltaK2 > 0.5 / grid.Col.SS):
-                grid.Col.DeltaK1 = -0.5 / abs(grid.Col.SS)
-                grid.Col.DeltaK2 = -grid.Col.DeltaK1
-            time_coa_poly = fit_time_coa_polynomial(inca, image_data, grid, dop_rate_scaled_coeffs, poly_order=2)
-            if collection_info.RadarMode.ModeType == 'SPOTLIGHT':
-                # using above was convenience, but not really sensible in spotlight mode
-                grid.TimeCOAPoly = Poly2DType(Coefs=[[time_coa_poly.Coefs[0, 0], ], ])
-                inca.DopCentroidPoly = None
-            else:
-                raise ValueError('ScanSAR mode data should be SPOTLIGHT mode')
-            return RMAType(RMAlgoType='OMEGA_K', INCA=inca)
-
-        def get_radiometric() -> Optional[RadiometricType]:
-            def perform_radiometric_fit(component_file: str) -> numpy.ndarray:
-                comp_struct = _parse_xml(component_file, without_ns=True)
-                comp_values = numpy.array(
-                    [float(entry) for entry in comp_struct.find('./gains').text.split()], dtype=numpy.float64)
-                comp_values = 1. / (comp_values * comp_values)  # adjust for sicd convention
-                if numpy.all(comp_values == comp_values[0]):
-                    return numpy.array([[comp_values[0], ], ], dtype=numpy.float64)
-                else:
-                    # fit a 1-d polynomial in range
-                    t_pfv = int(comp_struct.find('./pixelFirstLutValue').text)
-                    t_step = int(comp_struct.find('./stepSize').text)
-                    num_vs = int(comp_struct.find('./numberOfValues').text)
-                    t_range_inds = t_pfv + numpy.arange(num_vs)*t_step
-                    coords_rg = grid.Row.SS * (t_range_inds - (image_data.SCPPixel.Row + row_shift))
-                    return numpy.reshape(polynomial.polyfit(coords_rg, comp_values, 3), (-1, 1))
-
-            # NB: I am neglecting the difference in polarization for these
-            base_path = os.path.dirname(self.file_name)
-            beta_file = os.path.join(
-                base_path, 'calibration',
-                self._find('./imageReferenceAttributes/lookupTableFileName[@sarCalibrationType="Beta Nought"]').text)
-            sigma_file = os.path.join(
-                base_path, 'calibration',
-                self._find('./imageReferenceAttributes/lookupTableFileName[@sarCalibrationType="Sigma Nought"]').text)
-            gamma_file = os.path.join(
-                base_path, 'calibration',
-                self._find('./imageReferenceAttributes/lookupTableFileName[@sarCalibrationType="Gamma"]').text)
-            if not os.path.isfile(beta_file):
-                logger.error(
-                    msg="Beta calibration information should be located in file {}, "
-                        "which doesn't exist.".format(beta_file))
-                return None
-
-            # perform beta, sigma, gamma fit
-            beta_zero_sf_poly = perform_radiometric_fit(beta_file)
-            sigma_zero_sf_poly = perform_radiometric_fit(sigma_file)
-            gamma_zero_sf_poly = perform_radiometric_fit(gamma_file)
-
-            # construct noise poly, neglecting the polarization again
-            noise_level = None
-            noise_stem = self._find('./imageReferenceAttributes/noiseLevelFileName').text
-            noise_file = os.path.join(base_path, 'calibration', noise_stem)
-            noise_root = _parse_xml(noise_file, without_ns=True)
-
-            noise_levels = noise_root.findall('./perBeamReferenceNoiseLevel')
-            beta0s = [entry for entry in noise_levels if (entry.find('./sarCalibrationType').text.startswith('Beta')
-                                                          and entry.find('./beam').text == beam)]
-            beta0_element = beta0s[0] if len(beta0s) > 0 else None
-
-            if beta0_element is not None:
-                pfv = float(beta0_element.find('pixelFirstNoiseValue').text)
-                step = float(beta0_element.find('stepSize').text)
-                beta0s = numpy.array(
-                    [float(x) for x in beta0_element.find('noiseLevelValues').text.split()])
-                range_inds = pfv + numpy.arange(len(beta0s)) * step
-                range_coords = grid.Row.SS * (range_inds - (image_data.SCPPixel.Row + row_shift))
-                noise_value = beta0s - 10*numpy.log10(polynomial.polyval(range_coords, beta_zero_sf_poly[:, 0]))
-                noise_poly = polynomial.polyfit(range_coords, noise_value, 2)
-                noise_level = NoiseLevelType_(
-                    NoiseLevelType='ABSOLUTE',
-                    NoisePoly=Poly2DType(Coefs=numpy.reshape(noise_poly, (-1, 1))))
-
-            return RadiometricType(BetaZeroSFPoly=beta_zero_sf_poly,
-                                   SigmaZeroSFPoly=sigma_zero_sf_poly,
-                                   GammaZeroSFPoly=gamma_zero_sf_poly,
-                                   NoiseLevel=noise_level)
-
-        def correct_scp() -> None:
-            scp_pixel = base_sicd.ImageData.SCPPixel.get_array()
-            scp_ecf = base_sicd.project_image_to_ground(scp_pixel, projection_type='HAE')
-            base_sicd.GeoData.SCP.ECF = scp_ecf
-
-        def get_data_file_names() -> List[str]:
-            base_path = os.path.dirname(self.file_name)
-            image_files = []
-            img_attribute_node = self._find('./sceneAttributes/imageAttributes[@burst="{}"]'.format(burst))
-            results = img_attribute_node.findall('./ipdf')
-
-            if len(results) == 1:
-                # there's either a single polarization, or it's one of the NITF files
-                image_files.append(os.path.join(base_path, results[0].text))
-            else:
-                for pol in self._polarizations:
-                    fname = None
-                    for entry in results:
-                        if entry.attrib.get('pole', None) == pol:
-                            fname = entry.text
-                    if fname is None:
-                        raise ValueError('Got unexpected image file structure for burst {}'.format(burst))
-                    image_files.append(os.path.join(base_path, fname))
-            return image_files
-
-        if self.generation != 'RCM':
-            raise ValueError('Unhandled generation {}'.format(self.generation))
-
-        center_frequency = float(self._find('./sourceAttributes/radarParameters/radarCenterFrequency').text)
-        tx_pols, tx_rcv_pols = self._get_sicd_polarizations()
-
-        # extract some common use doppler information
-        num_of_pulses = int(
-            self._find(
-                './sourceAttributes/radarParameters/numberOfPulseIntervalsPerDwell[@beam="{}"]'.format(beam)).text)
-        # NB: I am neglecting that prfInformation is provided separately for pols data because
-        #   it appears identical
-        pulse_rep_freq = float(
-            self._find('./sourceAttributes'
-                       '/radarParameters'
-                       '/prfInformation[@beam="{}"]'.format(beam) +
-                       '/pulseRepetitionFrequency').text)
-        dop_rate_estimate_node = self._find(
-            './dopplerRate/dopplerRateEstimate[@burst="{}"]'.format(burst))
-        dop_centroid_estimate_node = self._find(
-            './dopplerCentroid/dopplerCentroidEstimate[@burst="{}"]'.format(burst))
-        dop_centroid_est_time = parse_timestring(
-            dop_centroid_estimate_node.find(
-                './timeOfDopplerCentroidEstimate').text, precision='us')
-        processing_time_span = (num_of_pulses - 1)/pulse_rep_freq  # in seconds
-        collect_start = dop_centroid_est_time - int(0.5*(processing_time_span*1000000))
-
-        nitf, collection_info = self._get_sicd_collection_info(collect_start)
-        image_creation = self._get_sicd_image_creation()
-        position = self._get_sicd_position(collect_start)
-        image_data, geo_data, row_shift = get_image_and_geo_data()
-        grid = GridType(ImagePlane='SLANT', Type='RGZERO', Row=get_grid_row(), Col=get_grid_col())
-        radar_collection = get_radar_collection()
-        timeline = get_timeline()
-        image_formation = get_image_formation()
-        scpcoa = SCPCOAType(SideOfTrack=self._get_side_of_track())
-        rma = get_rma_adjust_grid()
-        radiometric = get_radiometric()
-        base_sicd = SICDType(
-            CollectionInfo=collection_info,
-            ImageCreation=image_creation,
-            GeoData=geo_data,
-            ImageData=image_data,
-            Position=position,
-            Grid=grid,
-            RadarCollection=radar_collection,
-            Timeline=timeline,
-            ImageFormation=image_formation,
-            SCPCOA=scpcoa,
-            RMA=rma,
-            Radiometric=radiometric,
-            _NITF=nitf)
-        correct_scp()
-        base_sicd.derive()  # derive all the fields
-        base_sicd.populate_rniirs(override=False)
-        # now, make one copy per polarimetric entry, as appropriate
-        the_files = get_data_file_names()
-
-        the_sicds = []
-        for i, (original_pol, sicd_pol) in enumerate(zip(self._polarizations, tx_rcv_pols)):
-            this_sicd = base_sicd.copy()
-            this_sicd.ImageFormation.RcvChanProc.ChanIndices = [i+1, ]
-            this_sicd.ImageFormation.TxRcvPolarizationProc = sicd_pol
-            the_sicds.append(this_sicd)
-        return the_sicds, the_files
+        pass
 
     def get_sicd_collection(self) -> Tuple[List[List[SICDType]], List[List[str]]]:
         """
@@ -1557,19 +456,7 @@ class RadarSatDetails(object):
         sicds: List[List[SICDType]]
         files: List[List[str]]
         """
-
-        sicds = []
-        data_files = []
-        if self._bursts is None:
-            t_sicds, t_files = self._get_regular_sicd()
-            sicds.append(t_sicds)
-            data_files.append(t_files)
-        else:
-            for (beam, burst) in self._bursts:
-                t_sicds, t_files = self._get_scansar_sicd(beam, burst)
-                sicds.append(t_sicds)
-                data_files.append(t_files)
-        return sicds, data_files
+        pass
 
 
 ##############
@@ -1634,49 +521,18 @@ class RadarSatReader(SICDTypeReader):
         -------
         List[BaseChipper]
         """
-
-        data_segments = []
-        if len(sicds) == len(data_files):
-            for sicd, data_file in zip(sicds, data_files):
-                fext = os.path.splitext(data_file)[1]
-                if fext in ['.tiff', '.tif']:
-                    data_segments.append(_construct_tiff_segment(sicd, data_file, reverse_axes, transpose_axes))
-                elif fext in ['.nitf', '.ntf']:
-                    reader, segment = _construct_single_nitf_segment(sicd, data_file, reverse_axes, transpose_axes)
-                    self._other_reader = reader  # NB: maintain reference, to keep segment open
-                    data_segments.append(segment)
-                else:
-                    raise ValueError(
-                        'The radarsat reader requires image files in tiff or nitf format. '
-                        'Uncertain how to interpret file {}'.format(data_file))
-        elif len(data_files) == 1:
-            data_file = data_files[0]
-            fext = os.path.splitext(data_file)[1]
-            if fext not in ['.nitf', '.ntf']:
-                raise ValueError(
-                    'The radarsat has image data for multiple polarizations provided in a '
-                    'single image file. This requires an image files in nitf format. '
-                    'Uncertain how to interpret file {}'.format(data_file))
-            reader, segments = _construct_multiple_nitf_segment(sicds, data_file, reverse_axes, transpose_axes)
-            self._other_reader = reader  # NB: maintain reference, to keep segments open
-            data_segments.extend(segments)
-        else:
-            raise ValueError(
-                'Unclear how to construct chipper elements for {} sicd elements '
-                'from {} image files.'.format(len(sicds), len(data_files)))
-        return data_segments
+        pass
 
     @property
     def radarsat_details(self) -> RadarSatDetails:
         """
         RadarSarDetails: The RadarSat/RCM details object.
         """
-
-        return self._radar_sat_details
+        pass
 
     @property
     def file_name(self) -> str:
-        return self.radarsat_details.directory_name
+        pass
 
     def close(self) -> None:
         SICDTypeReader.close(self)
@@ -1700,13 +556,4 @@ def is_a(file_name: str) -> Optional[RadarSatReader]:
     RadarSatReader|None
         `RadarSatReader` instance if RadarSat file, `None` otherwise
     """
-
-    if is_file_like(file_name):
-        return None
-
-    try:
-        details = RadarSatDetails(file_name)
-        logger.info('Path {} is determined to be or contain a RadarSat or RCM product.xml file.'.format(file_name))
-        return RadarSatReader(details)
-    except SarpyIOError:
-        return None
+    pass

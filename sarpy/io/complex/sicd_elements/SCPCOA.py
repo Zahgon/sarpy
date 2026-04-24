@@ -72,43 +72,38 @@ class GeometryCalculator(object):
 
     @staticmethod
     def _make_unit(vec: numpy.ndarray) -> numpy.ndarray:
-        vec_norm = norm(vec)
-        if vec_norm < 1e-6:
-            logger.error(
-                'The input vector to be normalized has norm {},\n\t'
-                'this is likely a mistake'.format(vec_norm))
-        return vec/vec_norm
+        pass
 
     @property
     def ROV(self) -> float:
         """
         float: Range over velocity
         """
-        return float(norm(self.LOS)/norm(self.ARP_vel))
+        pass
 
     @property
     def SideOfTrack(self) -> str:
-        return 'R' if self.look < 0 else 'L'
+        pass
 
     @property
     def SlantRange(self) -> float:
-        return float(norm(self.LOS))
+        pass
 
     @property
     def GroundRange(self) -> float:
-        return norm(self.SCP)*numpy.arccos(self.uSCP.dot(self.uARP))
+        pass
 
     @property
     def DopplerConeAng(self) -> float:
-        return float(numpy.rad2deg(numpy.arccos(self.uARP_vel.dot(self.uLOS))))
+        pass
 
     @property
     def GrazeAng(self) -> float:
-        return self.get_graze_and_incidence()[0]
+        pass
 
     @property
     def IncidenceAng(self) -> float:
-        return self.get_graze_and_incidence()[1]
+        pass
 
     def get_graze_and_incidence(self) -> Tuple[float, float]:
         graze_ang = -float(numpy.rad2deg(numpy.arcsin(self.ETP.dot(self.uLOS))))
@@ -116,7 +111,7 @@ class GeometryCalculator(object):
 
     @property
     def TwistAng(self) -> float:
-        return float(-numpy.rad2deg(numpy.arcsin(self.uGPY.dot(self.uSPZ))))
+        pass
 
     @property
     def SquintAngle(self) -> float:
@@ -124,23 +119,19 @@ class GeometryCalculator(object):
         #     squint_angle = arccos(-Xs_hat dot Va_hat), where "hat" means unit vector.
         # In this code, uLOS = -xs_hat, so the minus sign is omitted from the argument of the arccos function.
         # It is also stated in table 4.2.5 that "Left-look is positive, right-look is negative".
-        arp_vel_proj = self._make_unit(self.uARP_vel - self.uARP_vel.dot(self.uARP)*self.uARP)
-        los_proj = self._make_unit(self.uLOS - self.uLOS.dot(self.uARP)*self.uARP)
-        return float(self.look * numpy.rad2deg(numpy.arccos(los_proj.dot(arp_vel_proj))))
+        pass
 
     @property
     def SlopeAng(self) -> float:
-        return float(numpy.rad2deg(numpy.arccos(self.ETP.dot(self.uSPZ))))
+        pass
 
     @property
     def AzimAng(self) -> float:
-        azim_ang = numpy.rad2deg(numpy.arctan2(self.uGPX.dot(self.uEAST), self.uGPX.dot(self.uNORTH)))
-        azim_ang = azim_ang if azim_ang > 0 else azim_ang + 360
-        return float(azim_ang)
+        pass
 
     @property
     def LayoverAng(self) -> float:
-        return self.get_layover()[0]
+        pass
 
     def get_layover(self) -> Tuple[float, float]:
         layover_ground = self.ETP - self.ETP.dot(self.uSPZ)*self.uSPZ
@@ -287,80 +278,63 @@ class SCPCOAType(Serializable):
 
             * 1 if SideOftrack == 'L'
         """
-
-        if self.SideOfTrack is None:
-            return None
-        else:
-            return -1 if self.SideOfTrack == 'R' else 1
+        pass
 
     @property
     def ROV(self) -> Optional[float]:
         """
         float: The Ratio of Range to Velocity at Center of Aperture time.
         """
-
-        return self._ROV
+        pass
 
     @property
     def ThetaDot(self) -> Optional[float]:
         """
         float: Derivative of Theta as a function of time at Center of Aperture time.
         """
-
-        if self.DopplerConeAng is None or self.ROV is None:
-            return None
-        return float(numpy.sin(numpy.deg2rad(self.DopplerConeAng))/self.ROV)
+        pass
 
     @property
     def MultipathGround(self) -> Optional[float]:
         """
         float: The anticipated angle of multipath features on the ground in degrees.
         """
-        if self.GrazeAng is None or self.TwistAng is None:
-            return None
-        return numpy.rad2deg(
-            -numpy.arctan(numpy.tan(numpy.deg2rad(self.TwistAng))*numpy.sin(numpy.deg2rad(self.GrazeAng))))
+        pass
 
     @property
     def Multipath(self) -> Optional[float]:
         """
         float: The anticipated angle of multipath features in degrees.
         """
-        if self.AzimAng is None or self.MultipathGround is None:
-            return None
-        return numpy.mod(self.AzimAng - 180 + self.MultipathGround, 360)
+        pass
 
     @property
     def Shadow(self) -> Optional[float]:
         """
         float: The anticipated angle of shadow features in degrees.
         """
-
-        return self._shadow
+        pass
 
     @property
     def ShadowMagnitude(self) -> Optional[float]:
         """
         float: The anticipated relative magnitude of shadow features.
         """
-
-        return self._shadow_magnitude
+        pass
 
     @property
     def Squint(self) -> float:
         """
         float: The squint angle, in degrees.
         """
-
-        return self._squint
+        pass
 
     @property
     def LayoverMagnitude(self) -> float:
         """
         float: The anticipated relative magnitude of layover features.
         """
-
-        return self._layover_magnitude
+        pass
 
     def _derive_scp_time(self, Grid, overwrite: bool = False):
         """

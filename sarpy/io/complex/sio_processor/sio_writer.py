@@ -147,21 +147,7 @@ class SIOWriter(object):
         """
         Private function: Given the numpy data type from the _image_data, set the data type code and size.
         """
-        match self._image_data.dtype.name:
-            case 'uint8':
-                self._data_type_code = 1
-                self._data_size      = 1
-            case 'int16':
-                self._data_type_code = 2
-                self._data_size      = 2
-            case 'float32':
-                self._data_type_code = 3
-                self._data_size      = 4
-            case 'complex64':
-                self._data_type_code = 13
-                self._data_size      = 8
-            case _ : #Default if other cases don't match
-                raise TypeError('Writer only recognizes floats, complex and signed or unsigned integers')
+        pass
                 
     def write(self):
         """

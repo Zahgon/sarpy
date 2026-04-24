@@ -400,17 +400,7 @@ def cphd_create_kmz_view(reader, output_directory, file_stem="view"):
 
             def _get_toa_point_ecf(initial_bp, toa_target):
                 def _errfunc(offset):
-                    pt_ecf = _bp_to_ecf(
-                        initial_bp[:, np.newaxis]
-                        + np.vstack([offset, np.zeros(len(offset))])
-                    )
-                    this_toa = _geom_to_toa(
-                        pt_ecf,
-                        pvp_array["TxPos"][index],
-                        pvp_array["RcvPos"][index],
-                        pvp_array["SRPPos"][index],
-                    )
-                    return np.abs(this_toa - toa_target)
+                    pass
 
                 res = scipy.optimize.minimize(_errfunc, 0, method="Nelder-Mead")
                 if res.success:

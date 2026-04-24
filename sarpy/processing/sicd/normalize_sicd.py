@@ -404,17 +404,11 @@ class DeskewCalculator(FullResolutionFetcher):
         """
         int: The dimension along which to perform the color subaperture split.
         """
-
-        return self._dimension
+        pass
 
     @dimension.setter
     def dimension(self, value) -> None:
-        value = int(value)
-        if value not in [0, 1]:
-            raise ValueError('dimension must be 0 or 1, got {}'.format(value))
-        self._dimension = value
-        if self._sicd is not None:
-            self._set_sicd(self._sicd)
+        pass
 
     def _set_index(self, value) -> None:
         value = int(value)
@@ -470,24 +464,22 @@ class DeskewCalculator(FullResolutionFetcher):
         """
         bool: Apply deskew to calculated value. This is for API completeness.
         """
-
-        return self._apply_deskew
+        pass
 
     @apply_deskew.setter
     def apply_deskew(self, value):
-        self._apply_deskew = (value is True)
+        pass
 
     @property
     def apply_deweighting(self) -> bool:
         """
         bool: Apply deweighting to calculated values.
         """
-
-        return self._apply_deweighting
+        pass
 
     @apply_deweighting.setter
     def apply_deweighting(self, value):
-        self._apply_deweighting = (value is True)
+        pass
 
     def _get_index_arrays(
             self,

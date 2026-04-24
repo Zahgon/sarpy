@@ -157,10 +157,7 @@ class BistaticRadarSensorType(Serializable):
         super(BistaticRadarSensorType, self).__init__(**kwargs)
 
     def version_required(self) -> Tuple[int, int, int]:
-        required = (1, 0, 1)
-        if self.DelayBias is not None:
-            required = max(required, (1, 1, 0))
-        return required
+        pass
 
 
 class MonostaticType(Serializable):
@@ -248,10 +245,7 @@ class PlatformType(Serializable):
         super(PlatformType, self).__init__(**kwargs)
 
     def version_required(self) -> Tuple[int, int, int]:
-        required = (1, 0, 1)
-        if self.RadarSensor is not None:
-            required = max(required, self.RadarSensor.version_required())
-        return required
+        pass
 
 
 class BistaticType(Serializable):
@@ -293,12 +287,7 @@ class BistaticType(Serializable):
         super(BistaticType, self).__init__(**kwargs)
 
     def version_required(self) -> Tuple[int, int, int]:
-        required = (1, 0, 1)
-        for fld in ['TxPlatform', 'RcvPlatform']:
-            val = getattr(self, fld)
-            if val is not None:
-                required = max(required, val.version_required())
-        return required
+        pass
 
 
 class ErrorParametersType(Serializable):
@@ -338,7 +327,4 @@ class ErrorParametersType(Serializable):
         super(ErrorParametersType, self).__init__(**kwargs)
 
     def version_required(self) -> Tuple[int, int, int]:
-        required = (1, 0, 1)
-        if self.Bistatic is not None:
-            required = max(required, self.Bistatic.version_required())
-        return required
+        pass

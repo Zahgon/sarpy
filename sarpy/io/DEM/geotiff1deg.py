@@ -45,29 +45,20 @@ class GeoTIFF1DegReader:
 
     @property
     def filename(self):
-        return self._filename
+        pass
 
     @property
     def dem_data(self):
-        if self._dem_data is None:
-            self._read()  # pragma no cover
-        return self._dem_data
+        pass
 
     @property
     def tiff_tags(self):
-        if self._tiff_tags is None:
-            self._read()  # pragma no cover
-        return self._tiff_tags
+        pass
 
     def _read(self):
         # Note: the dem_data must have dtype=np.float64 otherwise the interpolator
         # created by RegularGridInterpolator will raise a TypeError exception.
-        if Image is None or TiffTags is None:
-            raise ImportError("Reading GeoTIFF DEM requires the PIL library")
-
-        with Image.open(self._filename) as img:
-            self._tiff_tags = {TiffTags.TAGS[key]: val for key, val in img.tag.items()}
-            self._dem_data = np.asarray(img, dtype=np.float64)
+        pass
 
 
 class GeoTIFF1DegInterpolator(DEMInterpolator):
@@ -124,11 +115,11 @@ class GeoTIFF1DegInterpolator(DEMInterpolator):
 
     @property
     def interp_method(self):
-        return self._interp_method
+        pass
 
     @interp_method.setter
     def interp_method(self, val):
-        self._interp_method = str(val)
+        pass
 
     def _read_dem_file(self, filename):
         """

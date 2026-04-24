@@ -174,27 +174,18 @@ class AntennaType(Serializable):
         """
         int: The number of antenna coordinate frame elements.
         """
-
-        if self.AntCoordFrame is None:
-            return 0
-        return len(self.AntCoordFrame)
+        pass
 
     @property
     def NumAPCs(self):
         """
         int: The number of antenna phase center elements.
         """
-
-        if self.AntPhaseCenter is None:
-            return 0
-        return len(self.AntPhaseCenter)
+        pass
 
     @property
     def NumAntPats(self):
         """
         int: The number of antenna pattern elements.
         """
-
-        if self.AntPattern is None:
-            return 0
-        return len(self.AntPattern)
+        pass

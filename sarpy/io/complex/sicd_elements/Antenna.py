@@ -177,8 +177,7 @@ class AntParamType(Serializable):
         super(AntParamType, self).__init__(**kwargs)
 
     def _apply_reference_frequency(self, reference_frequency):
-        if self.FreqZero is not None:
-            self.FreqZero += reference_frequency
+        pass
 
 
 class AntennaType(Serializable):
@@ -233,13 +232,4 @@ class AntennaType(Serializable):
         -------
         None
         """
-
-        if self.Tx is not None:
-            # noinspection PyProtectedMember
-            self.Tx._apply_reference_frequency(reference_frequency)
-        if self.Rcv is not None:
-            # noinspection PyProtectedMember
-            self.Rcv._apply_reference_frequency(reference_frequency)
-        if self.TwoWay is not None:
-            # noinspection PyProtectedMember
-            self.TwoWay._apply_reference_frequency(reference_frequency)
+        pass

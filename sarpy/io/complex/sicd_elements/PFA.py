@@ -248,62 +248,7 @@ class PFAType(Serializable):
         -------
         None
         """
-
-        if self.PolarAngRefTime is None and SCPCOA.SCPTime is not None:
-            self.PolarAngRefTime = SCPCOA.SCPTime
-
-        if GeoData is None or GeoData.SCP is None or GeoData.SCP.ECF is None:
-            return
-
-        scp = GeoData.SCP.ECF.get_array()
-
-        if SCPCOA.ARPPos is not None and SCPCOA.ARPVel is not None:
-            scp = GeoData.SCP.ECF.get_array()
-            etp = geocoords.wgs_84_norm(scp)
-
-            arp = SCPCOA.ARPPos.get_array()
-            los = (scp - arp)
-            ulos = los/norm(los)
-
-            look = SCPCOA.look
-            arp_vel = SCPCOA.ARPVel.get_array()
-            uspz = look*numpy.cross(arp_vel, ulos)
-            uspz /= norm(uspz)
-            if Grid is not None and Grid.ImagePlane is not None:
-                if self.IPN is None:
-                    if Grid.ImagePlane == 'SLANT':
-                        self.IPN = XYZType.from_array(uspz)
-                    elif Grid.ImagePlane == 'GROUND':
-                        self.IPN = XYZType.from_array(etp)
-            elif self.IPN is None:
-                self.IPN = XYZType.from_array(uspz)  # assuming slant -> most common
-
-            if self.FPN is None:
-                self.FPN = XYZType.from_array(etp)
-
-        if Position is not None and \
-                Timeline is not None and Timeline.CollectDuration is not None and \
-                (self.PolarAngPoly is None or self.SpatialFreqSFPoly is None):
-            pol_ref_pos = Position.ARPPoly(self.PolarAngRefTime)
-            # fit the PFA polynomials
-            times = numpy.linspace(0, Timeline.CollectDuration, 15)
-            k_a, k_sf = self.pfa_polar_coords(Position, scp, times)
-
-            self.PolarAngPoly = Poly1DType(Coefs=polynomial.polyfit(times, k_a, 5, full=False))
-            self.SpatialFreqSFPoly = Poly1DType(Coefs=polynomial.polyfit(k_a, k_sf, 5, full=False))
-
-        if Grid is not None and Grid.Row is not None and \
-                Grid.Row.KCtr is not None and Grid.Row.ImpRespBW is not None:
-            if self.Krg1 is None:
-                self.Krg1 = Grid.Row.KCtr - 0.5*Grid.Row.ImpRespBW
-            if self.Krg2 is None:
-                self.Krg2 = Grid.Row.KCtr + 0.5*Grid.Row.ImpRespBW
-        if Grid is not None and Grid.Col is not None and \
-                Grid.Col.KCtr is not None and Grid.Col.ImpRespBW is not None:
-            if self.Kaz1 is None:
-                self.Kaz1 = Grid.Col.KCtr - 0.5*Grid.Col.ImpRespBW
-            if self.Kaz2 is None:
-                self.Kaz2 = Grid.Col.KCtr + 0.5*Grid.Col.ImpRespBW
+        pass
 
     def _check_polar_ang_ref(self):
         """

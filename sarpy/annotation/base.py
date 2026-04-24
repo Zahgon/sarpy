@@ -43,38 +43,29 @@ class GeometryProperties(Jsonable):
         """
         str: A unique identifier for the associated geometry element
         """
-
-        return self._uid
+        pass
 
     @property
     def name(self):
         """
         Optional[str]: The name
         """
-
-        return self._name
+        pass
 
     @name.setter
     def name(self, value):
-        if value is None or isinstance(value, str):
-            self._name = value
-        else:
-            raise TypeError('Got unexpected type of {} for name'.format(type(value)))
+        pass
 
     @property
     def color(self):
         """
         Optional[str]: The color
         """
-
-        return self._color
+        pass
 
     @color.setter
     def color(self, value):
-        if value is None or isinstance(value, str):
-            self._color = value
-        else:
-            raise TypeError('Got unexpected type of {} for color'.format(type(value)))
+        pass
 
     @classmethod
     def from_dict(cls, the_json):
@@ -168,47 +159,33 @@ class AnnotationProperties(Jsonable):
         """
         Optional[str]: The name
         """
-        return self._name
+        pass
 
     @name.setter
     def name(self, value):
-        if value is None or isinstance(value, str):
-            self._name = value
-        else:
-            raise TypeError(f'Got unexpected value of type {type(value)} for name')
+        pass
 
     @property
     def description(self):
         """
         Optional[str]: The description
         """
-        return self._description
+        pass
 
     @description.setter
     def description(self, value):
-        if value is None or isinstance(value, str):
-            self._description = value
-        else:
-            raise TypeError(f'Got unexpected value of type {type(value)} for description')
+        pass
 
     @property
     def directory(self):
         """
         Optional[str]: The directory - for basic display and/or subdivision purposes
         """
-        return self._directory
+        pass
 
     @directory.setter
     def directory(self, value):
-        if value is None:
-            self._directory = None
-            return
-
-        if not isinstance(value, str):
-            raise TypeError(f'Got unexpected value of type {type(value)} for directory')
-
-        parts = [entry.strip() for entry in value.split('/')]
-        self._directory = '/'.join([entry for entry in parts if entry != ''])
+        pass
 
     @property
     def geometry_properties(self):
@@ -216,20 +193,11 @@ class AnnotationProperties(Jsonable):
         """
         List[GeometryProperties]: The geometry properties.
         """
-
-        return self._geometry_properties
+        pass
 
     @geometry_properties.setter
     def geometry_properties(self, value):
-        if value is None:
-            self._geometry_properties = []
-            return
-        if not isinstance(value, list):
-            raise TypeError(f'Got unexpected value of type {type(value)} for geometry properties')
-
-        self._geometry_properties = []
-        for entry in value:
-            self.add_geometry_property(entry)
+        pass
 
     def add_geometry_property(self, entry):
         """
@@ -244,14 +212,7 @@ class AnnotationProperties(Jsonable):
         entry: Dict|GeometryProperties
             The geometry properties instance of serialized version of it.
         """
-
-        if isinstance(entry, dict):
-            entry = GeometryProperties.from_dict(entry)
-
-        if not isinstance(entry, GeometryProperties):
-            raise TypeError(f'Got unexpected value of type {type(entry)} for geometry properties')
-
-        self.geometry_properties.append(entry)
+        pass
 
     def get_geometry_property(self, item):
         """
@@ -270,8 +231,7 @@ class AnnotationProperties(Jsonable):
         ------
         KeyError
         """
-
-        return self.get_geometry_property_and_index(item)[0]
+        pass
 
     def get_geometry_property_and_index(self, item):
         """
@@ -290,28 +250,18 @@ class AnnotationProperties(Jsonable):
         ------
         KeyError
         """
-        if isinstance(item, int):
-            return self._geometry_properties[item], item
-        elif isinstance(item, str):
-            for index, entry in enumerate(self.geometry_properties):
-                if entry.uid == item:
-                    return entry, index
-        raise KeyError('Got unrecognized geometry key `{}`'.format(item))
+        pass
 
     @property
     def parameters(self):
         """
         Optional[Jsonable]: The parameters
         """
-
-        return self._parameters
+        pass
 
     @parameters.setter
     def parameters(self, value):
-        if value is None or isinstance(value, Jsonable):
-            self._parameters = value
-        else:
-            raise TypeError(f'Got unexpected value of type {type(value)} for parameters')
+        pass
 
     @classmethod
     def from_dict(cls, the_json):
@@ -374,14 +324,7 @@ class AnnotationProperties(Jsonable):
         return parent_dict
 
     def replicate(self):
-        geom_properties = None if self.geometry_properties is None else \
-            [entry.replicate() for entry in self.geometry_properties]
-        params = None if self.parameters is None else self.parameters.replicate()
-
-        the_type = self.__class__
-        return the_type(
-            name=self.name, description=self.description, directory=self.directory,
-            geometry_properties=geom_properties, parameters=params)
+        pass
 
 
 class AnnotationFeature(Feature):
@@ -401,19 +344,11 @@ class AnnotationFeature(Feature):
         -------
         None|AnnotationProperties
         """
-
-        return self._properties
+        pass
 
     @properties.setter
     def properties(self, properties):
-        if properties is None:
-            self._properties = AnnotationProperties()
-        elif isinstance(properties, AnnotationProperties):
-            self._properties = properties
-        elif isinstance(properties, dict):
-            self._properties = AnnotationProperties.from_dict(properties)
-        else:
-            raise TypeError('Got an unexpected type for properties attribute of type {}'.format(properties.__class__))
+        pass
 
     def get_name(self):
         """
@@ -423,11 +358,7 @@ class AnnotationFeature(Feature):
         -------
         str
         """
-
-        if self.properties is None or self.properties.name is None:
-            return self.uid
-
-        return self.properties.name
+        pass
 
     @property
     def geometry(self):
@@ -438,34 +369,18 @@ class AnnotationFeature(Feature):
         -------
         GeometryObject|GeometryCollection
         """
-
-        return self._geometry
+        pass
 
     @geometry.setter
     def geometry(self, geometry):
-        if isinstance(geometry, dict):
-            geometry = Geometry.from_dict(geometry)
-        if geometry is None:
-            self._geometry = None
-            return
-        if not isinstance(geometry, Geometry):
-            raise TypeError('geometry must be an instance of Geometry, got `{}`'.format(type(geometry)))
-        if geometry.is_collection:
-            geometry = basic_assemble_from_collection(geometry)
-        self._geometry = self._validate_geometry_element(geometry)
+        pass
 
     @property
     def geometry_count(self):
         """
         int: The number of base geometry elements
         """
-
-        if self.geometry is None:
-            return 0
-        elif not self.geometry.is_collection:
-            return 1
-        else:
-            return len(self.geometry.collection)
+        pass
 
     def get_geometry_name(self, item):
         """
@@ -479,9 +394,7 @@ class AnnotationFeature(Feature):
         -------
         str
         """
-
-        geometry, geom_properties = self.get_geometry_and_geometry_properties(item)
-        return '<{}>'.format(geometry.__class__.__name__) if geom_properties.name is None else geom_properties.name
+        pass
 
     def get_geometry_property(self, item):
         """
@@ -500,8 +413,7 @@ class AnnotationFeature(Feature):
         ------
         KeyError
         """
-
-        return self.properties.get_geometry_property(item)
+        pass
 
     def get_geometry_property_and_index(self, item):
         """
@@ -520,8 +432,7 @@ class AnnotationFeature(Feature):
         ------
         KeyError
         """
-
-        return self.properties.get_geometry_property_and_index(item)
+        pass
 
     def get_geometry_and_geometry_properties(self, item):
         """
@@ -540,19 +451,7 @@ class AnnotationFeature(Feature):
         ------
         KeyError
         """
-
-        if self.geometry is None:
-            raise ValueError('No geometry defined.')
-
-        geom_prop, index = self.get_geometry_property_and_index(item)
-
-        index = int(index)
-        if not (0 <= index < self.geometry_count):
-            raise KeyError('invalid geometry index')
-        if self.geometry.is_collection:
-            return self.geometry.collection[index], geom_prop
-        else:
-            return self.geometry, geom_prop
+        pass
 
     def get_geometry_element(self, item):
         """
@@ -571,18 +470,10 @@ class AnnotationFeature(Feature):
         ------
         ValueError|KeyError
         """
-
-        return self.get_geometry_and_geometry_properties(item)[0]
+        pass
 
     def _validate_geometry_element(self, geometry):
-        if geometry is None:
-            return geometry
-        if not isinstance(geometry, Geometry):
-            raise TypeError('geometry must be an instance of Geometry base class. Got {}'.format(type(geometry)))
-
-        if self._allowed_geometries is not None and geometry.__class__ not in self._allowed_geometries:
-            raise TypeError('geometry ({}) is not of one of the allowed types ({})'.format(geometry, self._allowed_geometries))
-        return geometry
+        pass
 
     def add_geometry_element(self, geometry, properties=None):
         """
@@ -593,36 +484,7 @@ class AnnotationFeature(Feature):
         geometry : GeometryObject
         properties : None|GeometryProperties
         """
-
-        if not isinstance(geometry, GeometryObject):
-            raise TypeError('geometry must be a GeometryObject instance. Got {}'.format(type(geometry)))
-
-        if properties is None:
-            properties = GeometryProperties()
-
-        if not isinstance(properties, GeometryProperties):
-            raise TypeError('properties must be a GeometryProperties instance. Got {}'.format(type(properties)))
-   
-        if self.properties is None:
-            self.properties = AnnotationProperties()
-        
-        if self.geometry is None:
-            self.geometry = GeometryCollection()
-
-        # handle the geometry
-        self.geometry = self._validate_geometry_element(
-            basic_assemble_from_collection(self.geometry, geometry))
-
-        # check that they are in sync and warns before adding the geometry element
-        if len(self.properties.geometry_properties) != self.geometry_count:
-            logger.warning(
-                'There are {} geometry elements defined\n\t'
-                'and {} geometry properties populated. '
-                'This is likely to cause problems.'.format(
-                    self.geometry_count, len(self.properties.geometry_properties)))
-
-         # add the geometry property
-        self.properties.add_geometry_property(properties)
+        pass
 
     def remove_geometry_element(self, item):
         """
@@ -632,19 +494,7 @@ class AnnotationFeature(Feature):
         ----------
         item : int|str
         """
-
-        _, index = self.get_geometry_property_and_index(item)
-
-        if self.geometry_count == 1:
-            self.geometry = None
-            self.properties = None
-        elif self.geometry_count == 2:
-            del self.geometry.collection[index]
-            del self.properties.geometry_properties[index]
-            self.geometry = self.geometry.collection[0]
-        else:
-            del self.geometry.collection[index]
-            del self.properties.geometry_properties[index]
+        pass
 
     @classmethod
     def from_dict(cls, the_json):
@@ -683,21 +533,11 @@ class AnnotationCollection(FeatureCollection):
         -------
         List[AnnotationFeature]
         """
-
-        return self._features
+        pass
 
     @features.setter
     def features(self, features):
-        if features is None:
-            self._features = None
-            self._feature_dict = None
-            return
-
-        if not isinstance(features, list):
-            raise TypeError('features must be a list of AnnotationFeatures. Got {}'.format(type(features)))
-
-        for entry in features:
-            self.add_feature(entry)
+        pass
 
     def add_feature(self, feature):
         """
@@ -707,18 +547,7 @@ class AnnotationCollection(FeatureCollection):
         ----------
         feature : AnnotationFeature|Dict
         """
-
-        if isinstance(feature, dict):
-            feature = AnnotationFeature.from_dict(feature)
-        if not isinstance(feature, AnnotationFeature):
-            raise TypeError('This requires an AnnotationFeature instance, got {}'.format(type(feature)))
-
-        if self._features is None:
-            self._feature_dict = {feature.uid: 0}
-            self._features = [feature, ]
-        else:
-            self._feature_dict[feature.uid] = len(self._features)
-            self._features.append(feature)
+        pass
 
     def __getitem__(self, item):
         # type: (Any) -> Union[AnnotationFeature, List[AnnotationFeature]]
@@ -787,8 +616,7 @@ class FileAnnotationCollection(Jsonable):
         """
         str: The version
         """
-
-        return self._version
+        pass
 
     @property
     def image_file_name(self):
@@ -799,8 +627,7 @@ class FileAnnotationCollection(Jsonable):
         -------
         None|str
         """
-
-        return self._image_file_name
+        pass
 
     @property
     def image_id(self):
@@ -811,8 +638,7 @@ class FileAnnotationCollection(Jsonable):
         -------
         None|str
         """
-
-        return self._image_id
+        pass
 
     @property
     def core_name(self):
@@ -823,8 +649,7 @@ class FileAnnotationCollection(Jsonable):
         -------
         None|str
         """
-
-        return self._core_name
+        pass
 
     @property
     def annotations(self):
@@ -835,23 +660,12 @@ class FileAnnotationCollection(Jsonable):
         -------
         AnnotationCollection
         """
-
-        return self._annotations
+        pass
 
     @annotations.setter
     def annotations(self, annotations):
         # type: (Union[None, AnnotationCollection, Dict]) -> None
-        if annotations is None:
-            self._annotations = None
-            return
-
-        if isinstance(annotations, AnnotationCollection):
-            self._annotations = annotations
-        elif isinstance(annotations, dict):
-            self._annotations = AnnotationCollection.from_dict(annotations)
-        else:
-            raise TypeError(
-                'annotations must be an AnnotationCollection. Got type {}'.format(type(annotations)))
+        pass
 
     def add_annotation(self, annotation):
         """
@@ -862,16 +676,7 @@ class FileAnnotationCollection(Jsonable):
         annotation : AnnotationFeature
             The prospective annotation.
         """
-
-        if isinstance(annotation, dict):
-            annotation = AnnotationFeature.from_dict(annotation)
-        if not isinstance(annotation, AnnotationFeature):
-            raise TypeError('This requires an AnnotationFeature instance. Got {}'.format(type(annotation)))
-
-        if self._annotations is None:
-            self._annotations = AnnotationCollection()
-
-        self._annotations.add_feature(annotation)
+        pass
 
     def delete_annotation(self, annotation_id):
         """
@@ -881,8 +686,7 @@ class FileAnnotationCollection(Jsonable):
         ----------
         annotation_id : str
         """
-
-        del self._annotations[annotation_id]
+        pass
 
     @classmethod
     def from_file(cls, file_name):
@@ -947,5 +751,4 @@ class FileAnnotationCollection(Jsonable):
         return parent_dict
 
     def to_file(self, file_name):
-        with open(file_name, 'w') as fi:
-            json.dump(self.to_dict(), fi, indent=1)
+        pass

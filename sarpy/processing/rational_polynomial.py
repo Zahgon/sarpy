@@ -68,17 +68,7 @@ def _map_list_to_poly_matrix(coeffs: Sequence[float], coeff_list: Sequence[Tuple
     -------
     coefficient_array : numpy.ndarray
     """
-
-    variables = _get_num_variables(coeff_list)
-
-    matrix_shape = []
-    for i in range(variables):
-        matrix_shape.append(max(entry[i] for entry in coeff_list)+1)
-
-    coefficient_array = numpy.zeros(tuple(matrix_shape), dtype='float64')
-    for i, entry in enumerate(coeff_list):
-        coefficient_array[entry] = coeffs[i]
-    return coefficient_array
+    pass
 
 
 def get_default_coefficient_ordering(variables: int, order: int) -> Sequence[Tuple[int, ...]]:
@@ -144,55 +134,7 @@ def rational_poly_fit_1d(
     SarpyRatPolyError
         Convergence failures passed through
     """
-
-    if coeff_list[0] not in [0, (0, )]:
-        raise ValueError(
-            'The first entry of coeff_list is required to be the constant term `0`')
-
-    if not (x.size == data.size):
-        raise ValueError('Size mismatch among data entries')
-    x = x.flatten()
-    data = data.flatten()
-
-    # Enforcing that the denominator has constant term 1,
-    #   P(x)/(1 + Q(x)) = d ->
-    #   P(x) - d*Q(x) = d
-    # This can be formulated as a strictly linear problem A*t = d
-
-    A = numpy.empty((x.size, 2*len(coeff_list) - 1), dtype=numpy.float64)
-    for i, entry in enumerate(coeff_list):
-        if not (isinstance(entry, int) or (isinstance(entry, tuple) and len(entry) == 1 and isinstance(entry[0], int))):
-            raise TypeError('coeff_list must be a list of integers or length 1 tuples of ints')
-        if isinstance(entry, tuple):
-            entry = entry[0]
-
-        u = 1
-        if entry > 0:
-            u *= numpy.power(x, entry)
-        A[:, i] = u
-        if i > 0:
-            A[:, i+len(coeff_list) - 1] = -u*data
-
-    # perform least squares fit
-    try:
-        sol, residuals, rank, sing_values = lstsq(A, data, cond=cond)
-    except LinAlgError as e:
-        raise SarpyRatPolyError(str(e))
-
-    # if len(residuals) != 0:
-    residuals /= float(x.size)
-    logger.info(
-        'Performed rational polynomial fit, got\n\t'
-        'residuals {}\n\t'
-        'rank {}\n\t'
-        'singular values {}'.format(residuals, rank, sing_values))
-
-    numerator = numpy.zeros((len(coeff_list), ), dtype='float64')
-    denominator = numpy.zeros((len(coeff_list), ), dtype='float64')
-    denominator[0] = 1.0
-    numerator[:] = sol[:len(coeff_list)]
-    denominator[1:] = sol[len(coeff_list):]
-    return numerator, denominator
+    pass
 
 
 def rational_poly_fit_2d(
@@ -449,8 +391,7 @@ class RationalPolynomial(object):
         -------
         int
         """
-
-        return self._variables
+        pass
 
     @property
     def coefficient_list(self) -> Sequence[Tuple[int, ...]]:
@@ -461,8 +402,7 @@ class RationalPolynomial(object):
         -------
         Sequence
         """
-
-        return self._coeff_list
+        pass
 
     @property
     def numerator(self) -> Sequence[float]:
@@ -473,8 +413,7 @@ class RationalPolynomial(object):
         -------
         Sequence
         """
-
-        return self._numerator
+        pass
 
     @property
     def denominator(self) -> Sequence[float]:
@@ -485,8 +424,7 @@ class RationalPolynomial(object):
         -------
         Sequence
         """
-
-        return self._denominator
+        pass
 
     def __call__(self, *input_variables: List[numpy.ndarray]) -> numpy.ndarray:
         def ensure_the_type(data):
@@ -577,28 +515,7 @@ def get_rational_poly_1d(
     SarpyRatPolyError
         Convergence failures passed through
     """
-
-    if (coeff_list is None and order is None) or \
-            (coeff_list is not None and order is not None):
-        raise ValueError('Exact one of  coeff_list and order must be provided.')
-
-    if order is not None:
-        coeff_list = get_default_coefficient_ordering(1, int(order))
-
-    if _get_num_variables(coeff_list) != 1:
-        raise ValueError('The number of variables defined by the coefficient list must be 1.')
-
-    scale_x, offset_x = _get_scale_and_offset(x)
-    scale_data, offset_data = _get_scale_and_offset(data)
-
-    numerator, denominator = rational_poly_fit_1d(
-        (x-offset_x)/scale_x,
-        (data-offset_data)/scale_data, coeff_list, cond=cond)
-
-    return RationalPolynomial(
-        numerator, denominator, coeff_list,
-        (offset_x, ), (scale_x, ),
-        offset_data, scale_data)
+    pass
 
 
 def get_rational_poly_2d(

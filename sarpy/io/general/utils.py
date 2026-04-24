@@ -153,29 +153,7 @@ def is_tiff(
     magic_number : None|int
         Only returned if `return_details` is `True`. One of `[42, 43]`.
     """
-
-    header = _fetch_initial_bytes(file_name, 4)
-    if header is None:
-        return (False, None, None) if return_details else False
-
-    try:
-        endian_part = header[:2].decode('utf-8')
-    except ValueError:
-        return (False, None, None) if return_details else False
-
-    if endian_part not in ['II', 'MM']:
-        return (False, None, None) if return_details else False
-
-    if endian_part == 'II':
-        endianness = '<'
-    else:
-        endianness = '>'
-    magic_number = struct.unpack('{}h'.format(endianness), header[2:])[0]
-
-    if magic_number in [42, 43]:
-        # NB: 42 is regular tiff, while 43 is big tiff
-        return (True, magic_number, endianness) if return_details else True
-    return (False, None, None) if return_details else False
+    pass
 
 
 def is_hdf5(file_name: Union[str, BinaryIO]) -> bool:
@@ -343,7 +321,7 @@ class MemMap(object):
 
     @property
     def closed(self):
-        return self._file_obj.closed
+        pass
 
     def close(self):
         self._file_obj.close()

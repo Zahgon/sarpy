@@ -56,26 +56,7 @@ def get_lat_lon_box(lats, lons):
     -------
     numpy.ndarray
     """
-
-    def get_min_max(inp, lon=False):
-        if isinstance(inp, (int, float, numpy.number)):
-            return inp, inp
-        else:
-            min_val, max_val = numpy.min(inp), numpy.max(inp)
-            if not lon:
-                return numpy.min(inp), numpy.max(inp)
-            # check for 180/-180 crossing
-            if not (min_val < -90 and max_val > 90):
-                return min_val, max_val
-            inp = numpy.array(inp).flatten()
-            min_val = numpy.min(inp[inp >= 0])
-            max_val = numpy.max(inp[inp <= 0])
-            return min_val, max_val
-
-    out = numpy.zeros((4, ), dtype='float64')
-    out[:2] = get_min_max(lats)
-    out[2:] = get_min_max(lons, lon=True)
-    return out
+    pass
 
 
 class DTEDList(DEMList):
@@ -118,8 +99,7 @@ class DTEDList(DEMList):
         """
         str: the root directory
         """
-
-        return self._root_dir
+        pass
 
     def _get_directory_stem(self, dem_type):
         if dem_type.startswith('DTED'):
@@ -317,8 +297,7 @@ class DTEDReader(object):
         """
         numpy.ndarray: The origin of this DTED, of the form `[longitude, latitude]`.
         """
-
-        return numpy.copy(self._origin)
+        pass
 
     @property
     def bounding_box(self):
@@ -326,8 +305,7 @@ class DTEDReader(object):
         numpy.ndarray: The bounding box of the form
         `[longitude min, longitude max, latitude min, latitude max]`.
         """
-
-        return numpy.copy(self._bounding_box)
+        pass
 
     def __getitem__(self, item):
         def new_col_int(val, begin):
@@ -456,31 +434,7 @@ class DTEDReader(object):
         numpy.ndarray
             Elevation values of the same shape as lat/lon.
         """
-
-        o_shape, lat, lon = argument_validation(lat, lon)
-
-        out = numpy.full(lat.shape, numpy.nan, dtype=numpy.float64)
-        if block_size is None:
-            boolc = self.in_bounds(lat, lon)
-            if numpy.any(boolc):
-                out[boolc] = self._get_elevation(lat[boolc], lon[boolc])
-        else:
-            block_size = min(50000, int(block_size))
-            start_block = 0
-            while start_block < lat.size:
-                end_block = min(lat.size, start_block + block_size)
-                lat1 = lat[start_block:end_block]
-                lon1 = lon[start_block:end_block]
-                boolc = self.in_bounds(lat1, lon1)
-                out1 = numpy.full(lat1.shape, numpy.nan, dtype=numpy.float64)
-                out1[boolc] = self._get_elevation(lat1[boolc], lon[boolc])
-                out[start_block:end_block] = out1
-                start_block = end_block
-
-        if o_shape == ():
-            return float(out[0])
-        else:
-            return numpy.reshape(out, o_shape)
+        pass
 
     def _find_overlap(self, lat_lon_box):
         """
@@ -690,8 +644,7 @@ class DTEDInterpolator(DEMInterpolator):
         """
         GeoidHeight: Get the geoid height calculator
         """
-
-        return self._geoid
+        pass
 
     def _get_elevation_geoid_from_reader(self, reader, lat, lon):
         mask = reader.in_bounds(lat, lon)

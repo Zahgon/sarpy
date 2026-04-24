@@ -144,14 +144,7 @@ class PolarizationType(Serializable):
         super(PolarizationType, self).__init__(**kwargs)
 
     def version_required(self) -> Tuple[int, int, int]:
-        required = (1, 0, 1)
-        for fld in ['TxPol', 'RcvPol']:
-            val = getattr(self, fld)
-            if val is not None and val in ['S', 'E']:
-                required = max(required, (1, 1, 0))
-        if self.TxPolRef is not None or self.RcvPolRef is not None:
-            required = max(required, (1, 1, 0))
-        return required
+        pass
 
 
 class LFMEclipseType(Serializable):
@@ -288,10 +281,7 @@ class DwellTimesType(Serializable):
         super(DwellTimesType, self).__init__(**kwargs)
 
     def version_required(self) -> Tuple[int, int, int]:
-        if self.DTAId is not None or self.UseDTA is not None:
-            return (1, 1, 0)
-        else:
-            return (1, 0, 1)
+        pass
 
 
 class AntennaType(Serializable):
@@ -637,12 +627,7 @@ class ChannelParametersType(Serializable):
         super(ChannelParametersType, self).__init__(**kwargs)
 
     def version_required(self) -> Tuple[int, int, int]:
-        required = (1, 0, 1)
-        if self.Polarization is not None:
-            required = max(required, self.Polarization.version_required())
-        if self.DwellTimes is not None:
-            required = max(required, self.DwellTimes.version_required())
-        return required
+        pass
 
 
 class ChannelType(Serializable):
@@ -718,8 +703,4 @@ class ChannelType(Serializable):
         super(ChannelType, self).__init__(**kwargs)
 
     def version_required(self) -> Tuple[int, int, int]:
-        required = (1, 0, 1)
-        if self.Parameters is not None:
-            for entry in self.Parameters:
-                required = max(required, entry.version_required())
-        return required
+        pass

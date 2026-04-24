@@ -78,28 +78,4 @@ class RgAzCompType(Serializable):
         -------
         None
         """
-
-        look = SCPCOA.look
-        az_sf = -look*numpy.sin(numpy.deg2rad(SCPCOA.DopplerConeAng))/SCPCOA.SlantRange
-        if self.AzSF is None:
-            self.AzSF = az_sf
-        elif abs(self.AzSF - az_sf) > 1e-3:
-            logger.warning(
-                'The derived value for RgAzComp.AzSF is {},\n\t'
-                'while the current setting is {}.'.format(az_sf, self.AzSF))
-
-        if self.KazPoly is None:
-            if Grid.Row.KCtr is not None and Timeline is not None and Timeline.IPP is not None and \
-                    Timeline.IPP.size == 1 and Timeline.IPP[0].IPPPoly is not None and SCPCOA.SCPTime is not None:
-
-                st_rate_coa = Timeline.IPP[0].IPPPoly.derivative_eval(SCPCOA.SCPTime, 1)
-
-                krg_coa = Grid.Row.KCtr
-                if Grid.Row is not None and Grid.Row.DeltaKCOAPoly is not None:
-                    krg_coa += Grid.Row.DeltaKCOAPoly.Coefs[0, 0]
-
-                # Scale factor described in SICD spec
-                delta_kaz_per_delta_v = \
-                    look*krg_coa*norm(SCPCOA.ARPVel.get_array()) * \
-                    numpy.sin(numpy.deg2rad(SCPCOA.DopplerConeAng))/(SCPCOA.SlantRange*st_rate_coa)
-                self.KazPoly = Poly1DType(Coefs=delta_kaz_per_delta_v*Timeline.IPP[0].IPPPoly.Coefs)
+        pass

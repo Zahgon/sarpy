@@ -11,8 +11,7 @@ __classification__ = 'UNCLASSIFIED'
 
 
 def open(*args, **kwargs):
-    from .converter import open_complex
-    return open_complex(*args, **kwargs)
+    pass
 
 
 def convert(*args, **kwargs):

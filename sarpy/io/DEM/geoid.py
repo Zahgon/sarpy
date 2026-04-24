@@ -119,36 +119,7 @@ def find_geoid_file_from_dir(dir_name, search_files=None):
     -------
     str
     """
-
-    geoid_dir = os.path.join(dir_name, 'geoid')
-    if not os.path.exists(geoid_dir):
-        raise SarpyIOError(
-            'Input is a directory, and beneath it we expect to find '
-            'files in directory "geoid"')
-    if search_files is None:
-        search_files = []
-    elif isinstance(search_files, str):
-        search_files = [search_files, ]
-    else:
-        search_files = list(search_files)
-
-    for entry in _SEARCH_FILES:
-        if entry not in search_files:
-            search_files.append(entry)
-
-    our_file = None
-    for fil in search_files:
-        file_name = os.path.join(geoid_dir, fil)
-        if os.path.exists(file_name):
-            our_file = file_name
-            break
-
-    if our_file is None:
-        raise SarpyIOError(
-            'input is a directory and we expect to find one of the files {} '
-            'in the directory "geoid" beneath it'.format(search_files))
-
-    return our_file
+    pass
 
 
 class GeoidHeight(object):
@@ -359,6 +330,4 @@ class GeoidHeight(object):
         -------
         GeoidHeight
         """
-
-        our_file = find_geoid_file_from_dir(dir_name, search_files=search_files)
-        return cls(our_file)
+        pass

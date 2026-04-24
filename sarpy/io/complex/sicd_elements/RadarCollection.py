@@ -117,16 +117,10 @@ class TxFrequencyType(Serializable, Arrayable):
         """
         None|float: The center frequency
         """
-
-        if self.Min is None or self.Max is None:
-            return None
-        return 0.5*(self.Min + self.Max)
+        pass
 
     def _apply_reference_frequency(self, reference_frequency: float):
-        if self.Min is not None:
-            self.Min += reference_frequency
-        if self.Max is not None:
-            self.Max += reference_frequency
+        pass
 
     def _basic_validity_check(self) -> bool:
         condition = super(TxFrequencyType, self)._basic_validity_check()
@@ -298,34 +292,18 @@ class WaveformParametersType(Serializable):
 
         * `'STRETCH'` - `RcvFMRate` is non-zero.
         """
-
-        if self._RcvFMRate is None:
-            return None
-        elif self._RcvFMRate == 0:
-            return 'CHIRP'
-        else:
-            return 'STRETCH'
+        pass
 
     @property
     def RcvFMRate(self) -> Optional[float]:
         """
         float: Receive FM rate in Hz/sec. Also, determines the value of `RcvDemodType`. **Optional.**
         """
-        return self._RcvFMRate
+        pass
 
     @RcvFMRate.setter
     def RcvFMRate(self, value: Optional[float]):
-        if value is None:
-            self._RcvFMRate = None
-        else:
-            try:
-                self._RcvFMRate = parse_float(value, 'RcvFMRate', self)
-            except Exception as e:
-                logger.error(
-                    'Failed parsing value {} for field RCVFMRate of type "float",\n\t'
-                    'with error {} - {}.\n\t'
-                    'The value has been set to None.'.format(value, type(e), e))
-                self._RcvFMRate = None
+        pass
 
     def _basic_validity_check(self) -> bool:
         valid = super(WaveformParametersType, self)._basic_validity_check()
@@ -339,19 +317,10 @@ class WaveformParametersType(Serializable):
         -------
         None
         """
-
-        if self.TxPulseLength is not None and self.TxFMRate is not None and self.TxRFBandwidth is None:
-            self.TxRFBandwidth = self.TxPulseLength*self.TxFMRate
-        if self.TxPulseLength is not None and self.TxRFBandwidth is not None and self.TxFMRate is None:
-            self.TxFMRate = self.TxRFBandwidth/self.TxPulseLength
-        if self.TxFMRate is not None and self.TxRFBandwidth is not None and self.TxPulseLength is None:
-            self.TxPulseLength = self.TxRFBandwidth/self.TxFMRate
+        pass
 
     def _apply_reference_frequency(self, reference_frequency: float):
-        if self.TxFreqStart is not None:
-            self.TxFreqStart += reference_frequency
-        if self.RcvFreqStart is not None:
-            self.RcvFreqStart += reference_frequency
+        pass
 
 
 class TxStepType(Serializable):
@@ -444,12 +413,7 @@ class ChanParametersType(Serializable):
         super(ChanParametersType, self).__init__(**kwargs)
 
     def get_transmit_polarization(self) -> Optional[str]:
-        if self.TxRcvPolarization is None:
-            return None
-        elif self.TxRcvPolarization in ['OTHER', 'UNKNOWN']:
-            return 'OTHER'
-        else:
-            return self.TxRcvPolarization.split(':')[0]
+        pass
 
     def version_required(self) -> Tuple[int, int, int]:
         """
@@ -459,8 +423,7 @@ class ChanParametersType(Serializable):
         -------
         tuple
         """
-
-        return polstring_version_required(self.TxRcvPolarization)
+        pass
 
 
 class ReferencePointType(Serializable):
@@ -732,22 +695,7 @@ class ReferencePlaneType(Serializable):
         numpy.ndarray
             The corner points of the collection area, with order following the AreaType order convention.
         """
-
-        ecf_ref = self.RefPt.ECF.get_array()
-        x_shift = self.XDir.UVectECF.get_array() * self.XDir.LineSpacing
-        y_shift = self.YDir.UVectECF.get_array() * self.YDir.SampleSpacing
-        # order convention
-        x_offset = numpy.array(
-            [self.XDir.FirstLine, self.XDir.FirstLine,
-             self.XDir.FirstLine + self.XDir.NumLines - 1, self.XDir.FirstLine + self.XDir.NumLines - 1])
-        y_offset = numpy.array(
-            [self.YDir.FirstSample, self.YDir.FirstSample + self.YDir.NumSamples - 1,
-             self.YDir.FirstSample + self.YDir.NumSamples - 1, self.YDir.FirstSample])
-        corners = numpy.zeros((4, 3), dtype=numpy.float64)
-        for i in range(4):
-            corners[i, :] = \
-                ecf_ref + x_shift*(x_offset[i] - self.RefPt.Line) + y_shift*(y_offset[i] - self.RefPt.Sample)
-        return corners
+        pass
 
 
 class AreaType(Serializable):
@@ -793,14 +741,7 @@ class AreaType(Serializable):
 
     def _derive_corner_from_plane(self):
         # try to define the corner points - for SICD 0.5.
-        if self.Corner is not None:
-            return  # nothing to be done
-        if self.Plane is None:
-            return  # nothing to derive from
-        corners = self.Plane.get_ecf_corner_array()
-        self.Corner = [
-            LatLonHAECornerRestrictionType(**{'Lat': entry[0], 'Lon': entry[1], 'HAE': entry[2], 'index': i+1})
-            for i, entry in enumerate(geocoords.ecf_to_geodetic(corners))]
+        pass
 
     def derive(self):
         """
@@ -810,8 +751,7 @@ class AreaType(Serializable):
         -------
         None
         """
-
-        self._derive_corner_from_plane()
+        pass
 
 
 class RadarCollectionType(Serializable):
@@ -905,76 +845,16 @@ class RadarCollectionType(Serializable):
         -------
         None
         """
-
-        self._derive_tx_polarization()
-        if self.Area is not None:
-            self.Area.derive()
-        if self.Waveform is not None:
-            for entry in self.Waveform:
-                entry.derive()
-        self._derive_tx_frequency()  # call after waveform entry derive call
-        self._derive_wf_params()
+        pass
 
     def _derive_tx_polarization(self):
-        def check_sequence():
-            unique_entries = set(entry.TxPolarization for entry in self.TxSequence)
-            if len(unique_entries) == 1:
-                self.TxPolarization = self.TxSequence[0].TxPolarization
-            else:
-                self.TxPolarization = 'SEQUENCE'
-
-        # TxPolarization was optional prior to SICD 1.0. It may need to be derived.
-        if self.TxSequence is not None:
-            check_sequence()
-            return
-        if self.TxPolarization is not None:
-            return  # nothing to be done
-
-        if self.RcvChannels is None:
-            return  # nothing to derive from
-
-        if len(self.RcvChannels) > 1:
-            # TxSequence may need to be derived from RCvChannels, for SICD before 1.0 or poorly formed
-            if self.TxSequence is not None or self.RcvChannels is None or len(self.RcvChannels) < 2:
-                return
-
-            tx_pols = list(chan_param.get_transmit_polarization() for chan_param in self.RcvChannels)
-
-            if len(tx_pols) > 1:
-                self.TxSequence = [TxStepType(index=i+1, TxPolarization=tx_pol) for i, tx_pol in enumerate(tx_pols)]
-                check_sequence()
-            else:
-                self.TxPolarization = tx_pols[0]
-        else:
-            self.TxPolarization = self.RcvChannels[0].get_transmit_polarization()
+        pass
 
     def _derive_tx_frequency(self):
-        if self.Waveform is None or self.Waveform.size == 0:
-            return  # nothing to be done
-        if not(self.TxFrequency is None or self.TxFrequency.Min is None or self.TxFrequency.Max is None):
-            return  # no need to do anything
-
-        if self.TxFrequency is None:
-            self.TxFrequency = TxFrequencyType()
-        if self.TxFrequency.Min is None:
-            self.TxFrequency.Min = min(
-                entry.TxFreqStart for entry in self.Waveform if entry.TxFreqStart is not None)
-        if self.TxFrequency.Max is None:
-            self.TxFrequency.Max = max(
-                (entry.TxFreqStart + entry.TxRFBandwidth) for entry in self.Waveform if
-                entry.TxFreqStart is not None and entry.TxRFBandwidth is not None)
+        pass
 
     def _derive_wf_params(self):
-        if self.TxFrequency is None or self.TxFrequency.Min is None or self.TxFrequency.Max is None:
-            return  # nothing that we can do
-        if self.Waveform is None or self.Waveform.size != 1:
-            return  # nothing to be done
-
-        entry = self.Waveform[0]  # only true for single waveform definition
-        if entry.TxFreqStart is None:
-            entry.TxFreqStart = self.TxFrequency.Min
-        if entry.TxRFBandwidth is None:
-            entry.TxRFBandwidth = self.TxFrequency.Max - self.TxFrequency.Min
+        pass
 
     def _apply_reference_frequency(self, reference_frequency):
         """
@@ -990,15 +870,7 @@ class RadarCollectionType(Serializable):
         -------
         None
         """
-
-        if self.TxFrequency is not None:
-            # noinspection PyProtectedMember
-            self.TxFrequency._apply_reference_frequency(reference_frequency)
-        if self.Waveform is not None:
-            for entry in self.Waveform:
-                # noinspection PyProtectedMember
-                entry._apply_reference_frequency(reference_frequency)
-        self.RefFreqIndex = 0
+        pass
 
     def get_polarization_abbreviation(self):
         """
@@ -1187,11 +1059,4 @@ class RadarCollectionType(Serializable):
         -------
         tuple
         """
-
-        requires = (1, 1, 0)
-        if self.RcvChannels is None:
-            return requires
-
-        for entry in self.RcvChannels:
-            requires = max(requires, entry.version_required())
-        return requires
+        pass

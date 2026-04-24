@@ -276,7 +276,7 @@ class ProductClassificationType(Serializable):
 
     @property
     def resourceElement(self):
-        return 'true'
+        pass
 
     @classmethod
     def from_sicd(cls, sicd, create_date=None):

@@ -44,52 +44,18 @@ class LineType(Serializable):
         """
         int: The size attribute
         """
-
-        return 0 if self._array is None else self._array.size
+        pass
 
     @property
     def Endpoint(self):
         """
         numpy.ndarray: The array of points.
         """
-
-        return numpy.array([], dtype='object') if self._array is None else self._array
+        pass
 
     @Endpoint.setter
     def Endpoint(self, value):
-        if value is None:
-            self._array = None
-            return
-
-        # LineType must have at least 2 Elements
-        if len(value) < 2:
-            raise ValueError(f'LineType must have at least 2 endpoints, got {len(value)}')
-
-        if isinstance(value, numpy.ndarray):
-            is_type = True
-            for entry in value:
-                is_type &= isinstance(entry, LatLonArrayElementType)
-            if is_type:
-                self._array = value
-                return
-
-        if isinstance(value, (numpy.ndarray, list, tuple)):
-            use_value = []
-            for i, entry in enumerate(value):
-                if isinstance(entry, LatLonArrayElementType):
-                    entry.index = i+1
-                    use_value.append(entry)
-                elif isinstance(entry, dict):
-                    e_val = LatLonArrayElementType.from_dict(entry)
-                    e_val.index = i+1
-                    use_value.append(e_val)
-                elif isinstance(entry, (numpy.ndarray, list, tuple)):
-                    use_value.append(LatLonArrayElementType.from_array(entry, index=i+1))
-                else:
-                    raise TypeError('Got unexpected type for element of Endpoint array `{}`'.format(type(entry)))
-            self._array = numpy.array(use_value, dtype='object')
-        else:
-            raise TypeError('Got unexpected type for Endpoint array `{}`'.format(type(value)))
+        pass
 
     def __getitem__(self, item):
         return self._array.__getitem__(item)
@@ -167,58 +133,18 @@ class PolygonType(Serializable):
         """
         int: The size attribute
         """
-
-        if self._array is None:
-            return 0
-        else:
-            return self._array.size
+        pass
 
     @property
     def Vertex(self):
         """
         numpy.ndarray: The array of points.
         """
-
-        if self._array is None:
-            return numpy.array((0,), dtype='object')
-        else:
-            return self._array
+        pass
 
     @Vertex.setter
     def Vertex(self, value):
-        if value is None:
-            self._array = None
-            return
-
-        # PolygonType must have at least 3 Vertices
-        if len(value) < 3:
-            raise ValueError(f'PolygonType must have at least 3 vertices, got {len(value)}')
-
-        if isinstance(value, numpy.ndarray):
-            is_type = True
-            for entry in value:
-                is_type &= isinstance(entry, LatLonArrayElementType)
-            if is_type:
-                self._array = value
-                return
-
-        if isinstance(value, (numpy.ndarray, list, tuple)):
-            use_value = []
-            for i, entry in enumerate(value):
-                if isinstance(entry, LatLonArrayElementType):
-                    entry.index = i + 1
-                    use_value.append(entry)
-                elif isinstance(entry, dict):
-                    e_val = LatLonArrayElementType.from_dict(entry)
-                    e_val.index = i + 1
-                    use_value.append(e_val)
-                elif isinstance(entry, (numpy.ndarray, list, tuple)):
-                    use_value.append(LatLonArrayElementType.from_array(entry, index=i + 1))
-                else:
-                    raise TypeError('Got unexpected type for element of Vertex array `{}`'.format(type(entry)))
-            self._array = numpy.array(use_value, dtype='object')
-        else:
-            raise TypeError('Got unexpected type for Vertex array `{}`'.format(type(value)))
+        pass
 
     def __getitem__(self, item):
         return self._array.__getitem__(item)
@@ -362,8 +288,7 @@ class GeoInfoType(Serializable):
         -------
         List[GeoInfoType]
         """
-
-        return [entry for entry in self._GeoInfo if entry.name == key]
+        pass
 
     def addGeoInfo(self, value):
         """
@@ -377,17 +302,7 @@ class GeoInfoType(Serializable):
         -------
         None
         """
-
-        if isinstance(value, ElementTree.Element):
-            gi_key = self._child_xml_ns_key.get('GeoInfo', self._xml_ns_key)
-            value = GeoInfoType.from_node(value, self._xml_ns, ns_key=gi_key)
-        elif isinstance(value, dict):
-            value = GeoInfoType.from_dict(value)
-
-        if isinstance(value, GeoInfoType):
-            self._GeoInfo.append(value)
-        else:
-            raise TypeError('Trying to set GeoInfo element with unexpected type {}'.format(type(value)))
+        pass
 
     @classmethod
     def from_node(cls, node, xml_ns, ns_key=None, kwargs=None):

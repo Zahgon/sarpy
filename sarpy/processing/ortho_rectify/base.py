@@ -81,31 +81,25 @@ class FullResolutionFetcher(object):
         """
         SICDTypeReader: The reader instance.
         """
-
-        return self._reader
+        pass
 
     @property
     def dimension(self) -> int:
         """
         int: The dimension along which to perform the color subaperture split.
         """
-
-        return self._dimension
+        pass
 
     @dimension.setter
     def dimension(self, value):
-        value = int(value)
-        if value not in [0, 1]:
-            raise ValueError('dimension must be 0 or 1, got {}'.format(value))
-        self._dimension = value
+        pass
 
     @property
     def data_size(self) -> Tuple[int, ...]:
         """
         Tuple[int, ...]: The data size for the reader at the given index.
         """
-
-        return self._data_size
+        pass
 
     @property
     def index(self) -> int:
@@ -137,34 +131,25 @@ class FullResolutionFetcher(object):
         None|float: The approximate processing block size in MB, where `None`
         represents processing in a single block.
         """
-
-        return self._block_size
+        pass
 
     @block_size.setter
     def block_size(self, value):
-        if value is None:
-            self._block_size = None
-        else:
-            value = float(value)
-            if value < 0.25:
-                value = 0.25
-            self._block_size = value
+        pass
 
     @property
     def block_size_in_bytes(self) -> Optional[int]:
         """
         None|int: The approximate processing block size in bytes.
         """
-
-        return None if self._block_size is None else int(self._block_size*(2**20))
+        pass
 
     @property
     def sicd(self) -> SICDType:
         """
         SICDType: The sicd structure.
         """
-
-        return self._sicd
+        pass
 
     def _parse_slicing(
             self,
@@ -434,32 +419,28 @@ class OrthorectificationIterator(object):
         """
         OrthorectificationHelper: The ortho-rectification helper.
         """
-
-        return self._ortho_helper
+        pass
 
     @property
     def calculator(self) -> FullResolutionFetcher:
         """
         FullResolutionFetcher : The calculator instance.
         """
-
-        return self._calculator
+        pass
 
     @property
     def sicd(self) -> SICDType:
         """
         SICDType: The sicd structure.
         """
-
-        return self.calculator.sicd
+        pass
 
     @property
     def pixel_bounds(self) -> numpy.ndarray:
         """
         numpy.ndarray : Of the form `(row min, row max, col min, col max)`.
         """
-
-        return self._pixel_bounds
+        pass
 
     @property
     def ortho_bounds(self) -> numpy.ndarray:
@@ -467,18 +448,14 @@ class OrthorectificationIterator(object):
         numpy.ndarray : Of the form `(row min, row max, col min, col max)`. Note that
         these are "unnormalized" orthorectified pixel coordinates.
         """
-
-        return self._ortho_bounds
+        pass
 
     @property
     def ortho_data_size(self) -> Tuple[int, int]:
         """
         Tuple[int, int] : The size of the overall ortho-rectified output.
         """
-
-        return (
-            int(self.ortho_bounds[1] - self.ortho_bounds[0]),
-            int(self.ortho_bounds[3] - self.ortho_bounds[2]))
+        pass
 
     @property
     def remap_function(self) -> Optional[RemapFunction]:
@@ -531,20 +508,7 @@ class OrthorectificationIterator(object):
         -------
         None
         """
-
-        if self.calculator.dimension == 0:
-            column_block_size = self.calculator.get_fetch_block_size(self.ortho_bounds[0], self.ortho_bounds[1])
-            self._iteration_blocks, _ = self.calculator.extract_blocks(
-                (self.ortho_bounds[2], self.ortho_bounds[3], 1), column_block_size)
-        else:
-            row_block_size = self.calculator.get_fetch_block_size(self.ortho_bounds[2], self.ortho_bounds[3])
-            self._iteration_blocks, _ = self.calculator.extract_blocks(
-                (self.ortho_bounds[0], self.ortho_bounds[1], 1), row_block_size)
-
-        if self.remap_function is not None and \
-                (recalc_remap_globals or not self.remap_function.are_global_parameters_set):
-            self.remap_function.calculate_global_parameters_from_reader(
-                self.ortho_helper.reader, index=self.ortho_helper.index, pixel_bounds=self.pixel_bounds)
+        pass
 
     @staticmethod
     def _get_ortho_helper(
@@ -692,6 +656,4 @@ class OrthorectificationIterator(object):
             The (normalized) indices `(start_row, start_col)` for this section of
             data, relative to overall output shape.
         """
-
-        # NB: this is the Python 2 pattern for iteration
-        return self.__next__()
+        pass

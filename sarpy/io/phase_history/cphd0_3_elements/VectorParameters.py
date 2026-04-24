@@ -54,8 +54,7 @@ class FxParametersType(Serializable):
         -------
         int
         """
-
-        return 32
+        pass
 
     def get_position_offset_and_size(self, field):
         """
@@ -69,18 +68,7 @@ class FxParametersType(Serializable):
         -------
         None|int
         """
-
-        if field not in self._fields:
-            return None
-
-        out = 0
-        for fld in self._fields:
-            val = getattr(self, fld)
-            if fld == field:
-                return out, val
-            else:
-                out += val
-        return None
+        pass
 
     def get_dtype_components(self):
         """
@@ -90,8 +78,7 @@ class FxParametersType(Serializable):
         -------
         List[Tuple]
         """
-
-        return [(entry, '>f8') for entry in self._fields]
+        pass
 
 
 class TOAParametersType(Serializable):
@@ -127,8 +114,7 @@ class TOAParametersType(Serializable):
         -------
         int
         """
-
-        return 16
+        pass
 
     def get_position_offset_and_size(self, field):
         """
@@ -142,18 +128,7 @@ class TOAParametersType(Serializable):
         -------
         None|(int, int)
         """
-
-        if field not in self._fields:
-            return None
-
-        out = 0
-        for fld in self._fields:
-            val = getattr(self, fld)
-            if fld == field:
-                return out, val
-            else:
-                out += val
-        return None
+        pass
 
     def get_dtype_components(self):
         """
@@ -163,8 +138,7 @@ class TOAParametersType(Serializable):
         -------
         List[Tuple]
         """
-
-        return [(entry, '>f8') for entry in self._fields]
+        pass
 
 
 class VectorParametersType(Serializable):
@@ -255,19 +229,7 @@ class VectorParametersType(Serializable):
         -------
         int
         """
-
-        out = 0
-        for fld in self._fields:
-            val = getattr(self, fld)
-            if val is None:
-                pass
-            elif isinstance(val, int):
-                out += val
-            elif isinstance(val, (FxParametersType, TOAParametersType)):
-                out += val.get_size()
-            else:
-                raise TypeError('Got unhandled type {}'.format(type(val)))
-        return out
+        pass
 
     def get_position_offset_and_size(self, field):
         """
@@ -281,29 +243,7 @@ class VectorParametersType(Serializable):
         -------
         None|(int, int)
         """
-
-        out = 0
-        for fld in self._fields:
-            val = getattr(self, fld)
-            if fld == field:
-                if val is not None:
-                    return out, val
-                else:
-                    return None
-
-            if val is None:
-                pass
-            elif isinstance(val, int):
-                out += val
-            elif isinstance(val, (FxParametersType, TOAParametersType)):
-                res = val.get_position_offset_and_size(field)
-                if res is not None:
-                    return out+res[0], res[1]
-                else:
-                    out += val.get_size()
-            else:
-                raise TypeError('Got unhandled type {}'.format(type(val)))
-        return None
+        pass
 
     def get_vector_dtype(self):
         """
@@ -314,21 +254,4 @@ class VectorParametersType(Serializable):
         numpy.dtype
             This will be a compound dtype for a structured array.
         """
-
-        the_type_info = []
-        for fld in self._fields:
-            val = getattr(self, fld)
-            if val is None:
-                continue
-            if fld in ['FxParameters', 'TOAParameters']:
-                the_type_info.extend(val.get_dtype_components())
-            else:
-                assert isinstance(val, int), 'CPHD 0.3 PVP field {} ' \
-                                             'should be an integer, got {}'.format(fld, val)
-                if val == 8:
-                    the_type_info.append((fld, '>f8'))
-                elif val == 24:
-                    the_type_info.append((fld, '>f8', (3, )))
-                else:
-                    raise ValueError('Got unhandled value {} for CPHD 0.3 PVP field {}'.format(val, fld))
-        return numpy.dtype(the_type_info)
+        pass

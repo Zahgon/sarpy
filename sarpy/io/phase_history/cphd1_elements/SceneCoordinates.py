@@ -283,7 +283,7 @@ class SegmentListType(SerializableArray):
 
     @property
     def NumSegments(self):
-        return self.size
+        pass
 
     def to_node(self, doc, tag, ns_key=None, parent=None, check_validity=False, strict=DEFAULT_STRICT):
         anode = super(SegmentListType, self).to_node(

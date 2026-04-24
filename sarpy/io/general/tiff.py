@@ -199,16 +199,14 @@ class TiffDetails(object):
         """
         str: READ ONLY. The file name.
         """
-
-        return self._file_name
+        pass
 
     @property
     def endian(self) -> str:
         """
         str: READ ONLY. The numpy dtype style ``('>' = big, '<' = little)`` endian string for the tiff file.
         """
-
-        return self._endian
+        pass
 
     @property
     def tags(self) -> Dict[str, Union[str, numpy.ndarray]]:
@@ -218,10 +216,7 @@ class TiffDetails(object):
         of the form `{<tag name> : str|numpy.ndarray}`, even for those tags
         containing only a single entry (i.e. `count=1`).
         """
-
-        if self._tags is None:
-            self.parse_tags()
-        return self._tags
+        pass
 
     def parse_tags(self) -> None:
         """
@@ -231,27 +226,7 @@ class TiffDetails(object):
         -------
         None
         """
-
-        if self._magic_number == 42:
-            type_dtype = numpy.dtype('{}u2'.format(self._endian))
-            count_dtype = numpy.dtype('{}u2'.format(self._endian))
-            offset_dtype = numpy.dtype('{}u4'.format(self._endian))
-            offset_size = 4
-        elif self._magic_number == 43:
-            type_dtype = numpy.dtype('{}u2'.format(self._endian))
-            count_dtype = numpy.dtype('{}i8'.format(self._endian))
-            offset_dtype = numpy.dtype('{}i8'.format(self._endian))
-            offset_size = 8
-        else:
-            raise ValueError('Unrecognized magic number {}'.format(self._magic_number))
-
-        with open(self._file_name, 'rb') as fi:
-            # skip the basic header
-            fi.seek(offset_size, os.SEEK_SET)
-            # extract the tags information
-            tags = {}
-            self._parse_ifd(fi, tags, type_dtype, count_dtype, offset_dtype, offset_size)
-        self._tags = tags
+        pass
 
     def _read_tag(self,
                   fi: BinaryIO,
@@ -276,39 +251,7 @@ class TiffDetails(object):
         -------
         dict
         """
-
-        # find which tags we belong to
-        if num_tag in _BASELINE_TAGS:
-            ext = 'BaselineTag'
-            name = _BASELINE_TAGS[num_tag]
-        elif num_tag in _EXTENSION_TAGS:
-            ext = 'ExtensionTag'
-            name = _EXTENSION_TAGS[num_tag]
-        elif num_tag in _GEOTIFF_TAGS:
-            ext = 'GeoTiffTag'
-            name = _GEOTIFF_TAGS[num_tag]
-        else:
-            ext, name = None, None
-        # Now extract from file based on type number
-        dtype = self._DTYPES.get(int(tiff_type), None)
-        if dtype is None:
-            logger.warning(
-                'Failed to extract tiff data type {},\n\t'
-                'for {} - {}'.format(tiff_type, ext, name))
-            return {'Value': None, 'Name': name, 'Extension': ext}
-        if tiff_type == 2:  # ascii field - read directly and decode?
-            val = fi.read(count)  # this will be a string for python 2, and we decode for python 3
-            if not isinstance(val, str):
-                val = val.decode('utf-8')
-            # eliminate the null characters
-            val = re.sub('\x00', '', val)
-        elif tiff_type in [5, 10]:  # unsigned or signed rational
-            val = numpy.fromfile(fi, dtype='{}{}'.format(self._endian, dtype), count=numpy.int64(2*count)).reshape((-1, 2))
-        else:
-            val = numpy.fromfile(fi, dtype='{}{}'.format(self._endian, dtype), count=count)
-            if count == 1:
-                val = val[0]
-        return {'Value': val, 'Name': name, 'Extension': ext}
+        pass
 
     def _parse_ifd(self,
                    fi: BinaryIO,
@@ -337,29 +280,7 @@ class TiffDetails(object):
         -------
         None
         """
-
-        nifd = numpy.fromfile(fi, dtype=offset_dtype, count=1)[0]
-        if nifd == 0:
-            return  # termination criterion
-
-        fi.seek(nifd)
-        num_entries = numpy.fromfile(fi, dtype=count_dtype, count=1)[0]
-        for entry in range(int(num_entries)):
-            num_tag, tiff_type = numpy.fromfile(fi, dtype=type_dtype, count=2)
-            count = numpy.fromfile(fi, dtype=offset_dtype, count=1)[0]
-            total_size = self._SIZES[tiff_type-1]*count
-            if total_size <= offset_size:
-                save_ptr = fi.tell() + offset_size  # we should advance past the entire block
-                value = self._read_tag(fi, tiff_type, num_tag, count)
-                fi.seek(save_ptr)
-            else:
-                offset = numpy.fromfile(fi, dtype=offset_dtype, count=1)[0]
-                save_ptr = fi.tell()  # save our current spot
-                fi.seek(offset)  # get to the offset location
-                value = self._read_tag(fi, tiff_type, num_tag, count)  # read the tag value
-                fi.seek(save_ptr)  # return to our location
-            tags[value['Name']] = value['Value']
-        self._parse_ifd(fi, tags, type_dtype, count_dtype, offset_dtype, offset_size)  # recurse
+        pass
 
     def check_compression(self):
         """
@@ -369,13 +290,7 @@ class TiffDetails(object):
         -------
         None
         """
-
-        if self.tags['Compression'] != 1:
-            raise ValueError(
-                'The file {} indicates some kind of tiff compression, and the sarpy API requirements '
-                'do not presently support reading of compressed tiff files. Consider using gdal to '
-                'translate this tiff to an uncompressed file via the command\n\t'
-                '"gdal_translate -co TILED=no <input_file> <output_file>"')
+        pass
 
     def check_tiled(self):
         """
@@ -385,13 +300,7 @@ class TiffDetails(object):
         -------
         None
         """
-
-        if 'TileLength' in self.tags or 'TileWidth' in self.tags:
-            raise ValueError(
-                'The file {} indicates that this is a tiled file, and the sarpy API requirements '
-                'do not presently support reading of tiled tiff files. Consider using gdal to '
-                'translate this tiff to a flat file via the command\n\t'
-                '"gdal_translate -co TILED=no <input_file> <output_file>"')
+        pass
 
 
 class NativeTiffDataSegment(NumpyMemmapSegment):
@@ -504,7 +413,7 @@ class NativeTiffDataSegment(NumpyMemmapSegment):
 
     @property
     def tiff_details(self) -> TiffDetails:
-        return self._tiff_details
+        pass
 
 
 class TiffReader(BaseReader):
@@ -529,20 +438,18 @@ class TiffReader(BaseReader):
         """
         NativeTiffDataSegment: The tiff data segment.
         """
-
-        return self._data_segment
+        pass
 
     @property
     def tiff_details(self) -> TiffDetails:
         """
         TiffDetails: The tiff details object.
         """
-
-        return self.data_segment.tiff_details
+        pass
 
     @property
     def file_name(self):
-        return self.tiff_details.file_name
+        pass
 
 ########
 # base expected functionality for a module with an implemented Reader
@@ -563,11 +470,4 @@ def is_a(file_name: str) -> Union[None, TiffReader]:
     None|TiffReader
         `TiffReader` instance if tiff file, `None` otherwise
     """
-
-    try:
-        tiff_details = TiffDetails(file_name)
-        logger.info('File {} is determined to be a tiff file.'.format(file_name))
-        return TiffReader(tiff_details)
-    except SarpyIOError:
-        # we don't want to catch parsing errors, for now
-        return None
+    pass

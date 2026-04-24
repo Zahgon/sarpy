@@ -106,10 +106,7 @@ class MatchType(Serializable):
     @property
     def NumMatchCollections(self):
         """int: The number of match collections for this match type."""
-        if self.MatchCollections is None:
-            return 0
-        else:
-            return len(self.MatchCollections)
+        pass
 
 
 class MatchInfoType(Serializable):
@@ -147,10 +144,7 @@ class MatchInfoType(Serializable):
     @property
     def NumMatchTypes(self) -> int:
         """int: The number of types of matched collections."""
-        if self.MatchTypes is None:
-            return 0
-        else:
-            return len(self.MatchTypes)
+        pass
 
     @classmethod
     def _from_node_0_5(cls, node, xml_ns, ns_key):

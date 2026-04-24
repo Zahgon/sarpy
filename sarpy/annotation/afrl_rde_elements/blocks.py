@@ -431,16 +431,7 @@ class ProjectionPerturbationType(Serializable):
         ----------
         structure : SICDType|SIDDType1|SIDDType2
         """
-
-        if not isinstance(structure, (SICDType, SIDDType1, SIDDType2)):
-            raise TypeError('Requires input of type SICDType or SIDDType, got {}'.format(type(structure)))
-
-        structure.define_coa_projection(
-            delta_arp=None if self.DeltaArp is None else self.DeltaArp.get_array(dtype='float64'),
-            delta_varp=None if self.DeltaVarp is None else self.DeltaVarp.get_array(dtype='float64'),
-            range_bias=self.DeltaRange,
-            adj_params_frame=self.CoordinateFrame,
-            override=True)
+        pass
 
 
 class LabelSourceType(Serializable):

@@ -207,17 +207,11 @@ class TxRcvType(Serializable):
         """
         int: The number of transmit waveforms used.
         """
-
-        if self.TxWFParameters is None:
-            return 0
-        return len(self.TxWFParameters)
+        pass
 
     @property
     def NumRcvs(self):
         """
         int: The number of receive configurations used.
         """
-
-        if self.RcvParameters is None:
-            return 0
-        return len(self.RcvParameters)
+        pass

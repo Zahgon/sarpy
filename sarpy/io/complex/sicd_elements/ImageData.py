@@ -273,12 +273,4 @@ class ImageDataType(Serializable):
         -------
         int
         """
-
-        if self.PixelType == "RE32F_IM32F":
-            return 8
-        elif self.PixelType == "RE16I_IM16I":
-            return 4
-        elif self.PixelType == "AMP8I_PHS8I":
-            return 2
-        else:
-            raise ValueError('Got unhandled pixel type `{}`'.format(self.PixelType))
+        pass

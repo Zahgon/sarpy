@@ -72,39 +72,21 @@ class SIDDTypeReader(BaseReader):
             self, data_segment, reader_type='SIDD', close_segments=close_segments, delete_files=delete_files)
 
     def _check_sizes(self) -> None:
-        data_sizes = self.get_data_size_as_tuple()
-        sidds = self.get_sidds_as_tuple()
-        if len(data_sizes) != len(sidds):
-            raise ValueError(
-                'Got mismatched number of data segments ({}) and sidds ({})'.format(
-                    len(data_sizes), len(sidds)))
-
-        agree = True
-        msg = ''
-        for i, (data_size, sidd) in enumerate(zip(data_sizes, sidds)):
-            expected_size = (sidd.Measurement.PixelFootprint.Row, sidd.Measurement.PixelFootprint.Col)
-            if data_size[:2] != expected_size:
-                agree = False
-                msg += 'data segment at index {} has data size {}\n\t' \
-                       'and expected size (from the sidd) {}\n'.format(i, data_size, expected_size)
-        if not agree:
-            raise ValueError(msg)
+        pass
 
     @property
     def sidd_meta(self) -> Union[None, SIDDType1, SIDDType2, SIDDType3, Tuple[SIDDType1, ...], Tuple[SIDDType2, ...], Tuple[SIDDType3, ...]]:
         """
         None|SIDDType1|SIDDType2|SIDDType3|Tuple[SIDDType1, ...]|Tuple[SIDDType2, ...]|Tuple[SIDDType3, ...]: the sidd meta_data collection.
         """
-
-        return self._sidd_meta
+        pass
 
     @property
     def sicd_meta(self) -> Optional[Tuple[SICDType, ...]]:
         """
         None|Tuple[SICDType, ...]: the sicd meta_data collection.
         """
-
-        return self._sicd_meta
+        pass
 
     def get_sidds_as_tuple(self) -> Union[None, Tuple[SIDDType1, ...], Tuple[SIDDType2, ...], Tuple[SIDDType3, ...]]:
         """
@@ -114,11 +96,4 @@ class SIDDTypeReader(BaseReader):
         -------
         None|Tuple[SIDDType1, ...]|Tuple[SIDDType2, ...]|Tuple[SIDDType3, ...]
         """
-
-        if self.sidd_meta is None:
-            return None
-        elif isinstance(self._sidd_meta, tuple):
-            return self.sidd_meta
-        else:
-            # noinspection PyRedundantParentheses
-            return (self.sidd_meta, )
+        pass

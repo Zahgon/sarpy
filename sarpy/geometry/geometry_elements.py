@@ -37,17 +37,7 @@ def _compress_identical(coords):
     numpy.ndarray
         coords array with consecutive identical points supressed (last point retained)
     """
-
-    if coords.shape[0] < 2:
-        return coords
-
-    include = numpy.zeros((coords.shape[0], ), dtype='bool')
-    include[-1] = True
-
-    for i, (first, last) in enumerate(zip(coords[:-1, :], coords[1:, :])):
-        if not (first[0] == last[0] and first[1] == last[1]):
-            include[i] = True
-    return coords[include, :]
+    pass
 
 
 def _validate_contain_arguments(pts_x, pts_y):
@@ -65,32 +55,12 @@ def _validate_contain_arguments(pts_x, pts_y):
 
 def _validate_grid_contain_arguments(grid_x, grid_y):
     # helper method for Polygon functionality
-    if not isinstance(grid_x, numpy.ndarray):
-        grid_x = numpy.array(grid_x, dtype=numpy.float64)
-    if not isinstance(grid_y, numpy.ndarray):
-        grid_y = numpy.array(grid_y, dtype=numpy.float64)
-    if len(grid_x.shape) != 1 or len(grid_y.shape) != 1:
-        raise ValueError('grid_x and grid_y must be one dimensional.')
-    if numpy.any((grid_x[1:] - grid_x[:-1]) <= 0):
-        raise ValueError('grid_x must be monotonically increasing')
-    if numpy.any((grid_y[1:] - grid_y[:-1]) <= 0):
-        raise ValueError('grid_y must be monotonically increasing')
-
-    return grid_x, grid_y
+    pass
 
 
 def _get_kml_coordinate_string(coordinates, transform):
     # type: (numpy.ndarray, Union[None, Callable]) -> str
-    def identity(x):
-        return x
-
-    if transform is None:
-        transform = identity
-
-    if coordinates.ndim == 1:
-        return '{0:0.9f},{1:0.9f}'.format(*transform(coordinates)[:2])
-    return ' '.join(
-        '{0:0.9f},{1:0.9f}'.format(*el[:2]) for el in transform(coordinates))
+    pass
 
 
 def _line_segments_intersect(pt0, pt1, pt2, pt3):
@@ -110,36 +80,7 @@ def _line_segments_intersect(pt0, pt1, pt2, pt3):
     -------
     bool
     """
-
-    def validate(entry):
-        # type: (Any) -> numpy.ndarray
-        if not isinstance(entry, numpy.ndarray):
-            entry = numpy.array(entry)
-        if entry.ndim != 1 or entry.size != 2:
-            raise ValueError('all inputs must be numpy array of shape (2, )')
-        return entry
-
-    P = validate(pt0)  # end point fo one segment
-    R = validate(pt1) - P  # direction vector for segment (one end to the other)
-    Q = validate(pt2)  # end point for the other line segment
-    S = validate(pt3) - Q  # direction vector for segment (one end to the other)
-
-    if numpy.linalg.norm(R) == 0 or numpy.linalg.norm(S) == 0:
-        # one of these is a trivial line segment. No legitimate intersection is possible.
-        return False
-
-    dir_cross = float(numpy.cross(R, S))  # the scalar cross product of the direction vectors
-
-    if dir_cross == 0:
-        # direction vectors are parallel, we will consider all of this as False
-        return False
-
-    end_cross_0 = float(numpy.cross(Q-P, S))
-    end_cross_1 = float(numpy.cross(Q-P, R))
-
-    t = end_cross_0/dir_cross
-    u = end_cross_1/dir_cross
-    return (0 <= t <= 1 and 0 < u < 1) or (0 < t < 1 and 0 <= u <= 1)
+    pass
 
 
 def _validate_point_array(point):
@@ -214,8 +155,7 @@ class Jsonable(object):
         -------
         str
         """
-
-        return self._type
+        pass
 
     @classmethod
     def from_dict(cls, the_json):
@@ -274,12 +214,7 @@ class Jsonable(object):
         -------
 
         """
-
-        out_dict = self.to_dict().copy()
-        if 'uid' in out_dict:
-            del out_dict['uid']
-        the_type = self.__class__
-        return the_type.from_dict(out_dict)
+        pass
 
 
 #######
@@ -320,8 +255,7 @@ class Feature(Jsonable):
         -------
         str
         """
-
-        return self._uid
+        pass
 
     @property
     def geometry(self):
@@ -332,19 +266,11 @@ class Feature(Jsonable):
         -------
         GeometryObject|GeometryCollection
         """
-
-        return self._geometry
+        pass
 
     @geometry.setter
     def geometry(self, geometry):
-        if geometry is None:
-            self._geometry = None
-        elif isinstance(geometry, Geometry):
-            self._geometry = geometry
-        elif isinstance(geometry, dict):
-            self._geometry = Geometry.from_dict(geometry)
-        else:
-            raise TypeError('geometry must be an instance of Geometry base class')
+        pass
 
     @property
     def properties(self):  # type: () -> Union[None, int, float, str, list, dict, Jsonable]
@@ -355,16 +281,11 @@ class Feature(Jsonable):
         -------
         None|int|float|str|dict|list|Jsonable: The properties.
         """
-
-        return self._properties
+        pass
 
     @properties.setter
     def properties(self, properties):
-        if not isinstance(properties, (int, float, str, dict, list, Jsonable)):
-            logger.warning(
-                'Got unexpected type `{}` for properties.\n\t'
-                'This may effect serialization ability'.format(type(properties)))
-        self._properties = properties
+        pass
 
     @classmethod
     def from_dict(cls, the_json):
@@ -420,28 +341,10 @@ class Feature(Jsonable):
         -------
         None
         """
-
-        params = {}
-        if self.uid is not None:
-            params['id'] = self.uid
-        if self.properties is not None:
-            params['description'] = str(self.properties)
-        placemark = doc.add_container(par=parent, typ='Placemark', **params)
-        if self.geometry is not None:
-            self.geometry.add_to_kml(doc, placemark, coord_transform)
+        pass
 
     def replicate(self):
-        geometry = None if self.geometry is None else self.geometry.replicate()
-        old_properties = self.properties
-        if old_properties is None:
-            new_properties = None
-        elif isinstance(old_properties, Jsonable):
-            new_properties = old_properties.replicate()
-        else:
-            new_properties = copy.deepcopy(old_properties)
-
-        the_type = self.__class__
-        return the_type(geometry=geometry, properties=new_properties)
+        pass
 
 
 class FeatureCollection(Jsonable):
@@ -500,28 +403,11 @@ class FeatureCollection(Jsonable):
         -------
         List[Feature]
         """
-
-        return self._features
+        pass
 
     @features.setter
     def features(self, features):
-        if features is None:
-            self._features = None
-            self._feature_dict = None
-            return
-
-        if not isinstance(features, list):
-            raise TypeError('features must be a list of features. Got {}'.format(type(features)))
-
-        for entry in features:
-            if isinstance(entry, Feature):
-                self.add_feature(entry)
-            elif isinstance(entry, dict):
-                self.add_feature(Feature.from_dict(entry))
-            else:
-                raise TypeError(
-                    'Entries of features are required to be instances of Feature or '
-                    'dictionary to be deserialized. Got {}'.format(type(entry)))
+        pass
 
     def get_integer_index(self, feature_id):
         """
@@ -535,13 +421,10 @@ class FeatureCollection(Jsonable):
         -------
         int
         """
-
-        return self._feature_dict[feature_id]
+        pass
 
     def _rebuild_feature_dict(self):
-        self._feature_dict = {}
-        for i, entry in enumerate(self._features):
-            self._feature_dict[entry.uid] = i
+        pass
 
     @classmethod
     def from_dict(cls, the_json):
@@ -572,16 +455,7 @@ class FeatureCollection(Jsonable):
         -------
         None
         """
-
-        if not isinstance(feature, Feature):
-            raise TypeError('This requires a Feature instance, got {}'.format(type(feature)))
-
-        if self._features is None:
-            self._feature_dict = {feature.uid: 0}
-            self._features = [feature, ]
-        else:
-            self._feature_dict[feature.uid] = len(self._features)
-            self._features.append(feature)
+        pass
 
     def export_to_kml(self, file_name, coord_transform=None, **params):
         """
@@ -600,18 +474,10 @@ class FeatureCollection(Jsonable):
         -------
         None
         """
-
-        from sarpy.io.kml import Document as KML_Document
-
-        with KML_Document(file_name=file_name, **params) as doc:
-            if self.features is not None:
-                for feat in self.features:
-                    feat.add_to_kml(doc, coord_transform)
+        pass
 
     def replicate(self):
-        features = [feat.replicate() for feat in self.features]
-        the_type = self.__class__
-        return the_type(features=features)
+        pass
 
 
 class Geometry(Jsonable):
@@ -696,8 +562,7 @@ class Geometry(Jsonable):
         """
         bool: Is this a collection object?
         """
-
-        return self._is_collection
+        pass
 
 
 class GeometryCollection(Geometry):
@@ -723,7 +588,7 @@ class GeometryCollection(Geometry):
 
     @property
     def collection(self):
-        return self.geometries
+        pass
 
     @property
     def geometries(self):
@@ -731,28 +596,11 @@ class GeometryCollection(Geometry):
         """
         List[Geometry]: The geometry collection.
         """
-
-        return self._geometries
+        pass
 
     @geometries.setter
     def geometries(self, geometries):
-        if geometries is None:
-            self._geometries = []
-            return
-        elif not isinstance(geometries, list):
-            raise TypeError(
-                'geometries must be None or a list of Geometry objects. Got type {}'.format(type(geometries)))
-        elif len(geometries) < 2:
-            logger.warning('GeometryCollection should contain a list of geometries with length greater than 1.')
-
-        self._geometries = []
-        for entry in geometries:
-            if isinstance(entry, dict):
-                entry = Geometry.from_dict(entry)
-            if not isinstance(entry, Geometry):
-                raise TypeError(
-                    'geometries must be a list of Geometry objects. Got an element of type {}'.format(type(entry)))
-            self._geometries.append(entry)
+        pass
 
     def get_bbox(self):
         if self._geometries is None:
@@ -804,12 +652,7 @@ class GeometryCollection(Geometry):
         return parent_dict
 
     def add_to_kml(self, doc, parent, coord_transform):
-        if self.geometries is None:
-            return
-        multigeometry = doc.add_multi_geometry(parent)
-        for geometry in self.geometries:
-            if geometry is not None:
-                geometry.add_to_kml(doc, multigeometry, coord_transform)
+        pass
 
     def apply_projection(self, proj_method):
         """
@@ -823,10 +666,7 @@ class GeometryCollection(Geometry):
         -------
         GeometryObject
         """
-
-        if self.geometries is None:
-            return GeometryCollection()
-        return GeometryCollection(geometries=[geom.apply_projection(proj_method) for geom in self.geometries])
+        pass
 
     @classmethod
     def assemble_from_collection(cls, *args):
@@ -971,27 +811,12 @@ class Point(GeometryObject):
         """
         numpy.ndarray: The coordinate array.
         """
-
-        return self._coordinates
+        pass
 
     @coordinates.setter
     def coordinates(self, coordinates):
         # type: (Union[None, List, Tuple, numpy.ndarray]) -> None
-        if coordinates is None:
-            self._coordinates = None
-            return
-
-        if not isinstance(coordinates, numpy.ndarray):
-            coordinates = numpy.array(coordinates, dtype=numpy.float64)
-
-        if coordinates.ndim != 1:
-            raise ValueError(
-                'coordinates must be a one-dimensional array. Got shape {}'.format(coordinates.shape))
-        elif not (2 <= coordinates.size <= 4):
-            raise ValueError(
-                'coordinates must have between 2 and 4 entries. Got shape {}'.format(coordinates.shape))
-        else:
-            self._coordinates = coordinates
+        pass
 
     def get_bbox(self):
         if self._coordinates is None:
@@ -1015,13 +840,11 @@ class Point(GeometryObject):
         return cls(coordinates=geometry['coordinates'])
 
     def add_to_kml(self, doc, parent, coord_transform):
-        if self.coordinates is None:
-            return
-        doc.add_point(_get_kml_coordinate_string(self.coordinates, coord_transform), par=parent)
+        pass
 
     def apply_projection(self, proj_method):
         # type: (callable) -> Point
-        return Point(coordinates=proj_method(self._coordinates))
+        pass
 
     def get_minimum_distance(self, point):
         if self._coordinates is None:
@@ -1057,7 +880,7 @@ class MultiPoint(GeometryObject):
 
     @property
     def collection(self):
-        return self.points
+        pass
 
     @property
     def points(self):
@@ -1065,26 +888,11 @@ class MultiPoint(GeometryObject):
         """
         List[Point]: The point collection.
         """
-
-        return self._points
+        pass
 
     @points.setter
     def points(self, points):
-        if points is None:
-            self._points = None
-        if isinstance(points, numpy.ndarray):
-            points = points.tolist()
-        if not isinstance(points, list):
-            raise TypeError(
-                'Multipoint requires that points is None or a list of points. '
-                'Got type {}'.format(type(points)))
-        pts = []
-        for entry in points:
-            if isinstance(entry, Point):
-                pts.append(entry)
-            else:
-                pts.append(Point(coordinates=entry))
-        self._points = pts
+        pass
 
     def get_bbox(self):
         if self._points is None:
@@ -1117,16 +925,11 @@ class MultiPoint(GeometryObject):
         return cls(coordinates=geometry['coordinates'])
 
     def add_to_kml(self, doc, parent, coord_transform):
-        if self._points is None:
-            return
-        multigeometry = doc.add_multi_geometry(parent)
-        for geometry in self._points:
-            if geometry is not None:
-                geometry.add_to_kml(doc, multigeometry, coord_transform)
+        pass
 
     def apply_projection(self, proj_method):
         # type: (callable) -> MultiPoint
-        return MultiPoint(coordinates=[pt.apply_projection(proj_method) for pt in self.points])
+        pass
 
     def get_minimum_distance(self, point):
         if self._points is None:
@@ -1197,38 +1000,12 @@ class LineString(GeometryObject):
         """
         numpy.ndarray: The coordinate array.
         """
-
-        return self._coordinates
+        pass
 
     @coordinates.setter
     def coordinates(self, coordinates):
         # type: (Union[None, List, Tuple, numpy.ndarray]) -> None
-        if coordinates is None:
-            self._coordinates = None
-            return
-
-        if not isinstance(coordinates, numpy.ndarray):
-            coordinates = numpy.array(coordinates, dtype=numpy.float64)
-
-        if coordinates.ndim != 2:
-            raise ValueError(
-                'coordinates must be a two-dimensional array. '
-                'Got shape {}'.format(coordinates.shape))
-        if not (2 <= coordinates.shape[1] <= 4):
-            raise ValueError(
-                'The second dimension of coordinates must have between 2 and 4 entries. '
-                'Got shape {}'.format(coordinates.shape))
-        if coordinates.shape[0] < 2:
-            logger.info(
-                'LineString coordinates should consist of at least 2 points.\n\t'
-                'Got shape {}'.format(coordinates.shape))
-        coordinates = _compress_identical(coordinates)
-        if coordinates.shape[0] < 2:
-            logger.info(
-                'coordinates should consist of at least 2 points after\n\t'
-                'suppressing consecutive repeated points.\n\t'
-                'Got shape {}'.format(coordinates.shape))
-        self._coordinates = coordinates
+        pass
 
     def self_intersection(self):
         """
@@ -1238,17 +1015,7 @@ class LineString(GeometryObject):
         -------
         bool
         """
-
-        if self.coordinates.shape[0] <= 3:
-            return False
-
-        for i in range(self.coordinates.shape[0] - 3):
-            for j in range(i+1, self.coordinates.shape[0] - 1):
-                result = _line_segments_intersect(
-                    self.coordinates[i, :], self.coordinates[i+1, :], self.coordinates[j, :], self.coordinates[j+1, :])
-                if result:
-                    return True
-        return False
+        pass
 
     def get_bbox(self):
         if self._coordinates is None:
@@ -1284,20 +1051,14 @@ class LineString(GeometryObject):
         -------
         None|float
         """
-
-        if self._coordinates is None:
-            return None
-        diffs = self._coordinates[1:, :] - self._coordinates[:-1, :]
-        return float(numpy.sum(numpy.sqrt(diffs[:, 0]*diffs[:, 0] + diffs[:, 1]*diffs[:, 1])))
+        pass
 
     def add_to_kml(self, doc, parent, coord_transform):
-        if self.coordinates is None:
-            return
-        doc.add_line_string(_get_kml_coordinate_string(self.coordinates, coord_transform), par=parent)
+        pass
 
     def apply_projection(self, proj_method):
         # type: (callable) -> LineString
-        return LineString(coordinates=proj_method(self.coordinates))
+        pass
 
     def get_minimum_distance(self, point):
         if self._coordinates is None:
@@ -1338,7 +1099,7 @@ class MultiLineString(GeometryObject):
 
     @property
     def collection(self):
-        return self.lines
+        pass
 
     @property
     def lines(self):
@@ -1346,25 +1107,11 @@ class MultiLineString(GeometryObject):
         """
         List[LineString]: The line collection.
         """
-
-        return self._lines
+        pass
 
     @lines.setter
     def lines(self, lines):
-        if lines is None:
-            self._lines = None
-            return
-        if not isinstance(lines, list):
-            raise TypeError(
-                'MultiLineString requires that lines is None or a list of LineStrings. '
-                'Got type {}'.format(type(lines)))
-        lins = []
-        for entry in lines:
-            if isinstance(entry, LineString):
-                lins.append(entry)
-            else:
-                lins.append(LineString(coordinates=entry))
-        self._lines = lins
+        pass
 
     def get_bbox(self):
         if self._lines is None:
@@ -1406,22 +1153,14 @@ class MultiLineString(GeometryObject):
         -------
         None|float
         """
-
-        if self._lines is None:
-            return None
-        return sum(entry.get_length() for entry in self._lines)
+        pass
 
     def add_to_kml(self, doc, parent, coord_transform):
-        if self._lines is None:
-            return
-        multigeometry = doc.add_multi_geometry(parent)
-        for geometry in self._lines:
-            if geometry is not None:
-                geometry.add_to_kml(doc, multigeometry, coord_transform)
+        pass
 
     def apply_projection(self, proj_method):
         # type: (callable) -> MultiLineString
-        return MultiLineString(coordinates=[line.apply_projection(proj_method) for line in self.lines])
+        pass
 
     def get_minimum_distance(self, point):
         if self._lines is None:
@@ -1519,8 +1258,7 @@ class LinearRing(LineString):
         -------
         numpy.ndarray
         """
-
-        return self._bounding_box
+        pass
 
     def get_perimeter(self):
         """
@@ -1530,8 +1268,7 @@ class LinearRing(LineString):
         -------
         float
         """
-
-        return self.get_length()
+        pass
 
     def get_area(self):
         """
@@ -1558,13 +1295,7 @@ class LinearRing(LineString):
         -------
         numpy.ndarray
         """
-
-        arr = self._coordinates[:-1, 0]*self._coordinates[1:, 1] - \
-            self._coordinates[1:, 0]*self._coordinates[:-1, 1]
-        area = 0.5*numpy.sum(arr)  # signed area
-        x = numpy.sum(0.5*(self._coordinates[:-1, 0] + self._coordinates[1:, 0])*arr)
-        y = numpy.sum(0.5*(self._coordinates[:-1, 1] + self._coordinates[1:, 1])*arr)
-        return numpy.array([x, y], dtype=numpy.float64)/(3*area)
+        pass
 
     @property
     def coordinates(self):
@@ -1575,121 +1306,19 @@ class LinearRing(LineString):
         -------
         numpy.ndarray
         """
-
-        return self._coordinates
+        pass
 
     @coordinates.setter
     def coordinates(self, coordinates):
-        self.set_coordinates(coordinates)
+        pass
 
     def set_coordinates(self, coordinates):
-        if coordinates is None:
-            self._coordinates = None
-            self._bounding_box = None
-            self._segmentation = None
-            self._diffs = None
-            return
-
-        if not isinstance(coordinates, numpy.ndarray):
-            # noinspection PyTypeChecker
-            coordinates = numpy.array(coordinates, dtype=numpy.float64)
-        if len(coordinates.shape) != 2:
-            raise ValueError(
-                'coordinates must be two-dimensional. Got shape {}'.format(coordinates.shape))
-        if not (2 <= coordinates.shape[1] <= 4):
-            raise ValueError('The second dimension of coordinates must have between 2 and 4 entries. '
-                             'Got shape {}'.format(coordinates.shape))
-        if coordinates.shape[0] < 3:
-            logger.info(
-                'coordinates must consist of at least 3 points.\n\t'
-                'Got shape {}'.format(coordinates.shape))
-        coordinates = _compress_identical(coordinates)
-        if (coordinates[0, 0] != coordinates[-1, 0]) or \
-                (coordinates[0, 1] != coordinates[-1, 1]):
-            coordinates = numpy.vstack((coordinates, coordinates[0, :]))
-        if coordinates.shape[0] < 4:
-            logger.info(
-                'After compressing repeated (in sequence) points and\n\t'
-                'ensuring first and last point are the same,\n\t'
-                'coordinates must contain at least 4 points.\n\t'
-                'Got shape {}'.format(coordinates.shape))
-        self._coordinates = coordinates
-        # construct bounding box
-        self._bounding_box = numpy.empty((2, 2), dtype=coordinates.dtype)
-        self._bounding_box[0, :] = (numpy.min(coordinates[:, 0]), numpy.max(coordinates[:, 0]))
-        self._bounding_box[1, :] = (numpy.min(coordinates[:, 1]), numpy.max(coordinates[:, 1]))
-        # construct diffs
-        self._diffs = coordinates[1:, :] - coordinates[:-1, :]
-        self._segmentation = {
-            'x': self._construct_segmentation(coordinates[:, 0], coordinates[:, 1]),
-            'y': self._construct_segmentation(coordinates[:, 1], coordinates[:, 0])}
-        signed_area = self.get_area()
-        if signed_area >= 0:
-            self._orientation = 1
-        else:
-            self._orientation = -1
+        pass
 
     @staticmethod
     def _construct_segmentation(coords, o_coords):
         # helper method
-        def overlap(fst, lst, segment):
-            if fst == lst and fst == segment['min']:
-                return 1  # contained
-            if fst >= segment['max']:
-                return 0  # above the segment
-            if lst <= segment['min']:
-                return 2  # below the segment
-            return 1  # contained
-
-        def do_min_val_value(segment, val1, val2):
-            segment['min_value'] = min(val1, val2, segment['min_value'])
-            segment['max_value'] = max(val1, val2, segment['max_value'])
-
-        if len(coords) == 1:
-            return (
-                {'min': coords[0], 'max': coords[0], 'inds': [0, ],
-                 'min_value': numpy.inf, 'max_value': -numpy.inf}, )
-
-        inds = numpy.argsort(coords[:-1])
-        segments = []
-        beg_val = coords[inds[0]]
-        val = None
-        for ind in inds[1:]:
-            val = coords[ind]
-            if val > beg_val:  # make a new segment
-                segments.append(
-                    {'min': beg_val, 'max': val, 'inds': [],
-                     'min_value': numpy.inf, 'max_value': -numpy.inf})
-                beg_val = val
-        else:
-            # it may have ended without appending the segment
-            if val > beg_val:
-                segments.append(
-                    {'min': beg_val, 'max': val, 'inds': [],
-                     'min_value': numpy.inf, 'max_value': -numpy.inf})
-        del beg_val, val
-
-        # order our segments based on smallest value in the given dimension, for fast analysis
-        this_sides = []
-        for i, (beg_value, end_value, ocoord1, ocoord2) in \
-                enumerate(zip(coords[:-1], coords[1:], o_coords[:-1], o_coords[1:])):
-            first, last = (beg_value, end_value) if beg_value <= end_value else (end_value, beg_value)
-            this_sides.append((first, last, i, ocoord1, ocoord2))
-
-        # now, let's populate the inds lists and min/max_values elements for the segmentation
-        start_segment = 0
-        for entry in sorted(this_sides, key=lambda x: x[0]):
-            for j in range(start_segment, len(segments)):
-                seg = segments[j]
-                overlap_state = overlap(entry[0], entry[1], seg)
-                if overlap_state == 0:
-                    start_segment += 1
-                elif overlap_state == 1:
-                    seg['inds'].append(entry[2])
-                    do_min_val_value(seg, entry[3], entry[4])
-                else:
-                    break
-        return tuple(segments)
+        pass
 
     def _contained_segment_data(self, x, y):
         """
@@ -1895,43 +1524,11 @@ class LinearRing(LineString):
             boolean mask for point inclusion of the grid. Output is of shape
             `(grid_x.size, grid_y.size)`.
         """
-
-        grid_x, grid_y = _validate_grid_contain_arguments(grid_x, grid_y)
-
-        out = numpy.zeros((grid_x.size, grid_y.size), dtype='bool')
-        if self._coordinates.shape[0] < 4:
-            # this is a degenerate linear ring with no interior
-            return out
-
-        first_ind, last_ind, direction = self._contained_segment_data(grid_x, grid_y)
-        if first_ind is None:
-            return out  # it missed the whole bounding box
-
-        first_ind, last_ind, direction = self._contained_segment_data(grid_x, grid_y)
-        x_inds = numpy.arange(grid_x.size)
-        y_inds = numpy.arange(grid_y.size)
-        for index in range(first_ind, last_ind):
-            if direction == 'x':
-                seg = self._segmentation['x'][index]
-                start_x = x_inds[grid_x >= seg['min']].min()
-                end_x = x_inds[grid_x <= seg['max']].max() + 1
-                start_y = y_inds[grid_y >= seg['min_value']].min() if grid_y[-1] >= seg['min_value'] else None
-                end_y = y_inds[grid_y <= seg['max_value']].max() + 1 if start_y is not None else None
-            else:
-                seg = self._segmentation['y'][index]
-                start_x = x_inds[grid_x >= seg['min_value']].min() if grid_x[-1] >= seg['min_value'] else None
-                end_x = x_inds[grid_x <= seg['max_value']].max() + 1 if start_x is not None else None
-                start_y = y_inds[grid_y >= seg['min']].min()
-                end_y = y_inds[grid_y <= seg['max']].max() + 1
-
-            if start_x is not None and end_x is not None and start_y is not None and end_y is not None:
-                y_temp, x_temp = numpy.meshgrid(grid_y[start_y:end_y], grid_x[start_x:end_x], indexing='xy')
-                out[start_x:end_x, start_y:end_y] = self._contained_do_segment(x_temp, y_temp, seg, direction)
-        return out
+        pass
 
     def apply_projection(self, proj_method):
         # type: (callable) -> LinearRing
-        return LinearRing(coordinates=proj_method(self.coordinates))
+        pass
 
     def to_dict(self, parent_dict=None):
         """
@@ -2000,43 +1597,21 @@ class Polygon(GeometryObject):
         -------
         bool
         """
-
-        if self.outer_ring is None:
-            return False
-
-        if self.outer_ring.self_intersection():
-            return True
-
-        if self.inner_rings is not None:
-            for entry in self.inner_rings:
-                if entry.self_intersection():
-                    return True
-
-            for i in range(self.outer_ring.coordinates.shape[0] - 1):
-                for entry in self.inner_rings:
-                    for j in range(entry.coordinates.shape[0] - 1):
-                        result = _line_segments_intersect(
-                            self.outer_ring.coordinates[i, :], self.outer_ring.coordinates[i + 1, :],
-                            entry.coordinates[j, :], entry.coordinates[j + 1, :])
-                        if result:
-                            return True
-        return False
+        pass
 
     @property
     def outer_ring(self):
         """
         LinearRing: The outer ring.
         """
-
-        return self._outer_ring
+        pass
 
     @property
     def inner_rings(self):
         """
         None|List[LinearRing]: The inner rings.
         """
-
-        return self._inner_rings
+        pass
 
     @classmethod
     def from_dict(cls, geometry):
@@ -2073,31 +1648,10 @@ class Polygon(GeometryObject):
         -------
         None
         """
-
-        if coordinates is None:
-            self._outer_ring = None
-            self._inner_rings = None
-            return
-        if isinstance(coordinates, (LinearRing, LineString)):
-            outer_ring = LinearRing(coordinates=coordinates.coordinates)
-        else:
-            outer_ring = LinearRing(coordinates=coordinates)
-        self._outer_ring = outer_ring
+        pass
 
     def add_inner_ring(self, coordinates):
-        if coordinates is None:
-            return
-        if self._outer_ring is None:
-            raise ValueError('A Polygon cannot have an inner ring with no outer ring defined.')
-
-        if self._inner_rings is None:
-            self._inner_rings = []
-
-        if isinstance(coordinates, (LinearRing, LineString)):
-            inner_ring = LinearRing(coordinates=coordinates.coordinates)
-        else:
-            inner_ring = LinearRing(coordinates=coordinates)
-        self._inner_rings.append(inner_ring)
+        pass
 
     def get_perimeter(self):
         """
@@ -2107,15 +1661,7 @@ class Polygon(GeometryObject):
         -------
         None|float
         """
-
-        if self._outer_ring is None:
-            return None
-
-        perimeter = self._outer_ring.get_perimeter()
-        if self._inner_rings is not None:
-            for entry in self._inner_rings:
-                perimeter += entry.get_perimeter()
-        return perimeter
+        pass
 
     def get_area(self):
         """
@@ -2145,10 +1691,7 @@ class Polygon(GeometryObject):
         -------
         numpy.ndarray
         """
-
-        if self._outer_ring is None:
-            return None
-        return self._outer_ring.get_centroid()
+        pass
 
     def contain_coordinates(self, pts_x, pts_y, block_size=None):
         """
@@ -2207,33 +1750,14 @@ class Polygon(GeometryObject):
             boolean mask for point inclusion of the grid. Output is of shape
             `(grid_x.size, grid_y.size)`.
         """
-
-        grid_x, grid_y = _validate_grid_contain_arguments(grid_x, grid_y)
-
-        if self._outer_ring is None:
-            return numpy.zeros((grid_x.size, grid_y.size), dtype='bool')
-
-        in_poly = self._outer_ring.grid_contained(grid_x, grid_y)
-        if self._inner_rings is not None:
-            for ir in self._inner_rings:
-                in_poly &= ~ir.grid_contained(grid_x, grid_y)
-        return in_poly
+        pass
 
     def add_to_kml(self, doc, parent, coord_transform):
-        if self._outer_ring is None:
-            return
-        outCoords = _get_kml_coordinate_string(self._outer_ring.coordinates, coord_transform)
-        inCoords = []
-        if self._inner_rings is not None:
-            inCoords = [_get_kml_coordinate_string(ir.coordinates, coord_transform) for ir in self._inner_rings]
-        doc.add_polygon(outCoords, inCoords=inCoords, par=parent)
+        pass
 
     def apply_projection(self, proj_method):
         # type: (callable) -> Polygon
-        coords = [self._outer_ring.apply_projection(proj_method), ]
-        if self._inner_rings is not None:
-            coords.extend([lr.apply_projection(proj_method) for lr in self._inner_rings])
-        return Polygon(coordinates=coords)
+        pass
 
     def get_minimum_distance(self, point):
         if self._outer_ring is None:
@@ -2271,7 +1795,7 @@ class MultiPolygon(GeometryObject):
 
     @property
     def collection(self):
-        return self.polygons
+        pass
 
     @property
     def polygons(self):
@@ -2279,26 +1803,11 @@ class MultiPolygon(GeometryObject):
         """
         List[Polygon]: The polygon collection.
         """
-
-        return self._polygons
+        pass
 
     @polygons.setter
     def polygons(self, polygons):
-        if polygons is None:
-            self._polygons = None
-            return
-
-        if not isinstance(polygons, list):
-            raise TypeError(
-                'MultiPolygon requires the polygons is None or a list of Polygons. '
-                'Got type {}'.format(type(polygons)))
-        polys = []
-        for entry in polygons:
-            if isinstance(entry, Polygon):
-                polys.append(entry)
-            else:
-                polys.append(Polygon(coordinates=entry))
-        self._polygons = polys
+        pass
 
     def get_bbox(self):
         if self._polygons is None:
@@ -2342,10 +1851,7 @@ class MultiPolygon(GeometryObject):
         -------
         None|float
         """
-
-        if self._polygons is None:
-            return None
-        return sum(entry.get_perimeter() for entry in self._polygons)
+        pass
 
     def get_area(self):
         """
@@ -2411,28 +1917,14 @@ class MultiPolygon(GeometryObject):
             boolean mask for point inclusion of the grid. Output is of shape
             `(grid_x.size, grid_y.size)`.
         """
-
-        grid_x, grid_y = _validate_grid_contain_arguments(grid_x, grid_y)
-
-        if self._polygons is None or len(self._polygons) == 0:
-            return numpy.zeros((grid_x.size, grid_y.size), dtype='bool')
-
-        in_poly = self._polygons[0].grid_contained(grid_x, grid_y)
-        for entry in self._polygons[1:]:
-            in_poly |= entry.grid_contained(grid_x, grid_y)
-        return in_poly
+        pass
 
     def add_to_kml(self, doc, parent, coord_transform):
-        if self._polygons is None:
-            return
-        multigeometry = doc.add_multi_geometry(parent)
-        for geometry in self._polygons:
-            if geometry is not None:
-                geometry.add_to_kml(doc, multigeometry, coord_transform)
+        pass
 
     def apply_projection(self, proj_method):
         # type: (callable) -> MultiPolygon
-        return MultiPolygon(coordinates=[poly.apply_projection(proj_method) for poly in self.polygons])
+        pass
 
     def get_minimum_distance(self, point):
         if self._polygons is None:

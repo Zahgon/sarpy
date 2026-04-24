@@ -149,27 +149,18 @@ class AntennaType(Serializable):
         """
         int: The number of transmit elements.
         """
-
-        if self.Tx is None:
-            return 0
-        return len(self.Tx)
+        pass
 
     @property
     def NumRcvAnt(self):
         """
         int: The number of receive elements.
         """
-
-        if self.Rcv is None:
-            return 0
-        return len(self.Rcv)
+        pass
 
     @property
     def NumTWAnt(self):
         """
         int: The number of two way elements.
         """
-
-        if self.TwoWay is None:
-            return 0
-        return len(self.TwoWay)
+        pass

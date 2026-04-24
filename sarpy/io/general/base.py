@@ -152,23 +152,21 @@ class BaseReader(object):
         """
         None|str: Defined as a convenience property.
         """
-
-        return None
+        pass
 
     @property
     def reader_type(self) -> str:
         """
         str: A descriptive string for the type of reader
         """
-        return self._reader_type
+        pass
 
     @property
     def data_segment(self) -> Union[DataSegment, Tuple[DataSegment, ...]]:
         """
         DataSegment|Tuple[DataSegment, ...]: The data segment collection.
         """
-
-        return self._data_segment
+        pass
 
     def _set_data_segment(
             self,
@@ -184,41 +182,14 @@ class BaseReader(object):
         -------
         None
         """
-
-        if data_segment is None:
-            return  # do nothing
-
-        if self._data_segment is not None:
-            raise ValueError('data_segment is read only, once set.')
-
-        if isinstance(data_segment, DataSegment):
-            data_segment = [data_segment, ]
-        if not isinstance(data_segment, Sequence):
-            raise TypeError('data_segment must be an instance of DataSegment or a sequence of such instances')
-
-        for entry in data_segment:
-            if not isinstance(entry, DataSegment):
-                raise TypeError(
-                    'Requires all data segment entries to be an instance of DataSegment.\n\t'
-                    'Got type {}'.format(type(entry)))
-            if not entry.mode == 'r':
-                raise ValueError('Each data segment must have mode="r"')
-
-        if len(data_segment) == 1:
-            self._data_segment = data_segment[0]
-        else:
-            self._data_segment = tuple(data_segment)
+        pass
 
     @property
     def image_count(self) -> int:
         """
         int: The number of images/data segments from which to read.
         """
-
-        if isinstance(self.data_segment, DataSegment):
-            return 1
-        else:
-            return len(self.data_segment)
+        pass
 
     def get_data_segment_as_tuple(self) -> Tuple[DataSegment, ...]:
         """
@@ -229,8 +200,7 @@ class BaseReader(object):
         -------
         Tuple[DataSegment, ...]
         """
-
-        return (self.data_segment, ) if self.image_count == 1 else self._data_segment
+        pass
 
     @property
     def data_size(self) -> Union[Tuple[int, ...], Tuple[Tuple[int, ...]]]:
@@ -240,9 +210,7 @@ class BaseReader(object):
         this will be `Tuple[int, ...]`, otherwise it will be
         `Tuple[Tuple, int, ...], ...]`.
         """
-
-        return self.data_segment.formatted_shape if self.image_count == 1 else \
-            tuple(entry.formatted_shape for entry in self.data_segment)
+        pass
 
     def get_data_size_as_tuple(self) -> Tuple[Tuple[int, ...], ...]:
         """
@@ -263,9 +231,7 @@ class BaseReader(object):
         data segment(s). If there is a single data segment, then this will be
         `Tuple[int, ...]`, otherwise it will be `Tuple[Tuple, int, ...], ...]`.
         """
-
-        return self.data_segment.raw_shape if self.image_count == 1 else \
-            tuple(entry.raw_shape for entry in self.data_segment)
+        pass
 
     def get_raw_data_size_as_tuple(self) -> Tuple[Tuple[int, ...], ...]:
         """
@@ -276,24 +242,21 @@ class BaseReader(object):
         -------
         Tuple[Tuple[int, ...], ...]
         """
-
-        return (self.data_size, ) if self.image_count == 1 else self.data_size
+        pass
 
     @property
     def files_to_delete_on_close(self) -> List[str]:
         """
         List[str]: A collection of files to delete on the close operation.
         """
-
-        return self._delete_temp_files
+        pass
 
     @property
     def closed(self) -> bool:
         """
         bool: Is the reader closed? Reading will result in a ValueError
         """
-
-        return self._closed
+        pass
 
     def _validate_closed(self):
         if not hasattr(self, '_closed') or self._closed:
@@ -321,8 +284,7 @@ class BaseReader(object):
         --------
         :meth:`read`.
         """
-
-        return self.__call__(*ranges, index=index, raw=False, squeeze=squeeze)
+        pass
 
     def read(
             self,
@@ -567,19 +529,7 @@ class AggregateReader(BaseReader):
         -------
         Tuple[BaseReader]
         """
-
-        if not isinstance(readers, Sequence):
-            raise TypeError('input argument must be a sequence of readers. Got type {}'.format(type(readers)))
-
-        # validate each entry
-        the_readers = []
-        for i, entry in enumerate(readers):
-            if not isinstance(entry, BaseReader):
-                raise TypeError(
-                    'All elements of the input argument must be reader instances. '
-                    'Entry {} is of type {}'.format(i, type(entry)))
-            the_readers.append(entry)
-        return tuple(the_readers)
+        pass
 
     def _define_index_mapping(self) -> List[DataSegment]:
         """
@@ -589,25 +539,14 @@ class AggregateReader(BaseReader):
         -------
         List[DataSegment]
         """
-
-        # prepare the index mapping workspace
-        index_mapping = []
-
-        segments = []
-        for i, reader in enumerate(self._readers):
-            for j, segment in enumerate(reader.get_data_segment_as_tuple()):
-                segments.append(segment)
-                index_mapping.append((i, j))
-        self._index_mapping = tuple(index_mapping)
-        return segments
+        pass
 
     @property
     def index_mapping(self) -> Tuple[Tuple[int, int]]:
         """
         Tuple[Tuple[int, int]]: The index mapping of the form (reader index, segment index in reader).
         """
-
-        return self._index_mapping
+        pass
 
     def close(self) -> None:
         """
@@ -662,24 +601,21 @@ class BaseWriter(object):
         """
         None|str: Defined as a convenience property.
         """
-
-        return None
+        pass
 
     @property
     def data_segment(self) -> Tuple[DataSegment, ...]:
         """
         Tuple[DataSegment, ...]: The data segment collection.
         """
-
-        return self._data_segment
+        pass
 
     @property
     def image_count(self) -> int:
         """
         int: The number of overall images/data segments.
         """
-
-        return len(self.data_segment)
+        pass
 
     @property
     def data_size(self) -> Tuple[Tuple[int, ...]]:
@@ -687,16 +623,14 @@ class BaseWriter(object):
         Tuple[Tuple[int, ...], ...]: the formatted data sizes of the data
         segments.
         """
-
-        return tuple(entry.formatted_shape for entry in self.data_segment)
+        pass
 
     @property
     def raw_data_size(self) -> Union[Tuple[int, ...], Tuple[Tuple[int, ...]]]:
         """
         Tuple[Tuple[int, ...], ...]: the raw data sizes of the data segments.
         """
-
-        return tuple(entry.raw_shape for entry in self.data_segment)
+        pass
 
     @property
     def closed(self) -> bool:
@@ -704,8 +638,7 @@ class BaseWriter(object):
         bool: Is the writer closed? Reading file after writing can
         result in a ValueError if writer was not closed.
         """
-
-        return self._closed
+        pass
 
     def _validate_closed(self):
         if not hasattr(self, '_closed') or self._closed:

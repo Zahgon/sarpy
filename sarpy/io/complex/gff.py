@@ -58,12 +58,11 @@ _requires_3darray_text = 'Requires a three-dimensional numpy.ndarray\n\t' \
 # utility functions
 
 def _get_string(bytes_in):
-    bytes_in = bytes_in.replace(b'\x00', b'')
-    return bytes_in.decode('utf-8')
+    pass
 
 
 def _rescale_float(int_in, scale):
-    return float(int_in)/scale
+    pass
 
 
 ####################
@@ -448,8 +447,7 @@ class _BlockHeader_2(object):
         """
         str: The version
         """
-
-        return '{}.{}'.format(self.major_version, self.minor_version)
+        pass
 
 
 # APINFO definitions
@@ -752,30 +750,12 @@ class _GeoInfo_1(object):
 
 def _get_complex_domain_code(code_int):
     # type: (int) -> str
-    if code_int in [0, 3]:
-        return 'IQ'
-    elif code_int in [1, 4]:
-        return 'QI'
-    elif code_int in [2, 5]:
-        return 'MP'
-    elif code_int == 6:
-        return 'PM'
-    elif code_int == 7:
-        return 'M'
-    elif code_int == 8:
-        return 'P'
-    else:
-        raise ValueError('Got unexpected code `{}`'.format(code_int))
+    pass
 
 
 def _get_band_order(code_int):
     # type: (int) -> str
-    if code_int in [0, 1, 2, 7, 8]:
-        return 'interleaved'
-    elif code_int in [3, 4, 5, 6]:
-        return 'sequential'
-    else:
-        raise ValueError('Got unexpected code `{}`'.format(code_int))
+    pass
 
 
 class _PixelFormat(object):
@@ -832,13 +812,7 @@ class _GSATIMG_2(object):
 def _check_serialization(
         block_header: _BlockHeader_2,
         expected_length: int) -> None:
-    if block_header.size == expected_length:
-        return
-
-    raise ValueError(
-        'Got `{}` block of version `{}` and serialized length {},\n\t'
-        'but expected serialized length {}'.format(
-            block_header.name, block_header.version, block_header.size, expected_length))
+    pass
 
 
 class _GFFHeader_2(object):
@@ -899,104 +873,40 @@ class _GFFHeader_2(object):
 
     @property
     def gsat_img(self) -> _GSATIMG_2:
-        return self._gsat_img
+        pass
 
     @property
     def ap_info(self) -> Union[_APInfo_1_0, _APInfo_2_0, _APInfo_3_0, _APInfo_4_0, _APInfo_5_0, _APInfo_5_1, _APInfo_5_2]:
-        return self._ap_info
+        pass
 
     @property
     def if_info(self) -> Union[_IFInfo_1_0, _IFInfo_2_0, _IFInfo_3_0]:
-        return self._if_info
+        pass
 
     @property
     def geo_info(self) -> _GeoInfo_1:
-        return self._geo_info
+        pass
 
     @property
     def image_header(self) -> _BlockHeader_2:
-        return self._image_header
+        pass
 
     @property
     def image_offset(self) -> int:
-        return self._image_offset
+        pass
 
     def _parse_apinfo(self, fi, estr, block_header) -> None:
-        if block_header.name != 'APINFO':
-            return
-
-        if block_header.major_version == 1:
-            _check_serialization(block_header, _APInfo_1_0.serialized_length)
-            self._ap_info = _APInfo_1_0(fi, estr)
-        elif block_header.major_version == 2:
-            _check_serialization(block_header, _APInfo_2_0.serialized_length)
-            self._ap_info = _APInfo_2_0(fi, estr)
-        elif block_header.major_version == 3:
-            _check_serialization(block_header, _APInfo_3_0.serialized_length)
-            self._ap_info = _APInfo_3_0(fi, estr)
-        elif block_header.major_version == 4:
-            _check_serialization(block_header, _APInfo_4_0.serialized_length)
-            self._ap_info = _APInfo_4_0(fi, estr)
-        elif block_header.major_version == 5:
-            if block_header.minor_version == 0:
-                _check_serialization(block_header, _APInfo_5_0.serialized_length)
-                self._ap_info = _APInfo_5_0(fi, estr)
-            elif block_header.minor_version == 1:
-                _check_serialization(block_header, _APInfo_5_1.serialized_length)
-                self._ap_info = _APInfo_5_1(fi, estr)
-            elif block_header.minor_version == 2:
-                _check_serialization(block_header, _APInfo_5_2.serialized_length)
-                self._ap_info = _APInfo_5_2(fi, estr)
-        else:
-            raise ValueError(
-                'Could not parse required `{}` block version `{}`'.format(
-                    block_header.name, block_header.version))
+        pass
 
     def _parse_ifinfo(self, fi, estr, block_header) -> None:
-        if block_header.name != 'IFINFO':
-            return
-
-        if block_header.major_version == 1:
-            _check_serialization(block_header, _IFInfo_1_0.serialized_length)
-            self._if_info = _IFInfo_1_0(fi, estr)
-        elif block_header.major_version == 2:
-            _check_serialization(block_header, _IFInfo_2_0.serialized_length)
-            self._if_info = _IFInfo_2_0(fi, estr)
-        elif block_header.major_version == 3:
-            _check_serialization(block_header, _IFInfo_3_0.serialized_length)
-            self._if_info = _IFInfo_3_0(fi, estr)
-        else:
-            raise ValueError(
-                'Could not parse required `{}` block version `{}`'.format(
-                    block_header.name, block_header.version))
+        pass
 
     def _parse_geoinfo(self, fi, estr, block_header) -> None:
-        if block_header.name != 'GEOINFO':
-            return
-
-        _check_serialization(block_header, _GeoInfo_1.serialized_length)
-        self._geo_info = _GeoInfo_1(fi, estr)
+        pass
 
     def _check_valid(self, gsat_header) -> None:
         # ensure that the required elements are all set
-        valid = True
-        if self._ap_info is None:
-            valid = False
-            logger.error(
-                'GFF version {} file did not present APINFO block'.format(
-                    gsat_header.version))
-        if self._if_info is None:
-            valid = False
-            logger.error(
-                'GFF version {} file did not present IFINFO block'.format(
-                    gsat_header.version))
-        if self._geo_info is None:
-            valid = False
-            logger.error(
-                'GFF version {} file did not present GEOINFO block'.format(
-                    gsat_header.version))
-        if not valid:
-            raise ValueError('GFF file determined to be invalid')
+        pass
 
     def get_arp_vel(self) -> numpy.ndarray:
         """
@@ -1006,69 +916,22 @@ class _GFFHeader_2(object):
         -------
         numpy.ndarray
         """
-
-        # get the aperture velocity in its native frame of reference (rotated ENU)
-        arp_vel_orig = numpy.array(self.ap_info.apcVel, dtype='float64')
-        # TODO: arp_vel_orig is in what coordinate system? Rick said "rotated ENU", wrt gta?
-        # gets the angle wrt to True North for the radar frame of reference
-        angle = numpy.deg2rad(self.ap_info.rfoa)
-        cosine, sine = numpy.cos(angle), numpy.sin(angle)
-        # construct the NED velocity vector
-        transform = numpy.array([[cosine, -sine, 0], [sine, cosine, 0], [0, 0, -1]], dtype='float64')
-        ned_velocity = transform.dot(arp_vel_orig)
-        # convert to ECF
-        orp = geodetic_to_ecf(self.ap_info.apcLLH, ordering='latlon')
-        out = ned_to_ecf(ned_velocity, orp, absolute_coords=False)
-        return out
+        pass
 
 
 ####################
 # object for creation of sicd structure from GFF header object
 
 def _get_wgt(str_in: str) -> Optional[WgtTypeType]:
-    if str_in == '':
-        return None
-
-    elements = str_in.split()
-    win_name = elements[0].upper()
-    parameters = None
-    if win_name == 'TAYLOR':
-        if len(elements) < 2:
-            raise ValueError('Got unparseable window definition `{}`'.format(str_in))
-        params = elements[1].split(',')
-        if len(params) != 2:
-            raise ValueError('Got unparseable window definition `{}`'.format(str_in))
-        parameters = {'SLL': params[0].strip(), 'NBAR': params[1].strip()}
-    return WgtTypeType(
-        WindowName=win_name,
-        Parameters=parameters)
+    pass
 
 
 def _get_polarization_string(int_value: int) -> Optional[str]:
-    if int_value == 0:
-        return 'H'
-    elif int_value == 1:
-        return 'V'
-    elif int_value == 2:
-        return 'LHC'
-    elif int_value == 3:
-        return 'RHC'
-    elif int_value in [4, 5]:
-        # TODO: according to their enum, we have 4 -> "T" and 5 -> "P"
-        #   what does that mean?
-        return 'OTHER'
-    else:
-        return 'UNKNOWN'
+    pass
 
 
 def _get_tx_rcv_polarization(tx_pol_int: int, rcv_pol_int: int) -> Tuple[str, str]:
-    tx_pol = _get_polarization_string(tx_pol_int)
-    rcv_pol = _get_polarization_string(rcv_pol_int)
-    if tx_pol in ['OTHER', 'UNKNOWN'] or rcv_pol in ['OTHER', 'UNKNOWN']:
-        tx_rcv_pol = 'OTHER'
-    else:
-        tx_rcv_pol = '{}:{}'.format(tx_pol, rcv_pol)
-    return tx_pol, tx_rcv_pol
+    pass
 
 
 class _GFFInterpreter(object):
@@ -1122,170 +985,14 @@ class _GFFInterpreter1(_GFFInterpreter):
                 'ImageType indicates a magnitude only image, which is incompatible with SICD')
 
     def get_sicd(self) -> SICDType:
-        def get_collection_info() -> CollectionInfoType:
-            core_name = self.header.image_name.replace(':', '_')
-            return CollectionInfoType(
-                CoreName=core_name,
-                CollectType='MONOSTATIC',
-                RadarMode=RadarModeType(
-                    ModeType='SPOTLIGHT'),
-                Classification='UNCLASSIFIED')
-
-        def get_image_creation() -> ImageCreationType:
-            from sarpy.__about__ import __version__
-            from datetime import datetime
-            return ImageCreationType(
-                Application=self.header.creator,
-                DateTime=numpy.datetime64(datetime(*self.header.date_time)),
-                Site='Unknown',
-                Profile='sarpy {}'.format(__version__))
-
-        def get_image_data() -> ImageDataType:
-            return ImageDataType(
-                PixelType='RE32F_IM32F',
-                NumRows=num_rows,
-                NumCols=num_cols,
-                FullImage=(num_rows, num_cols),
-                FirstRow=0,
-                FirstCol=0,
-                SCPPixel=(scp_row, scp_col))
-
-        def get_geo_data() -> GeoDataType:
-            return GeoDataType(
-                SCP=SCPType(
-                    LLH=[self.header.srp_lat, self.header.srp_lon, self.header.srp_alt]))
-
-        def get_grid() -> GridType:
-            image_plane = 'GROUND' if self.header.image_plane == 0 else 'SLANT'
-            # we presume that image_plane in [0, 1]
-
-            row_ss = self.header.range_pixel_size
-            col_ss = self.header.azimuth_pixel_size
-            row_bw = 1./row_ss
-            col_bw = 1./col_ss
-            if self.header.version == '1.8':
-                if self.header.range_win_fac_bw > 0:
-                    row_bw = self.header.range_win_fac_bw/row_ss
-                if self.header.az_win_fac_bw > 0:
-                    col_bw = self.header.az_win_fac_bw/col_ss
-
-            row = DirParamType(
-                Sgn=-1,
-                SS=row_ss,
-                ImpRespWid=self.header.range_resolution,
-                ImpRespBW=row_bw,
-                DeltaK1=0.5*row_bw,
-                DeltaK2=-0.5*row_bw,
-                WgtType=_get_wgt(
-                    self.header.range_win_id if self.header.version == '1.8' else ''),
-                DeltaKCOAPoly=[[0, ], ]
-            )
-
-            col = DirParamType(
-                Sgn=-1,
-                SS=col_ss,
-                ImpRespWid=self.header.az_resolution,
-                ImpRespBW=col_bw,
-                DeltaK1=0.5*col_bw,
-                DeltaK2=-0.5*col_bw,
-                WgtType=_get_wgt(
-                    self.header.az_win_id if self.header.version == '1.8' else ''),
-                DeltaKCOAPoly=[[0, ], ]
-            )
-
-            return GridType(
-                ImagePlane=image_plane,
-                Type='PLANE',
-                Row=row,
-                Col=col)
-
-        def get_scpcoa() -> SCPCOAType:
-            side_of_track = 'L' if self.header.squint < 0 else 'R'
-
-            apc_llh = numpy.array(
-                [self.header.apc_lat, self.header.apc_lon, self.header.apc_alt],
-                dtype='float64')
-            if numpy.all(apc_llh == 0):
-                arp_pos = None
-            else:
-                arp_pos = geodetic_to_ecf(apc_llh, ordering='latlon')
-
-            return SCPCOAType(
-                ARPPos=arp_pos,
-                GrazeAng=self.header.graze_angle,
-                SideOfTrack=side_of_track)
-
-        num_rows = self.header.range_count
-        num_cols = self.header.azimuth_count
-        scp_row = int(0.5*num_rows)
-        scp_col = int(0.5*num_cols)
-
-        collection_info = get_collection_info()
-        image_creation = get_image_creation()
-        image_data = get_image_data()
-        geo_data = get_geo_data()
-        grid = get_grid()
-        scpcoa = get_scpcoa()
-
-        return SICDType(
-            CollectionInfo=collection_info,
-            ImageCreation=image_creation,
-            ImageData=image_data,
-            GeoData=geo_data,
-            Grid=grid,
-            SCPCOA=scpcoa)
+        pass
 
     def get_data_segment(self) -> DataSegment:
-        if self.header.bits_per_phase not in [8, 16, 32]:
-            raise ValueError('Got unexpected bits per phase {}'.format(self.header.bits_per_phase))
-        if self.header.bits_per_magnitude not in [8, 16, 32]:
-            raise ValueError('Got unexpected bits per phase {}'.format(self.header.bits_per_magnitude))
-
-        raw_dtype = numpy.dtype('{}u{}'.format(self.header.estr, int(self.header.bits_per_phase/8)))
-        raw_shape = (self.header.range_count, self.header.azimuth_count, 2)
-        reverse_axes = (0, 1)
-        if self.header.row_major:
-            transpose_axes = (1, 0, 2)
-            formatted_shape = (raw_shape[1], raw_shape[0])
-        else:
-            transpose_axes = None
-            formatted_shape = raw_shape[:2]
-
-        if self.header.image_type == 1:
-            # phase/magnitude which is integer
-            return NumpyMemmapSegment(
-                self.header.file_object, self.header.header_length,
-                raw_dtype, raw_shape, formatted_dtype='complex64', formatted_shape=formatted_shape,
-                reverse_axes=reverse_axes, transpose_axes=transpose_axes,
-                format_function=ComplexFormatFunction(raw_dtype, order='PM', band_dimension=2),
-                close_file=True)
-        else:
-            raise ValueError('Got unsupported image type `{}`'.format(self.header.image_type))
+        pass
 
 
 def _get_numpy_dtype(data_type_int: int) -> str:
-    if data_type_int == 0:
-        return 'u1'
-    elif data_type_int == 1:
-        return 'u2'
-    elif data_type_int == 2:
-        return 'u4'
-    elif data_type_int == 3:
-        return 'u8'
-    elif data_type_int == 4:
-        return 'i1'
-    elif data_type_int == 5:
-        return 'i2'
-    elif data_type_int == 6:
-        return 'i4'
-    elif data_type_int == 7:
-        return 'i8'
-    elif data_type_int == 8:
-        return 'f4'
-    elif data_type_int == 9:
-        return 'f8'
-    else:
-        raise ValueError('Got unsupported data type code `{}`'.format(data_type_int))
+    pass
 
 
 class _GFFInterpreter2(_GFFInterpreter):
@@ -1310,415 +1017,31 @@ class _GFFInterpreter2(_GFFInterpreter):
                     self.header.gsat_img.pixelFormat.numComponents))
 
     def get_sicd(self) -> SICDType:
-        def get_collection_info() -> CollectionInfoType:
-            core_name = self.header.ap_info.phName  # TODO: double check this...
-            return CollectionInfoType(
-                CollectorName=self.header.ap_info.missionText,
-                CoreName=core_name,
-                CollectType='MONOSTATIC',
-                RadarMode=RadarModeType(
-                    ModeType='SPOTLIGHT'),
-                Classification='UNCLASSIFIED')
-
-        def get_image_creation() -> ImageCreationType:
-            from sarpy.__about__ import __version__
-            application = '{} {}'.format(self.header.gsat_img.imageCreator, self.header.ap_info.swVerNum)
-            date_time = None  # todo: really?
-            return ImageCreationType(
-                Application=application,
-                DateTime=date_time,
-                Site='Unknown',
-                Profile='sarpy {}'.format(__version__))
-
-        def get_image_data() -> ImageDataType:
-            pix_data_type = self.header.gsat_img.pixDataType
-            amp_table = None
-            if pix_data_type == 12:
-                pixel_type = 'AMP8I_PHS8I'
-                amp_table = numpy.arange(256, dtype='float64')
-            elif pix_data_type in [1, 3, 4, 6, 8, 9, 10, 11]:
-                pixel_type = 'RE32F_IM32F'
-            elif pix_data_type in [2, 7]:
-                pixel_type = 'RE16I_IM16I'
-            else:
-                raise ValueError('Unhandled pixTypeData value `{}`'.format(pix_data_type))
-
-            return ImageDataType(
-                PixelType=pixel_type,
-                AmpTable=amp_table,
-                NumRows=num_rows,
-                NumCols=num_cols,
-                FullImage=(num_rows, num_cols),
-                FirstRow=0,
-                FirstCol=0,
-                SCPPixel=(scp_row, scp_col))
-
-        def get_geo_data() -> GeoDataType:
-            return GeoDataType(SCP=SCPType(ECF=scp))
-
-        def get_grid() -> GridType:
-            image_plane = 'GROUND' if self.header.geo_info.imagePlane == 0 else 'SLANT'
-            # we presume that image_plane in [0, 1]
-
-            # derive row/col uvect
-            ground_uvec = wgs_84_norm(scp)
-
-            urng = scp - arp_pos  # unit vector for row in the slant plane
-            urng /= numpy.linalg.norm(urng)
-            if image_plane == 'GROUND':
-                row_uvec = urng - numpy.dot(urng, ground_uvec)*ground_uvec
-                row_uvec /= numpy.linalg.norm(row_uvec)
-            else:
-                row_uvec = urng
-
-            col_uvec = arp_vel/numpy.linalg.norm(arp_vel)
-            if self.header.ap_info.squintAngle < 0:
-                col_uvec *= -1
-
-            # verify that my orientation makes some sense
-            dumb_check = ground_uvec.dot(numpy.cross(row_uvec, col_uvec))
-            if dumb_check <= 0:
-                raise ValueError(
-                    'The range vector, velocity vector, and squint angle have '
-                    'incompatible orientations')
-
-            parallel_component = numpy.dot(row_uvec, col_uvec)
-            if numpy.abs(parallel_component) > 1e-7:
-                col_uvec = col_uvec - parallel_component*row_uvec
-                col_uvec /= numpy.linalg.norm(col_uvec)
-
-            row_ss = self.header.geo_info.rangePixSpacing
-            row_bw = self.header.if_info.wndBwFactRng/self.header.if_info.rngResolution
-            row_delta_kcoa_constant = 0.5*(1 - (self.header.if_info.sampLocDCRow/int(0.5*num_rows)))/row_ss
-            row = DirParamType(
-                Sgn=-1,
-                SS=row_ss,
-                UVectECF=row_uvec,
-                ImpRespWid=self.header.if_info.rngResolution,
-                ImpRespBW=row_bw,
-                KCtr=2*center_frequency/speed_of_light,
-                DeltaK1=0.5*row_bw,
-                DeltaK2=-0.5*row_bw,
-                WgtType=_get_wgt(self.header.if_info.wndFncIdRng),
-                DeltaKCOAPoly=[[row_delta_kcoa_constant, ], ])
-
-            col_ss = self.header.geo_info.azPixSpacing
-            col_bw = self.header.if_info.wndBwFactAz/self.header.if_info.azResolution
-            col_delta_kcoa_constant = 0.5*(1 - (self.header.if_info.sampLocDCCol/int(0.5*num_cols)))/col_ss
-            col = DirParamType(
-                Sgn=-1,
-                SS=col_ss,
-                UVectECF=col_uvec,
-                ImpRespWid=self.header.if_info.azResolution,
-                ImpRespBW=col_bw,
-                KCtr=0,
-                DeltaK1=0.5*col_bw,
-                DeltaK2=-0.5*col_bw,
-                WgtType=_get_wgt(self.header.if_info.wndFncIdAz),
-                DeltaKCOAPoly=[[col_delta_kcoa_constant, ], ])
-
-            return GridType(
-                ImagePlane=image_plane,
-                Type=grid_type,
-                Row=row,
-                Col=col)
-
-        def get_scpcoa() -> SCPCOAType:
-            return SCPCOAType(
-                ARPPos=arp_pos,
-                ARPVel=arp_vel,
-                SCPTime=0.5*collect_duration)
-
-        def get_timeline() -> TimelineType:
-            try:
-                # only exists for APINFO version 3 and above
-                ipp_end = self.header.ap_info.numPhaseHistories
-                ipp = [IPPSetType(
-                    TStart=0,
-                    TEnd=collect_duration,
-                    IPPStart=0,
-                    IPPEnd=ipp_end,
-                    IPPPoly=[0, (ipp_end + 1)/collect_duration]), ]
-            except AttributeError:
-                ipp = None
-            return TimelineType(
-                CollectStart=start_time,
-                CollectDuration=collect_duration,
-                IPP=ipp)
-
-        def get_radar_collection() -> RadarCollectionType:
-
-            try:
-                sample_rate = self.header.ap_info.adSampleFreq
-                pulse_length = float(self.header.ap_info.fastTimeSamples)/sample_rate
-                waveform = [
-                    WaveformParametersType(ADCSampleRate=sample_rate, TxPulseLength=pulse_length), ]
-            except AttributeError:
-                waveform = None
-
-            rcv_channels = [ChanParametersType(TxRcvPolarization=tx_rcv_pol, index=1), ]
-
-            return RadarCollectionType(
-                TxFrequency=(center_frequency-0.5*band_width, center_frequency+0.5*band_width),
-                Waveform=waveform,
-                TxPolarization=tx_pol,
-                RcvChannels=rcv_channels)
-
-        def get_image_formation() -> ImageFormationType:
-            return ImageFormationType(
-                RcvChanProc=RcvChanProcType(ChanIndices=[1, ]),
-                TxRcvPolarizationProc=tx_rcv_pol,
-                TxFrequencyProc=(
-                    center_frequency-0.5*band_width,
-                    center_frequency+0.5*band_width),
-                TStartProc=0,
-                TEndProc=collect_duration,
-                ImageFormAlgo=image_form_algo,
-                STBeamComp='NO',
-                ImageBeamComp='NO',
-                AzAutofocus='NO',
-                RgAutofocus='NO')
-
-        def repair_scpcoa() -> None:
-            # call after deriving the sicd fields
-            if out_sicd.SCPCOA.GrazeAng is None:
-                out_sicd.SCPCOA.GrazeAng = self.header.ap_info.grazingAngle
-            if out_sicd.SCPCOA.IncidenceAng is None:
-                out_sicd.SCPCOA.IncidenceAng = 90 - out_sicd.SCPCOA.GrazeAng
-            if out_sicd.SCPCOA.SideOfTrack is None:
-                out_sicd.SCPCOA.SideOfTrack = 'L' if self.header.ap_info.squintAngle < 0 else 'R'
-
-        def populate_radiometric() -> None:
-            # call after deriving the sicd fields
-            rcs_constant = self.header.if_info.imgCalParam**2
-            radiometric = RadiometricType(RCSSFPoly=[[rcs_constant, ]])
-            # noinspection PyProtectedMember
-            radiometric._derive_parameters(out_sicd.Grid, out_sicd.SCPCOA)
-            if radiometric.SigmaZeroSFPoly is not None:
-                noise_constant = self.header.if_info.sigmaN - 10*numpy.log10(radiometric.SigmaZeroSFPoly[0, 0])
-                radiometric.NoiseLevel = NoiseLevelType_(
-                    NoiseLevelType='ABSOLUTE',
-                    NoisePoly=[[noise_constant, ]])
-            out_sicd.Radiometric = radiometric
-
-        num_rows = self.header.gsat_img.rangePixels
-        num_cols = self.header.gsat_img.azPixels
-        scp_row = self.header.geo_info.pixLocImCtrRow
-        scp_col = self.header.geo_info.pixLocImCtrCol
-
-        collect_duration = self.header.ap_info.apertureTime
-        scp_time_utc_us = numpy.datetime64(datetime(*self.header.ap_info.ApTimeUTC), 'us').astype('int64')
-        start_time = (scp_time_utc_us - int(0.5*collect_duration*1e6)).astype('datetime64[us]')
-        tx_pol, tx_rcv_pol = _get_tx_rcv_polarization(
-            self.header.ap_info.txPolarization, self.header.ap_info.rxPolarization)
-        center_frequency = self.header.ap_info.ctrFreq
-        band_width = 0.0  # TODO: is this defined anywhere?
-
-        scp = geodetic_to_ecf(self.header.geo_info.patchCtrLLH)
-        arp_llh = self.header.ap_info.apcLLH
-        arp_pos = geodetic_to_ecf(arp_llh, ordering='latlon')
-        arp_vel = self.header.get_arp_vel()
-
-        if self.header.if_info.ifAlgo in ['PFA', 'OSAPF']:
-            # if self.header.if_info.ifAlgo == 'PFA':
-            image_form_algo = 'PFA'
-            grid_type = 'RGAZIM'
-        else:
-            image_form_algo = 'OTHER'
-            grid_type = 'PLANE'
-
-        collection_info = get_collection_info()
-        image_creation = get_image_creation()
-        image_data = get_image_data()
-        geo_data = get_geo_data()
-        scp = geo_data.SCP.ECF.get_array()
-
-        grid = get_grid()
-        scpcoa = get_scpcoa()
-        timeline = get_timeline()
-        radar_collection = get_radar_collection()
-        image_formation = get_image_formation()
-
-        out_sicd = SICDType(
-            CollectionInfo=collection_info,
-            ImageCreation=image_creation,
-            ImageData=image_data,
-            GeoData=geo_data,
-            Grid=grid,
-            SCPCOA=scpcoa,
-            Timeline=timeline,
-            RadarCollection=radar_collection,
-            ImageFormation=image_formation)
-
-        out_sicd.derive()
-        repair_scpcoa()
-        populate_radiometric()
-        out_sicd.populate_rniirs(override=False)
-        return out_sicd
+        pass
 
     def _get_size_and_symmetry(self) -> Tuple[Tuple[int, int], Tuple[int, ...], bool]:
-        if self.header.gsat_img.pixOrder == 0:
-            # in range consecutive order, opposite from a SICD
-            data_size = (self.header.gsat_img.azPixels, self.header.gsat_img.rangePixels)
-            reverse_axes = (0, 1)
-            transpose_axes = True
-        elif self.header.gsat_img.pixOrder == 1:
-            # in azimuth consecutive order, like a SICD
-            data_size = (self.header.gsat_img.rangePixels, self.header.gsat_img.azPixels)
-            reverse_axes = (0, 1)
-            transpose_axes = False
-        else:
-            raise ValueError('Got unexpected pixel order `{}`'.format(self.header.gsat_img.pixOrder))
-        return data_size, reverse_axes, transpose_axes
+        pass
 
     def _check_image_validity(self, band_order: str) -> None:
-        if self.header.gsat_img.pixelFormat.numComponents != 2:
-            raise ValueError(
-                'Got unexpected number of components `{}`'.format(
-                    self.header.gsat_img.pixelFormat.numComponents))
-
-        image_compression_scheme = self.header.gsat_img.imageCompressionScheme
-        if image_compression_scheme in [1, 3]:
-            if band_order == 'sequential':
-                raise ValueError(
-                    'GFF with sequential bands and jpeg or jpeg 2000 compression currently unsupported.')
-            if PIL is None:
-                raise ValueError(
-                    'The GFF image is compressed using jpeg or jpeg 2000 compression, '
-                    'and decompression requires the PIL library')
+        pass
 
     def _extract_zlib_image(self) -> str:
-        if self.header.gsat_img.imageCompressionScheme != 2:
-            raise ValueError('The image is not zlib compressed')
-        self.header.file_object.seek(self.header.image_offset, os.SEEK_SET)
-        data_bytes = zlib.decompress(self.header.file_object.read(self.header.image_header.size))
-        fi, path_name = mkstemp(suffix='.sarpy_cache', text=False)
-        os.close(fi)
-        self._cached_files.append(path_name)
-        logger.info('Created cached file {} for decompressed data'.format(path_name))
-        with open(path_name, 'wb') as the_file:
-            the_file.write(data_bytes)
-        logger.info('Filled cached file {}'.format(path_name))
-        return path_name
+        pass
 
     def _extract_pil_image(
             self,
             band_order: str,
             data_size: Tuple[int, int]) -> str:
-        if band_order == 'sequential':
-            raise ValueError(
-                'GFF with sequential bands and jpeg or jpeg 2000 compression currently unsupported.')
-        our_memmap = MemMap(self.header.file_object.name, self.header.image_header.size, self.header.image_offset)
-        # noinspection PyUnresolvedReferences
-        img = PIL.Image.open(our_memmap)  # this is a lazy operation
-        # dump the extracted image data out to a temp file
-        fi, path_name = mkstemp(suffix='.sarpy_cache', text=False)
-        os.close(fi)
-        self._cached_files.append(path_name)
-        logger.info('Created cached file {} for decompressed data'.format(path_name))
-        data = numpy.asarray(img)  # create our numpy array from the PIL Image
-        if data.shape[:2] != data_size:
-            raise ValueError(
-                'Naively decompressed data of shape {}, but expected ({}, {}, {}).'.format(
-                    data.shape, data_size[0], data_size[1], 2))
-        mem_map = numpy.memmap(path_name, dtype=data.dtype, mode='w+', offset=0, shape=data.shape)
-        mem_map[:] = data
-        # clean up this memmap and file overhead
-        del mem_map
-        logger.info('Filled cached file {}'.format(path_name))
-        return path_name
+        pass
 
     def _get_interleaved_segment(self) -> DataSegment:
-        complex_domain = _get_complex_domain_code(self.header.gsat_img.pixelFormat.cmplxDomain)
-        if complex_domain not in ['IQ', 'QI', 'MP', 'PM']:
-            raise ValueError('Got unsupported complex domain `{}`'.format(complex_domain))
-
-        if self.header.gsat_img.pixelFormat.comp0_dataType != self.header.gsat_img.pixelFormat.comp1_dataType:
-            raise ValueError(
-                'GFF with interleaved bands with the two components of different data types.\n\t'
-                'This is not currently unsupported.')
-        raw_dtype = _get_numpy_dtype(self.header.gsat_img.pixelFormat.comp0_dataType)
-
-        data_size, reverse_axes, transpose = self._get_size_and_symmetry()
-        raw_shape = data_size + (2, )
-        if transpose:
-            transpose_axes = (1, 0, 2)
-            formatted_shape = (data_size[1], data_size[0])
-        else:
-            transpose_axes = None
-            formatted_shape = data_size
-
-        image_compression_scheme = self.header.gsat_img.imageCompressionScheme
-        if image_compression_scheme == 0:
-            # no compression
-            the_file = self.header.file_object
-            data_offset = self.header.image_offset
-        elif image_compression_scheme in [1, 3]:
-            # jpeg or jpeg 2000 compression
-            the_file = self._extract_pil_image('interleaved', data_size)
-            data_offset = 0
-        elif image_compression_scheme == 2:
-            # zlib compression
-            the_file = self._extract_zlib_image()
-            data_offset = 0
-        else:
-            raise ValueError('Got unhandled image compression scheme code `{}`'.format(image_compression_scheme))
-
-        return NumpyMemmapSegment(
-            the_file, data_offset, raw_dtype, raw_shape,
-            formatted_dtype='complex64', formatted_shape=formatted_shape,
-            reverse_axes=reverse_axes, transpose_axes=transpose_axes,
-            format_function=ComplexFormatFunction(raw_dtype, complex_domain, band_dimension=2))
+        pass
 
     def _get_sequential_segment(self) -> DataSegment:
-        complex_domain = _get_complex_domain_code(self.header.gsat_img.pixelFormat.cmplxDomain)
-        if complex_domain not in ['IQ', 'QI', 'MP', 'PM']:
-            raise ValueError('Got unsupported complex domain `{}`'.format(complex_domain))
-
-        if self.header.gsat_img.pixelFormat.comp0_dataType != self.header.gsat_img.pixelFormat.comp1_dataType:
-            raise ValueError(
-                'GFF with sequential bands has the two components with different data types.\n\t'
-                'This is not currently unsupported.')
-
-        raw_dtype = numpy.dtype(_get_numpy_dtype(self.header.gsat_img.pixelFormat.comp0_dataType))
-        data_size, reverse_axes, transpose = self._get_size_and_symmetry()
-        raw_shape = (2, ) + data_size
-        if reverse_axes is not None:
-            reverse_axes = tuple(1+entry for entry in reverse_axes)
-        if transpose:
-            transpose_axes = (2, 1, 0)
-            formatted_shape = (data_size[1], data_size[0])
-        else:
-            transpose_axes = (1, 2, 0)
-            formatted_shape = data_size
-
-        image_compression_scheme = self.header.gsat_img.imageCompressionScheme
-        if image_compression_scheme == 0:
-            # no compression
-            the_file = self.header.file_object
-            main_offset = self.header.image_offset
-        elif image_compression_scheme == 2:
-            the_file = self._extract_zlib_image()
-            main_offset = 0
-        else:
-            raise ValueError('Unhandled image compression scheme `{}`'.format(image_compression_scheme))
-
-        return NumpyMemmapSegment(
-            the_file, main_offset, raw_dtype, raw_shape,
-            formatted_dtype='complex64', formatted_shape=formatted_shape,
-            reverse_axes=reverse_axes, transpose_axes=transpose_axes,
-            format_function=ComplexFormatFunction(raw_dtype, complex_domain, band_dimension=0))
+        pass
 
     def get_data_segment(self) -> DataSegment:
-        band_order = _get_band_order(self.header.gsat_img.pixelFormat.cmplxDomain)
-        self._check_image_validity(band_order)
-
-        if band_order == 'interleaved':
-            return self._get_interleaved_segment()
-        elif band_order == 'sequential':
-            return self._get_sequential_segment()
-        else:
-            raise ValueError('Unhandled band order `{}`'.format(band_order))
+        pass
 
     def clean_up(self) -> None:
         try:
@@ -1792,8 +1115,7 @@ class GFFDetails(object):
         """
         str: the file name
         """
-
-        return self._file_name
+        pass
 
     @property
     def endianness(self) -> str:
@@ -1801,32 +1123,28 @@ class GFFDetails(object):
         str: The endian format of the GFF storage. Returns '<' if little-endian
         or '>' if big endian.
         """
-
-        return self._endianness
+        pass
 
     @property
     def major_version(self) -> int:
         """
         int: The major GFF version number
         """
-
-        return self._major_version
+        pass
 
     @property
     def minor_version(self) -> int:
         """
         int: The minor GFF version number
         """
-
-        return self._minor_version
+        pass
 
     @property
     def version(self) -> str:
         """
         str: The GFF version number
         """
-
-        return '{}.{}'.format(self._major_version, self._minor_version)
+        pass
 
     @property
     def header(self) -> Union[_GFFHeader_1_6, _GFFHeader_1_8, _GFFHeader_2]:
@@ -1837,8 +1155,7 @@ class GFFDetails(object):
         -------
         _GFFHeader_1_6|_GFFHeader_1_8|_GFFHeader_2
         """
-
-        return self._header
+        pass
 
     @property
     def interpreter(self) -> _GFFInterpreter:
@@ -1849,48 +1166,13 @@ class GFFDetails(object):
         -------
         _GFFInterpreter
         """
-
-        return self._interpreter
+        pass
 
     def _initialize(self) -> None:
         """
         Initialize the various elements
         """
-
-        self._file_object.seek(7, os.SEEK_SET)
-        check = self._file_object.read(1)
-        if check == b'\x20':
-            # this should be version 1.*, but we will verify
-            self._file_object.seek(54, os.SEEK_SET)
-            endianness = struct.unpack('H', self._file_object.read(2))[0]  # 0 if little endian
-            estr = '<' if endianness == 0 else '>'
-
-            self._file_object.seek(8, os.SEEK_SET)
-            self._minor_version, self._major_version = struct.unpack(
-                '{}HH'.format(estr), self._file_object.read(4))
-        elif check == b'\x00':
-            # this should be a version 2.*, but we will verify
-            estr = '<'
-            self._file_object.seek(16, os.SEEK_SET)
-            self._major_version, self._minor_version = struct.unpack(
-                '{}HH'.format(estr), self._file_object.read(4))
-        else:
-            raise ValueError('Got unexpected check byte')
-
-        self._file_object.seek(0, os.SEEK_SET)
-        self._endianness = estr
-        version = self.version
-        if version == '1.6':
-            self._header = _GFFHeader_1_6(self._file_object, self.endianness)
-            self._interpreter = _GFFInterpreter1(self._header)
-        elif version == '1.8':
-            self._header = _GFFHeader_1_8(self._file_object, self.endianness)
-            self._interpreter = _GFFInterpreter1(self._header)
-        elif self.major_version == 2:
-            self._header = _GFFHeader_2(self._file_object, self.endianness)
-            self._interpreter = _GFFInterpreter2(self._header)
-        else:
-            raise ValueError('Got unhandled GFF version `{}`'.format(version))
+        pass
 
     def get_sicd(self) -> SICDType:
         """
@@ -1900,8 +1182,7 @@ class GFFDetails(object):
         -------
         SICDType
         """
-
-        return self._interpreter.get_sicd()
+        pass
 
     def get_data_segment(self) -> DataSegment:
         """
@@ -1911,8 +1192,7 @@ class GFFDetails(object):
         -------
         DataSegment
         """
-
-        return self._interpreter.get_data_segment()
+        pass
 
     def close(self):
         try:
@@ -1963,12 +1243,11 @@ class GFFReader(SICDTypeReader):
         """
         GFFDetails: The details object.
         """
-
-        return self._gff_details
+        pass
 
     @property
     def file_name(self):
-        return self.gff_details.file_name
+        pass
 
     def close(self) -> None:
         SICDTypeReader.close(self)
@@ -1997,14 +1276,4 @@ def is_a(file_name: str) -> Optional[GFFReader]:
     CSKReader|None
         `CSKReader` instance if Cosmo Skymed file, `None` otherwise
     """
-
-    if is_file_like(file_name):
-        return None
-
-    try:
-        gff_details = GFFDetails(file_name)
-        logger.info('File {} is determined to be a GFF version {} file.'.format(
-            file_name, gff_details.version))
-        return GFFReader(gff_details)
-    except SarpyIOError:
-        return None
+    pass

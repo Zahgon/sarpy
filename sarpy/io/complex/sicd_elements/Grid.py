@@ -669,14 +669,7 @@ class GridType(Serializable):
         -------
         None
         """
-        if self.TimeCOAPoly is not None:
-            return  # nothing needs to be done
-
-        try:
-            if CollectionInfo.RadarMode.ModeType == 'SPOTLIGHT':
-                self.TimeCOAPoly = Poly2DType(Coefs=[[SCPCOA.SCPTime, ], ])
-        except (AttributeError, ValueError):
-            return
+        pass
 
     def _derive_rg_az_comp(
             self,
@@ -698,64 +691,7 @@ class GridType(Serializable):
         -------
         None
         """
-
-        if self.Row is None:
-            self.Row = DirParamType()
-        if self.Col is None:
-            self.Col = DirParamType()
-
-        if self.ImagePlane is None:
-            self.ImagePlane = 'SLANT'
-        elif self.ImagePlane != 'SLANT':
-            logger.warning(
-                'The Grid.ImagePlane is set to {},\n\t'
-                'but Image Formation Algorithm is RgAzComp, which requires "SLANT".\n\t'
-                'Resetting.'.format(self.ImagePlane))
-            self.ImagePlane = 'SLANT'
-
-        if self.Type is None:
-            self.Type = 'RGAZIM'
-        elif self.Type != 'RGAZIM':
-            logger.warning(
-                'The Grid.Type is set to {},\n\t'
-                'but Image Formation Algorithm is RgAzComp, which requires "RGAZIM".\n\t'
-                'Resetting.'.format(self.Type))
-            self.Type = 'RGAZIM'
-
-        if GeoData is not None and GeoData.SCP is not None and GeoData.SCP.ECF is not None and \
-                SCPCOA.ARPPos is not None and SCPCOA.ARPVel is not None:
-            scp = GeoData.SCP.ECF.get_array()
-            arp = SCPCOA.ARPPos.get_array()
-            los = (scp - arp)
-            ulos = los/norm(los)
-            if self.Row.UVectECF is None:
-                self.Row.UVectECF = XYZType.from_array(ulos)
-
-            look = SCPCOA.look
-            arp_vel = SCPCOA.ARPVel.get_array()
-            uspz = look*numpy.cross(arp_vel, ulos)
-            uspz /= norm(uspz)
-            uaz = numpy.cross(uspz, ulos)
-            if self.Col.UVectECF is None:
-                self.Col.UVectECF = XYZType.from_array(uaz)
-
-        center_frequency = _get_center_frequency(RadarCollection, ImageFormation)
-        if center_frequency is not None:
-            if self.Row.KCtr is None:
-                kctr = 2*center_frequency/speed_of_light
-                if self.Row.DeltaKCOAPoly is not None:  # assume it's 0 otherwise?
-                    kctr -= self.Row.DeltaKCOAPoly.Coefs[0, 0]
-                self.Row.KCtr = kctr
-            elif self.Row.DeltaKCOAPoly is None:
-                self.Row.DeltaKCOAPoly = Poly2DType(Coefs=[[2*center_frequency/speed_of_light - self.Row.KCtr, ], ])
-
-            if self.Col.KCtr is None:
-                kctr = 0.0
-                if self.Col.DeltaKCOAPoly is not None:
-                    kctr -= self.Col.DeltaKCOAPoly.Coefs[0, 0]
-                self.Col.KCtr = kctr
-            elif self.Col.DeltaKCOAPoly is None:
-                self.Col.DeltaKCOAPoly = Poly2DType(Coefs=[[-self.Col.KCtr, ], ])
+        pass
 
     def _derive_pfa(
             self,
@@ -779,46 +715,7 @@ class GridType(Serializable):
         -------
         None
         """
-
-        if self.Type is None:
-            self.Type = 'RGAZIM'  # the natural result for PFA
-
-        if PFA is None:
-            return  # nothing to be done
-        if GeoData is None or GeoData.SCP is None:
-            return  # nothing to be done
-
-        scp = GeoData.SCP.ECF.get_array()
-
-        if Position is not None and Position.ARPPoly is not None \
-                and PFA.PolarAngRefTime is not None:
-            polar_ref_pos = Position.ARPPoly(PFA.PolarAngRefTime)
-        else:
-            polar_ref_pos = scp
-
-        if PFA.IPN is not None and PFA.FPN is not None and \
-                self.Row.UVectECF is None and self.Col.UVectECF is None:
-            ipn = PFA.IPN.get_array()
-            fpn = PFA.FPN.get_array()
-
-            dist = numpy.dot((scp - polar_ref_pos), ipn) / numpy.dot(fpn, ipn)
-            ref_pos_ipn = polar_ref_pos + (dist * fpn)
-            urg = scp - ref_pos_ipn
-            urg /= norm(urg)
-            uaz = numpy.cross(ipn, urg)  # already unit
-            self.Row.UVectECF = XYZType.from_array(urg)
-            self.Col.UVectECF = XYZType.from_array(uaz)
-
-        if self.Col is not None and self.Col.KCtr is None:
-            self.Col.KCtr = 0  # almost always 0 for PFA
-
-        if self.Row is not None and self.Row.KCtr is None:
-            center_frequency = _get_center_frequency(RadarCollection, ImageFormation)
-            if PFA.Krg1 is not None and PFA.Krg2 is not None:
-                self.Row.KCtr = 0.5*(PFA.Krg1 + PFA.Krg2)
-            elif center_frequency is not None and PFA.SpatialFreqSFPoly is not None:
-                # APPROXIMATION: may not be quite right, due to rectangular inscription loss in PFA.
-                self.Row.KCtr = 2*center_frequency/speed_of_light + PFA.SpatialFreqSFPoly.Coefs[0]
+        pass
 
     def _derive_rma(
             self,
@@ -841,21 +738,7 @@ class GridType(Serializable):
         -------
         None
         """
-
-        if RMA is None:
-            return   # nothing can be derived
-
-        im_type = RMA.ImageType
-
-        if im_type is None:
-            return
-        if im_type == 'INCA':
-            self._derive_rma_inca(RMA, GeoData, Position)
-        else:
-            if im_type == 'RMAT':
-                self._derive_rma_rmat(RMA, GeoData, RadarCollection, ImageFormation)
-            elif im_type == 'RMCR':
-                self._derive_rma_rmcr(RMA, GeoData, RadarCollection, ImageFormation)
+        pass
 
     @staticmethod
     def _derive_unit_vector_params(GeoData, RMAParam):
@@ -871,25 +754,7 @@ class GridType(Serializable):
         -------
         Tuple[numpy.ndarray,...]
         """
-
-        if GeoData is None or GeoData.SCP is None:
-            return None
-
-        scp = GeoData.SCP.ECF.get_array()
-        pos_ref = RMAParam.PosRef.get_array()
-        upos_ref = pos_ref / norm(pos_ref)
-        vel_ref = RMAParam.VelRef.get_array()
-        uvel_ref = vel_ref / norm(vel_ref)
-        los = (scp - pos_ref)  # it absolutely could be that scp = pos_ref
-        los_norm = norm(los)
-        if los_norm < 1:
-            logger.error(
-                msg="Row/Col UVectECF cannot be derived from RMA,\n\t"
-                    "because the Reference Position is too close (less than 1 meter) to the SCP.")
-        ulos = los/los_norm
-        left = numpy.cross(upos_ref, uvel_ref)
-        look = numpy.sign(numpy.dot(left, ulos))
-        return scp, upos_ref, uvel_ref, ulos, left, look
+        pass
 
     def _derive_rma_rmat(
             self,
@@ -910,32 +775,7 @@ class GridType(Serializable):
         -------
         None
         """
-
-        if RMA.RMAT is None:
-            return
-
-        if self.ImagePlane is None:
-            self.ImagePlane = 'SLANT'
-        if self.Type is None:
-            self.Type = 'XCTYAT'
-
-        if self.Row.UVectECF is None and self.Col.UVectECF is None:
-            params = self._derive_unit_vector_params(GeoData, RMA.RMAT)
-            if params is not None:
-                scp, upos_ref, uvel_ref, ulos, left, look = params
-                uyat = -look*uvel_ref
-                uspz = numpy.cross(ulos, uyat)
-                uspz /= norm(uspz)
-                uxct = numpy.cross(uyat, uspz)
-                self.Row.UVectECF = XYZType.from_array(uxct)
-                self.Col.UVectECF = XYZType.from_array(uyat)
-
-        center_frequency = _get_center_frequency(RadarCollection, ImageFormation)
-        if center_frequency is not None and RMA.RMAT.DopConeAngRef is not None:
-            if self.Row.KCtr is None:
-                self.Row.KCtr = (2*center_frequency/speed_of_light)*numpy.sin(numpy.deg2rad(RMA.RMAT.DopConeAngRef))
-            if self.Col.KCtr is None:
-                self.Col.KCtr = (2*center_frequency/speed_of_light)*numpy.cos(numpy.deg2rad(RMA.RMAT.DopConeAngRef))
+        pass
 
     def _derive_rma_rmcr(
             self,
@@ -956,32 +796,7 @@ class GridType(Serializable):
         -------
         None
         """
-
-        if RMA.RMCR is None:
-            return
-
-        if self.ImagePlane is None:
-            self.ImagePlane = 'SLANT'
-        if self.Type is None:
-            self.Type = 'XRGYCR'
-
-        if self.Row.UVectECF is None and self.Col.UVectECF is None:
-            params = self._derive_unit_vector_params(GeoData, RMA.RMCR)
-            if params is not None:
-                scp, upos_ref, uvel_ref, ulos, left, look = params
-                uxrg = ulos
-                uspz = look*numpy.cross(uvel_ref, uxrg)
-                uspz /= norm(uspz)
-                uycr = numpy.cross(uspz, uxrg)
-                self.Row.UVectECF = XYZType.from_array(uxrg)
-                self.Col.UVectECF = XYZType.from_array(uycr)
-
-        center_frequency = _get_center_frequency(RadarCollection, ImageFormation)
-        if center_frequency is not None:
-            if self.Row.KCtr is None:
-                self.Row.KCtr = 2*center_frequency/speed_of_light
-            if self.Col.KCtr is None:
-                self.Col.KCtr = 2*center_frequency/speed_of_light
+        pass
 
     def _derive_rma_inca(
             self,
@@ -1000,40 +815,7 @@ class GridType(Serializable):
         -------
         None
         """
-
-        if RMA.INCA is None:
-            return
-
-        if self.Type is None:
-            self.Type = 'RGZERO'
-
-        if RMA.INCA.TimeCAPoly is not None and Position is not None and Position.ARPPoly is not None and \
-                self.Row.UVectECF is None and self.Col.UVectECF is None and \
-                GeoData is not None and GeoData.SCP is not None:
-            scp = GeoData.SCP.ECF.get_array()
-
-            t_zero = RMA.INCA.TimeCAPoly.Coefs[0]
-            ca_pos = Position.ARPPoly(t_zero)
-            ca_vel = Position.ARPPoly.derivative_eval(t_zero, der_order=1)
-
-            uca_pos = ca_pos/norm(ca_pos)
-            uca_vel = ca_vel/norm(ca_vel)
-            urg = (scp - ca_pos)
-            urg_norm = norm(urg)
-            if urg_norm > 0:
-                urg /= urg_norm
-                left = numpy.cross(uca_pos, uca_vel)
-                look = numpy.sign(numpy.dot(left, urg))
-                uspz = -look*numpy.cross(urg, uca_vel)
-                uspz /= norm(uspz)
-                uaz = numpy.cross(uspz, urg)
-                self.Row.UVectECF = XYZType.from_array(urg)
-                self.Col.UVectECF = XYZType.from_array(uaz)
-
-        if self.Row is not None and self.Row.KCtr is None and RMA.INCA.FreqZero is not None:
-            self.Row.KCtr = 2*RMA.INCA.FreqZero/speed_of_light
-        if self.Col is not None and self.Col.KCtr is None:
-            self.Col.KCtr = 0
+        pass
 
     def _basic_validity_check(self) -> bool:
         condition = super(GridType, self)._basic_validity_check()

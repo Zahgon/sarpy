@@ -57,7 +57,7 @@ class ImageBand(NITFElement):
 
     @classmethod
     def minimum_length(cls):
-        return 13
+        pass
 
     @property
     def LUTD(self):
@@ -68,30 +68,11 @@ class ImageBand(NITFElement):
         -------
         None|numpy.ndarray
         """
-
-        return self._LUTD
+        pass
 
     @LUTD.setter
     def LUTD(self, value):
-        if value is None:
-            self._LUTD = None
-            return
-
-        if not isinstance(value, numpy.ndarray):
-            raise TypeError('LUTD must be a numpy array')
-        if value.dtype.name != 'uint8':
-            raise ValueError('LUTD must be a numpy array of dtype uint8, got {}'.format(value.dtype.name))
-        if value.ndim != 2:
-            raise ValueError('LUTD must be a two-dimensional array')
-        if value.shape[0] > 4:
-            raise ValueError(
-                'The number of LUTD bands (axis 0) must be 4 or fewer. '
-                'Got LUTD shape {}'.format(value.shape))
-        if value.shape[1] > 65536:
-            raise ValueError(
-                'The number of LUTD elemnts (axis 1) must be 65536 or fewer. '
-                'Got LUTD shape {}'.format(value.shape))
-        self._LUTD = value
+        pass
 
     @property
     def NLUTS(self):
@@ -104,8 +85,7 @@ class ImageBand(NITFElement):
         -------
         int
         """
-
-        return 0 if self._LUTD is None else self._LUTD.shape[0]
+        pass
 
     @property
     def NELUTS(self):
@@ -117,8 +97,7 @@ class ImageBand(NITFElement):
         -------
         int
         """
-
-        return 0 if self._LUTD is None else self._LUTD.shape[1]
+        pass
 
     def _get_attribute_bytes(self, attribute):
         if attribute == 'LUTD':
@@ -188,7 +167,7 @@ class ImageBands(NITFLoop):
 
     @classmethod
     def minimum_length(cls):
-        return cls.NBANDS_LEN + cls._child_class.minimum_length()
+        pass
 
 
 class ImageComment(NITFElement):
@@ -240,8 +219,7 @@ class MaskSubheader(NITFElement):
         """
         int: The number of band elements. Will only be > 1 if band-sequential format.
         """
-
-        return self._band_depth
+        pass
 
     @property
     def blocks(self):
@@ -256,23 +234,11 @@ class MaskSubheader(NITFElement):
         """
         bytes: The Transparent output pixel code.
         """
-
-        return self._TPXCD
+        pass
 
     @TPXCD.setter
     def TPXCD(self, value):
-        if self.TPXCDLNTH == 0:
-            self._TPXCD = None
-            return
-
-        if not isinstance(value, bytes):
-            raise TypeError('TPXCD must be of type bytes.')
-        expected_length = self._get_attribute_length('TPXCD')
-        if len(value) != expected_length:
-            raise ValueError(
-                'Provided TPXCD data is required to be of length {}, '
-                'but got length {}'.format(expected_length, len(value)))
-        self._TPXCD = value
+        pass
 
     @property
     def BMR(self):
@@ -284,29 +250,11 @@ class MaskSubheader(NITFElement):
         block. If the block is not recorded/transmitted (i.e. present), then the
         offset value is defaulted to `0xFFFFFFFF`.
         """
-
-        return self._BMR
+        pass
 
     @BMR.setter
     def BMR(self, value):
-        if value is None:
-            if self.BMRLNTH != 0:
-                raise ValueError('BMR array is None, but BMRLNTH={}'.format(self.BMRLNTH))
-            self._BMR = None
-        else:
-            if self.BMRLNTH != 4:
-                raise ValueError('BMR array is provided, but BMRLNTH={}'.format(self.BMRLNTH))
-            if not isinstance(value, numpy.ndarray):
-                value = numpy.array(value, dtype='uint32')
-            if value.shape != (self.band_depth, self.blocks):
-                raise ValueError(
-                    'BMR array is of shape {}, and must be of '
-                    'shape {}'.format(value.shape, (self.band_depth, self.blocks)))
-            if value.dtype.name != 'uint32':
-                raise ValueError(
-                    'BMR array has dtype {}, and must be of '
-                    'dtype uint32'.format(value.dtype.name))
-            self._BMR = value
+        pass
 
     @property
     def TMR(self):
@@ -318,29 +266,11 @@ class MaskSubheader(NITFElement):
         block (if this block contains pad pixels), or the default value `0xFFFFFFFF`
         to indicate that this block does not contain pad pixels.
         """
-
-        return self._TMR
+        pass
 
     @TMR.setter
     def TMR(self, value):
-        if value is None:
-            if self.TMRLNTH != 0:
-                raise ValueError('TMR array is None, but TMRLNTH={}'.format(self.TMRLNTH))
-            self._TMR = None
-        else:
-            if self.TMRLNTH != 4:
-                raise ValueError('TMR array is provided, but TMRLNTH={}'.format(self.TMRLNTH))
-            if not isinstance(value, numpy.ndarray):
-                value = numpy.array(value, dtype='uint32')
-            if value.shape != (self.band_depth, self.blocks):
-                raise ValueError(
-                    'TMR array is of shape {}, and must be of '
-                    'shape {}'.format(value.shape, (self.band_depth, self.blocks)))
-            if value.dtype.name != 'uint32':
-                raise ValueError(
-                    'TMR array has dtype {}, and must be of '
-                    'dtype uint32'.format(value.dtype.name))
-            self._TMR = value
+        pass
 
     @staticmethod
     def define_tpxcd_length(tpxcdlnth):
@@ -443,16 +373,7 @@ class MaskSubheader(NITFElement):
         return out
 
     def to_json(self):
-        out = OrderedDict([('band_depth', self.band_depth), ('blocks', self.blocks)])
-        for fld in self._ordering:
-            value = getattr(self, fld)
-            if value is None:
-                continue
-            if fld in ['BMR', 'TMR']:
-                out[fld] = value.tolist()
-            else:
-                out[fld] = value
-        return out
+        pass
 
 
 #########
@@ -653,16 +574,14 @@ class ImageSegmentHeader(NITFElement):
         """
         bool: Does this image segment contain a mask?
         """
-
-        return self.IC in ['NM', 'M1', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8']
+        pass
 
     @property
     def is_compressed(self):
         """
         bool: Is this image segment compressed?
         """
-
-        return self.IC not in ['NC', 'NM']
+        pass
 
     @property
     def IC(self):
@@ -694,21 +613,11 @@ class ImageSegmentHeader(NITFElement):
         valid in NITF 2.1.) The definition of the compression scheme associated
         with codes :code:`C8/M8` is found in ISO/IEC 15444- 1:2000 (with amendments 1 and 2).
         """
-
-        return self._IC
+        pass
 
     @IC.setter
     def IC(self, value):
-        value = _parse_str(value, 2, 'NC', 'IC', self)
-        if value not in {
-                'NC', 'NM', 'C0', 'C1', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'I1',
-                'M1', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8'}:
-            raise ValueError('IC got invalid value {}'.format(value))
-        self._IC = value
-        if value in ('NC', 'NM'):
-            self._COMRAT = None
-        elif self._COMRAT is not None:
-            self._COMRAT = '\x20'*4
+        pass
 
     @property
     def COMRAT(self):
@@ -719,23 +628,11 @@ class ImageSegmentHeader(NITFElement):
 
         If `IC` is :code:`NC` or :code:`NM`, then this will be set to :code:`None`.
         """
-
-        return self._COMRAT
+        pass
 
     @COMRAT.setter
     def COMRAT(self, value):
-        value = _parse_str(value, 4, None, 'COMRAT', self)
-        if value is None and self.IC not in ('NC', 'NM'):
-            value = '\x20'*4
-            logger.error(
-                'COMRAT value is None, but IC is not in {"NC", "NM"}.\n\t'
-                'This must be resolved.')
-        if value is not None and self.IC in ('NC', 'NM'):
-            value = None
-            logger.error(
-                'COMRAT value is something other than None, but IC in {"NC", "NM"}.\n\t'
-                'This is invalid, and COMRAT is being set to None.')
-        self._COMRAT = value
+        pass
 
     @property
     def IGEOLO(self):
@@ -750,17 +647,11 @@ class ImageSegmentHeader(NITFElement):
         MaxCol and MaxRow shall be determined from the values contained, respectively,
         in the `NCOLS` field and the `NROWS` field.
         """
-
-        return self._IGEOLO
+        pass
 
     @IGEOLO.setter
     def IGEOLO(self, value):
-        value = _parse_str(value, 60, None, 'IGEOLO', self)
-        if value is None and self.ICORDS.strip() != '':
-            value = '\x20'*60
-        if value is not None and self.ICORDS.strip() == '':
-            value = None
-        self._IGEOLO = value
+        pass
 
     @property
     def mask_subheader(self):
@@ -768,23 +659,11 @@ class ImageSegmentHeader(NITFElement):
         """
         None|MaskSubheader: The mask subheader, if it has been appended.
         """
-
-        return self._mask_subheader
+        pass
 
     @mask_subheader.setter
     def mask_subheader(self, value):
-        if value is None:
-            self._mask_subheader = None
-            return
-        if not isinstance(value, MaskSubheader):
-            raise ValueError(
-                'mask_subheader is expected to be an instance of MaskSubheader. '
-                'Got type {}'.format(type(value)))
-        if self.IC not in ['NM', 'M1', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8']:
-            raise ValueError(
-                'IC={}, which does not indicate the presence of a mask '
-                'subheader'.format(self.IC))
-        self._mask_subheader = value
+        pass
 
     def _get_attribute_length(self, fld):
         if fld in ['COMRAT', 'IGEOLO']:
@@ -798,7 +677,7 @@ class ImageSegmentHeader(NITFElement):
     @classmethod
     def minimum_length(cls):
         # COMRAT and IGEOLO may not be there
-        return super(ImageSegmentHeader, cls).minimum_length() - 64
+        pass
 
     @classmethod
     def _parse_attribute(cls, fields, attribute, value, start):
@@ -827,13 +706,7 @@ class ImageSegmentHeader(NITFElement):
         -------
         int
         """
-
-        nppbv = self.NROWS if self.NPPBV == 0 else self.NPPBV
-        nppbh = self.NCOLS if self.NPPBH == 0 else self.NPPBH
-        if self.IMODE == 'S':
-            return int(nppbh*nppbv*self.NBPP/8)
-        else:
-            return int(nppbh*nppbv*len(self.Bands)*self.NBPP/8)
+        pass
 
     def get_full_uncompressed_image_size(self) -> int:
         """
@@ -844,11 +717,7 @@ class ImageSegmentHeader(NITFElement):
         -------
         int
         """
-
-        total_blocks = self.NBPR*self.NBPC
-        if self.IMODE == 'S':
-            total_blocks *= len(self.Bands)
-        return total_blocks*self.get_uncompressed_block_size()
+        pass
 
     def get_clevel(self) -> int:
         """
@@ -858,16 +727,7 @@ class ImageSegmentHeader(NITFElement):
         -------
         int
         """
-
-        dim_size = max(self.NROWS, self.NCOLS)
-        if dim_size <= 2048:
-            return 3
-        elif dim_size <= 8192:
-            return 5
-        elif dim_size <= 65536:
-            return 6
-        else:
-            return 7
+        pass
 
 
 #########
@@ -1068,16 +928,14 @@ class ImageSegmentHeader0(NITFElement):
         """
         bool: Does this image segment contain a mask?
         """
-
-        return self.IC in ['NM', 'M1', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8']
+        pass
 
     @property
     def is_compressed(self):
         """
         bool: Is this image segment compressed?
         """
-
-        return self.IC not in ['NC', 'NM']
+        pass
 
     @property
     def IC(self):
@@ -1109,21 +967,11 @@ class ImageSegmentHeader0(NITFElement):
         valid in NITF 2.1.) The definition of the compression scheme associated
         with codes :code:`C8/M8` is found in ISO/IEC 15444- 1:2000 (with amendments 1 and 2).
         """
-
-        return self._IC
+        pass
 
     @IC.setter
     def IC(self, value):
-        value = _parse_str(value, 2, 'NC', 'IC', self)
-        if value not in {
-                'NC', 'NM', 'C1', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'I1',
-                'M1', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8'}:
-            raise ValueError('IC got invalid value {}'.format(value))
-        self._IC = value
-        if value in ('NC', 'NM'):
-            self._COMRAT = None
-        elif self._COMRAT is not None:
-            self._COMRAT = '\x20'*4
+        pass
 
     @property
     def COMRAT(self):
@@ -1134,23 +982,11 @@ class ImageSegmentHeader0(NITFElement):
 
         If `IC` is :code:`NC` or :code:`NM`, then this will be set to :code:`None`.
         """
-
-        return self._COMRAT
+        pass
 
     @COMRAT.setter
     def COMRAT(self, value):
-        value = _parse_str(value, 4, None, 'COMRAT', self)
-        if value is None and self.IC not in ('NC', 'NM'):
-            value = '\x20'*4
-            logger.error(
-                'COMRAT value is None, but IC is not in {"NC", "NM"}.\n\t'
-                'This must be resolved.')
-        if value is not None and self.IC in ('NC', 'NM'):
-            value = None
-            logger.error(
-                'COMRAT value is something other than None, but IC in {"NC", "NM"}.\n\t'
-                'This is invalid, and COMRAT is being set to None.')
-        self._COMRAT = value
+        pass
 
     @property
     def IGEOLO(self):
@@ -1165,17 +1001,11 @@ class ImageSegmentHeader0(NITFElement):
         MaxCol and MaxRow shall be determined from the values contained, respectively,
         in the `NCOLS` field and the `NROWS` field.
         """
-
-        return self._IGEOLO
+        pass
 
     @IGEOLO.setter
     def IGEOLO(self, value):
-        value = _parse_str(value, 60, None, 'IGEOLO', self)
-        if value is None and self.ICORDS.strip() != '':
-            value = '\x20'*60
-        if value is not None and self.ICORDS.strip() == '':
-            value = None
-        self._IGEOLO = value
+        pass
 
     @property
     def mask_subheader(self):
@@ -1183,23 +1013,11 @@ class ImageSegmentHeader0(NITFElement):
         """
         None|MaskSubheader: The mask subheader, if it has been appended.
         """
-
-        return self._mask_subheader
+        pass
 
     @mask_subheader.setter
     def mask_subheader(self, value):
-        if value is None:
-            self._mask_subheader = None
-            return
-        if not isinstance(value, MaskSubheader):
-            raise ValueError(
-                'mask_subheader is expected to be an instance of MaskSubheader. '
-                'Got type {}'.format(type(value)))
-        if self.IC not in ['NM', 'M1', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8']:
-            raise ValueError(
-                'IC={}, which does not indicate the presence of a mask '
-                'subheader'.format(self.IC))
-        self._mask_subheader = value
+        pass
 
     def _get_attribute_length(self, fld):
         if fld in ['COMRAT', 'IGEOLO']:
@@ -1213,7 +1031,7 @@ class ImageSegmentHeader0(NITFElement):
     @classmethod
     def minimum_length(cls):
         # COMRAT and IGEOLO may not be there
-        return super(ImageSegmentHeader0, cls).minimum_length() - 64
+        pass
 
     @classmethod
     def _parse_attribute(cls, fields, attribute, value, start):
@@ -1243,13 +1061,7 @@ class ImageSegmentHeader0(NITFElement):
         -------
         int
         """
-
-        nppbv = self.NROWS if self.NPPBV == 0 else self.NPPBV
-        nppbh = self.NCOLS if self.NPPBH == 0 else self.NPPBH
-        if self.IMODE == 'S':
-            return int(nppbh*nppbv*self.NBPP/8)
-        else:
-            return int(nppbh*nppbv*len(self.Bands)*self.NBPP/8)
+        pass
 
     def get_full_uncompressed_image_size(self) -> int:
         """
@@ -1260,11 +1072,7 @@ class ImageSegmentHeader0(NITFElement):
         -------
         int
         """
-
-        total_blocks = self.NBPR*self.NBPC
-        if self.IMODE == 'S':
-            total_blocks *= len(self.Bands)
-        return total_blocks*self.get_uncompressed_block_size()
+        pass
 
     def get_clevel(self) -> int:
         """
@@ -1274,13 +1082,4 @@ class ImageSegmentHeader0(NITFElement):
         -------
         int
         """
-
-        dim_size = max(self.NROWS, self.NCOLS)
-        if dim_size <= 2048:
-            return 3
-        elif dim_size <= 8192:
-            return 5
-        elif dim_size <= 65536:
-            return 6
-        else:
-            return 7
+        pass

@@ -143,8 +143,7 @@ class OrthorectificationHelper(object):
         """
         SICDTypeReader: The reader instance.
         """
-
-        return self._reader
+        pass
 
     @property
     def index(self):
@@ -160,8 +159,7 @@ class OrthorectificationHelper(object):
         """
         SICDType: The sicd structure.
         """
-
-        return self._sicd
+        pass
 
     @property
     def proj_helper(self):
@@ -169,8 +167,7 @@ class OrthorectificationHelper(object):
         """
         ProjectionHelper: The projection helper instance.
         """
-
-        return self._proj_helper
+        pass
 
     @property
     def out_dtype(self):
@@ -178,8 +175,7 @@ class OrthorectificationHelper(object):
         """
         numpy.dtype: The output data type.
         """
-
-        return self._out_dtype
+        pass
 
     @property
     def pad_value(self):
@@ -187,12 +183,11 @@ class OrthorectificationHelper(object):
         The value to use for any portions of the array which extend beyond the range
         of where the reader has data.
         """
-
-        return self._pad_value
+        pass
 
     @pad_value.setter
     def pad_value(self, value):
-        self._pad_value = value
+        pass
 
     def set_index_and_proj_helper(self, index, proj_helper=None):
         """
@@ -207,32 +202,7 @@ class OrthorectificationHelper(object):
         -------
         None
         """
-
-        self._index = index
-        self._sicd = self.reader.get_sicds_as_tuple()[index]
-        self._is_radiometric_valid()
-        self._is_radiometric_noise_valid()
-
-        default_ortho_bounds = None
-        if proj_helper is None:
-            try:
-                proj_helper = PGRatPolyProjection(self.sicd)
-            except SarpyRatPolyError:
-                proj_helper = PGProjection(self.sicd)
-
-            if self.sicd.RadarCollection is not None and self.sicd.RadarCollection.Area is not None \
-                    and self.sicd.RadarCollection.Area.Plane is not None:
-                plane = self.sicd.RadarCollection.Area.Plane
-                default_ortho_bounds = numpy.array([
-                    plane.XDir.FirstLine, plane.XDir.FirstLine+plane.XDir.NumLines,
-                    plane.YDir.FirstSample, plane.YDir.FirstSample+plane.YDir.NumSamples], dtype=numpy.uint32)
-
-        if not isinstance(proj_helper, ProjectionHelper):
-            raise TypeError('Got unexpected type {} for proj_helper'.format(proj_helper))
-        self._proj_helper = proj_helper
-        if default_ortho_bounds is not None:
-            _, ortho_rectangle = self.bounds_to_rectangle(default_ortho_bounds)
-            self._default_physical_bounds = self.proj_helper.ortho_to_ecf(ortho_rectangle)
+        pass
 
     @property
     def apply_radiometric(self):
@@ -246,22 +216,11 @@ class OrthorectificationHelper(object):
         `sicd.Radiometric.SigmaZeroSFPoly`, `sicd.Radiometric.GammaZeroSFPoly`, or
         `sicd.Radiometric.BetaZeroSFPoly` is not populated with a valid polynomial.
         """
-
-        return self._apply_radiometric
+        pass
 
     @apply_radiometric.setter
     def apply_radiometric(self, value):
-        if value is None:
-            self._apply_radiometric = None
-        elif isinstance(value, str):
-            val = value.upper()
-            allowed = ('RCS', 'SIGMA0', 'GAMMA0', 'BETA0')
-            if val not in allowed:
-                raise ValueError('Require that value is one of {}, got {}'.format(allowed, val))
-            self._apply_radiometric = val
-            self._is_radiometric_valid()
-        else:
-            raise TypeError('Got unexpected type {} for apply_radiometric'.format(type(value)))
+        pass
 
     @property
     def subtract_radiometric_noise(self):
@@ -274,16 +233,11 @@ class OrthorectificationHelper(object):
         `sicd.Radiometric.NoiseLevel.NoisePoly` populated with a viable polynomial and
         `sicd.Radiometric.NoiseLevel.NoiseLevelType == 'ABSOLUTE'`.
         """
-
-        return self._subtract_radiometric_noise
+        pass
 
     @subtract_radiometric_noise.setter
     def subtract_radiometric_noise(self, value):
-        if value:
-            self._subtract_radiometric_noise = True
-        else:
-            self._subtract_radiometric_noise = False
-        self._is_radiometric_noise_valid()
+        pass
 
     def _is_radiometric_valid(self):
         """
@@ -293,44 +247,7 @@ class OrthorectificationHelper(object):
         -------
         None
         """
-
-        if self.apply_radiometric is None:
-            self._rad_poly = None
-            return  # nothing to be done
-        if self._complex_valued:
-            raise ValueError('apply_radiometric is not None, which requires real valued output.')
-        if self.sicd is None:
-            return  # nothing to be done, no sicd set (yet)
-
-        if self.sicd.Radiometric is None:
-            raise ValueError(
-                'apply_radiometric is {}, but sicd.Radiometric is unpopulated.'.format(self.apply_radiometric))
-
-        if self.apply_radiometric == 'RCS':
-            if self.sicd.Radiometric.RCSSFPoly is None:
-                raise ValueError('apply_radiometric is "RCS", but the sicd.Radiometric.RCSSFPoly is not populated.')
-            else:
-                self._rad_poly = self.sicd.Radiometric.RCSSFPoly
-        elif self.apply_radiometric == 'SIGMA0':
-            if self.sicd.Radiometric.SigmaZeroSFPoly is None:
-                raise ValueError(
-                    'apply_radiometric is "SIGMA0", but the sicd.Radiometric.SigmaZeroSFPoly is not populated.')
-            else:
-                self._rad_poly = self.sicd.Radiometric.SigmaZeroSFPoly
-        elif self.apply_radiometric == 'GAMMA0':
-            if self.sicd.Radiometric.GammaZeroSFPoly is None:
-                raise ValueError(
-                    'apply_radiometric is "GAMMA0", but the sicd.Radiometric.GammaZeroSFPoly is not populated.')
-            else:
-                self._rad_poly = self.sicd.Radiometric.GammaZeroSFPoly
-        elif self.apply_radiometric == 'BETA0':
-            if self.sicd.Radiometric.BetaZeroSFPoly is None:
-                raise ValueError(
-                    'apply_radiometric is "BETA0", but the sicd.Radiometric.BetaZeroSFPoly is not populated.')
-            else:
-                self._rad_poly = self.sicd.Radiometric.BetaZeroSFPoly
-        else:
-            raise ValueError('Got unhandled value {} for apply_radiometric'.format(self.apply_radiometric))
+        pass
 
     def _is_radiometric_noise_valid(self):
         """
@@ -340,34 +257,7 @@ class OrthorectificationHelper(object):
         -------
         None
         """
-
-        if not self.subtract_radiometric_noise:
-            self._noise_poly = None
-            return  # nothing to be done
-        if self._complex_valued:
-            raise ValueError('subtract_radiometric_noise is True, which requires real valued output.')
-        if self.sicd is None:
-            return  # nothing to be done, no sicd set (yet)
-
-        # set the noise polynomial value
-        if self.sicd.Radiometric is None:
-            raise ValueError(
-                'subtract_radiometric_noise is True,\n\t'
-                'but sicd.Radiometric is unpopulated.')
-
-        if self.sicd.Radiometric.NoiseLevel is None:
-            raise ValueError(
-                'subtract_radiometric_noise is set to True,\n\t'
-                'but sicd.Radiometric.NoiseLevel is not populated.')
-        if self.sicd.Radiometric.NoiseLevel.NoisePoly is None:
-            raise ValueError(
-                'subtract_radiometric_noise is set to True,\n\t'
-                'but sicd.Radiometric.NoiseLevel.NoisePoly is not populated.')
-        if self.sicd.Radiometric.NoiseLevel.NoiseLevelType == 'RELATIVE':
-            raise ValueError(
-                'subtract_radiometric_noise is set to True,\n\t'
-                'but sicd.Radiometric.NoiseLevel.NoiseLevelType is "RELATIVE"')
-        self._noise_poly = self.sicd.Radiometric.NoiseLevel.NoisePoly
+        pass
 
     def get_full_ortho_bounds(self):
         """
@@ -401,16 +291,7 @@ class OrthorectificationHelper(object):
         numpy.ndarray
             Of the form `[min row, max row, min column, max column]`.
         """
-
-        if self._default_physical_bounds is not None:
-            ortho_rectangle = self.proj_helper.ecf_to_ortho(self._default_physical_bounds)
-            return self.proj_helper.get_pixel_array_bounds(ortho_rectangle)
-
-        valid_coords = self.sicd.ImageData.get_valid_vertex_data()
-        if valid_coords is None:
-            valid_coords = self.sicd.ImageData.get_full_vertex_data()
-        valid_line = _linear_fill(valid_coords, fill_interval=1)
-        return self.get_orthorectification_bounds_from_pixel_object(valid_line)
+        pass
 
     def get_orthorectification_bounds_from_pixel_object(self, coordinates):
         """
@@ -460,36 +341,7 @@ class OrthorectificationHelper(object):
         numpy.ndarray
             Of the form `(row_min, row_max, col_min, col_max)`.
         """
-
-        if isinstance(coordinates, GeometryObject):
-            # Note we assume a geometry object is using lon/lat ordering of coordinates.
-            bounds = coordinates.get_bbox()
-            if len(bounds) == 4:
-                coordinates = numpy.array(
-                    [[bounds[1], bounds[0]],
-                     [bounds[1], bounds[2]],
-                     [bounds[3], bounds[2]],
-                     [bounds[3], bounds[0]]], dtype=numpy.float64)
-            elif len(bounds) >= 6:
-                siz = int(len(bounds)/2)
-                coordinates = numpy.array(
-                    [[bounds[1], bounds[0], bounds[3]],
-                     [bounds[1], bounds[siz], bounds[3]],
-                     [bounds[3], bounds[2], bounds[3]],
-                     [bounds[3], bounds[0], bounds[3]]], dtype=numpy.float64)
-            else:
-                raise ValueError(
-                    'It is expected that the geometry object "coordinates" uses two '
-                    'or three dimensional coordinates. Got {} for a bounding box.'.format(bounds))
-        if not isinstance(coordinates, numpy.ndarray):
-            coordinates = numpy.array(coordinates, dtype=numpy.float64)
-        if coordinates.shape[-1] == 2:
-            ortho = self.proj_helper.ll_to_ortho(coordinates)
-        elif coordinates.shape[-1] == 3:
-            ortho = self.proj_helper.llh_to_ortho(coordinates)
-        else:
-            raise ValueError('Got unexpected shape for coordinates {}'.format(coordinates.shape))
-        return self.proj_helper.get_pixel_array_bounds(ortho)
+        pass
 
     @staticmethod
     def validate_bounds(bounds):
@@ -539,12 +391,7 @@ class OrthorectificationHelper(object):
         -------
         numpy.ndarray
         """
-
-        ortho_shape = (int(ortho_bounds[1]-ortho_bounds[0]), int(ortho_bounds[3]-ortho_bounds[2]), 2)
-        ortho_mesh = numpy.zeros(ortho_shape, dtype=numpy.int32)
-        ortho_mesh[:, :, 1], ortho_mesh[:, :, 0] = numpy.meshgrid(numpy.arange(ortho_bounds[2], ortho_bounds[3]),
-                                                                  numpy.arange(ortho_bounds[0], ortho_bounds[1]))
-        return ortho_mesh
+        pass
 
     @staticmethod
     def _get_mask(pixel_rows, pixel_cols, row_array, col_array):
@@ -843,15 +690,7 @@ class OrthorectificationHelper(object):
         -------
         numpy.ndarray
         """
-
-        ortho_bounds, nominal_pixel_bounds = self.extract_pixel_bounds(bounds)
-        # extract the values - ensure that things are within proper image bounds
-        pixel_bounds = self.get_real_pixel_bounds(nominal_pixel_bounds)
-        pixel_array = self.reader[
-            pixel_bounds[0]:pixel_bounds[1], pixel_bounds[2]:pixel_bounds[3], self.index]
-        row_arr = numpy.arange(pixel_bounds[0], pixel_bounds[1])
-        col_arr = numpy.arange(pixel_bounds[2], pixel_bounds[3])
-        return self.get_orthorectified_from_array(ortho_bounds, row_arr, col_arr, pixel_array)
+        pass
 
     def get_orthorectified_for_pixel_bounds(self, pixel_bounds):
         """
@@ -867,9 +706,7 @@ class OrthorectificationHelper(object):
         -------
         numpy.ndarray
         """
-
-        pixel_bounds, pixel_rect = self.bounds_to_rectangle(pixel_bounds)
-        return self.get_orthorectified_for_pixel_object(pixel_rect)
+        pass
 
     def get_orthorectified_for_pixel_object(self, coordinates):
         """
@@ -885,9 +722,7 @@ class OrthorectificationHelper(object):
         -------
         numpy.ndarray
         """
-
-        bounds = self.get_orthorectification_bounds_from_pixel_object(coordinates)
-        return self.get_orthorectified_for_ortho_bounds(bounds)
+        pass
 
     def get_orthorectified_for_latlon_object(self, ll_coordinates):
         """
@@ -905,9 +740,7 @@ class OrthorectificationHelper(object):
         -------
         numpy.ndarray
         """
-
-        bounds = self.get_orthorectification_bounds_from_latlon_object(ll_coordinates)
-        return self.get_orthorectified_for_ortho_bounds(bounds)
+        pass
 
     def _setup_flat_workspace(self, ortho_bounds, row_array, col_array, value_array):
         """
@@ -1095,29 +928,22 @@ class BivariateSplineMethod(OrthorectificationHelper):
         """
         int : The spline order for the x/row coordinate, where `1 <= row_order <= 5`.
         """
-        return self._row_order
+        pass
 
     @row_order.setter
     def row_order(self, value):
-        value = int(value)
-        if not (1 <= value <= 5):
-            raise ValueError('row_order must take value between 1 and 5.')
-        self._row_order = value
+        pass
 
     @property
     def col_order(self):
         """
         int : The spline order for the y/col coordinate, where `1 <= col_order <= 5`.
         """
-
-        return self._col_order
+        pass
 
     @col_order.setter
     def col_order(self, value):
-        value = int(value)
-        if not (1 <= value <= 5):
-            raise ValueError('col_order must take value between 1 and 5.')
-        self._col_order = value
+        pass
 
     def _get_orthrectified_from_array_flat(self, ortho_bounds, row_array, col_array, value_array):
         # setup the result workspace

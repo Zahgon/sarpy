@@ -68,16 +68,11 @@ class FFTCalculator(FullResolutionFetcher):
         """
         int: The dimension along which to perform the color subaperture split.
         """
-
-        return self._dimension
+        pass
 
     @dimension.setter
     def dimension(self, value):
-        value = int(value)
-        if value not in [0, 1]:
-            raise ValueError('dimension must be 0 or 1, got {}'.format(value))
-        self._dimension = value
-        self._set_fill()
+        pass
 
     @property
     def index(self) -> int:
@@ -105,8 +100,7 @@ class FFTCalculator(FullResolutionFetcher):
         """
         float: The fill factor for the fourier processing.
         """
-
-        return self._fill
+        pass
 
     def _set_fill(self):
         self._fill = None
@@ -155,13 +149,7 @@ def _validate_fft_input(array: numpy.ndarray) -> None:
     -------
     None
     """
-
-    if not isinstance(array, numpy.ndarray):
-        raise TypeError('array must be a numpy array')
-    if not numpy.iscomplexobj(array):
-        raise ValueError('array must have a complex data type')
-    if array.ndim != 2:
-        raise ValueError('array must be a two-dimensional array. Got shape {}'.format(array.shape))
+    pass
 
 
 def _determine_direction(

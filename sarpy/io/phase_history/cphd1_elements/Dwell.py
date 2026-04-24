@@ -126,19 +126,11 @@ class DwellType(Serializable):
         """
         int: The number of cod time polynomial elements.
         """
-
-        if self.CODTimes is None:
-            return 0
-        else:
-            return len(self.CODTimes)
+        pass
 
     @property
     def NumDwellTimes(self):
         """
         int: The number of dwell time polynomial elements.
         """
-
-        if self.DwellTimes is None:
-            return 0
-        else:
-            return len(self.DwellTimes)
+        pass

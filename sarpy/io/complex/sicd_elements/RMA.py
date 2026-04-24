@@ -145,8 +145,7 @@ class INCAType(Serializable):
         super(INCAType, self).__init__(**kwargs)
 
     def _apply_reference_frequency(self, reference_frequency: float):
-        if self.FreqZero is not None:
-            self.FreqZero += reference_frequency
+        pass
 
 
 class RMAType(Serializable):
@@ -214,11 +213,7 @@ class RMAType(Serializable):
         returning the (first) attribute among `'RMAT', 'RMCR', 'INCA'` which is populated. `None` will be returned if
         none of them are populated.
         """
-
-        for attribute in self._choice[0]['collection']:
-            if getattr(self, attribute) is not None:
-                return attribute
-        return None
+        pass
 
     def _derive_parameters(self, SCPCOA, Position, RadarCollection, ImageFormation):
         """
@@ -235,38 +230,7 @@ class RMAType(Serializable):
         -------
         None
         """
-
-        if SCPCOA is None:
-            return
-
-        scp = None if SCPCOA.ARPPos is None else SCPCOA.ARPPos.get_array()
-
-        im_type = self.ImageType
-        if im_type in ['RMAT', 'RMCR']:
-            rm_ref = getattr(self, im_type)  # type: RMRefType
-            if rm_ref.PosRef is None and SCPCOA.ARPPos is not None:
-                rm_ref.PosRef = SCPCOA.ARPPos.copy()
-            if rm_ref.VelRef is None and SCPCOA.ARPVel is not None:
-                rm_ref.VelRef = SCPCOA.ARPVel.copy()
-            if scp is not None and rm_ref.PosRef is not None and rm_ref.VelRef is not None:
-                pos_ref = rm_ref.PosRef.get_array()
-                vel_ref = rm_ref.VelRef.get_array()
-                uvel_ref = vel_ref/norm(vel_ref)
-                ulos = (scp - pos_ref)  # it absolutely could be that scp = pos_ref
-                ulos_norm = norm(ulos)
-                if ulos_norm > 0:
-                    ulos /= ulos_norm
-                    if rm_ref.DopConeAngRef is None:
-                        rm_ref.DopConeAngRef = numpy.rad2deg(numpy.arccos(numpy.dot(uvel_ref, ulos)))
-        elif im_type == 'INCA':
-            if scp is not None and self.INCA.TimeCAPoly is not None and \
-                    Position is not None and Position.ARPPoly is not None:
-                t_zero = self.INCA.TimeCAPoly.Coefs[0]
-                ca_pos = Position.ARPPoly(t_zero)
-                if self.INCA.R_CA_SCP is None:
-                    self.INCA.R_CA_SCP = norm(ca_pos - scp)
-            if self.INCA.FreqZero is None:
-                self.INCA.FreqZero = _get_center_frequency(RadarCollection, ImageFormation)
+        pass
 
     def _apply_reference_frequency(self, reference_frequency: float):
         """
@@ -282,7 +246,4 @@ class RMAType(Serializable):
         -------
         None
         """
-
-        if self.INCA is not None:
-            # noinspection PyProtectedMember
-            self.INCA._apply_reference_frequency(reference_frequency)
+        pass

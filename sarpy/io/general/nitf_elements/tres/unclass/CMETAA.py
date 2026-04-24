@@ -214,18 +214,7 @@ class CMETAA(TREExtension):
         -------
         numpy.ndarray
         """
-
-        cg_model = self.DATA.CG_MODEL.strip()
-        scp_array = numpy.array(
-            [float(self.DATA.CG_SCECN_X),
-             float(self.DATA.CG_SCECN_Y),
-             float(self.DATA.CG_SCECN_Z)], dtype='float64')
-        if cg_model == 'ECEF':
-            return scp_array
-        elif cg_model == 'WGS84':
-            return geodetic_to_ecf(scp_array)
-        else:
-            raise ValueError('Got unhandled CG_MODEL {}'.format(cg_model))
+        pass
 
     def get_arp(self):
         """
@@ -235,18 +224,7 @@ class CMETAA(TREExtension):
         -------
         numpy.ndarray
         """
-
-        cg_model = self.DATA.CG_MODEL.strip()
-        arp_array = numpy.array(
-            [float(self.DATA.CG_APCEN_X),
-             float(self.DATA.CG_APCEN_Y),
-             float(self.DATA.CG_APCEN_Z)], dtype='float64')
-        if cg_model == 'ECEF':
-            return arp_array
-        elif cg_model == 'WGS84':
-            return geodetic_to_ecf(arp_array)
-        else:
-            raise ValueError('Got unhandled CG_MODEL {}'.format(cg_model))
+        pass
 
     def get_image_corners(self):
         """
@@ -256,13 +234,5 @@ class CMETAA(TREExtension):
         -------
         None|numpy.ndarray
         """
-
-        if self.DATA.CG_MAP_TYPE.strip() != 'GEOD':
-            return None
-
-        return numpy.array([
-                [float(self.DATA.CG_PATCH_LTCORUL), float(self.DATA.CG_PATCH_LGCORUL)],
-                [float(self.DATA.CG_PATCH_LTCORUR), float(self.DATA.CG_PATCH_LGCORUR)],
-                [float(self.DATA.CG_PATCH_LTCORLR), float(self.DATA.CG_PATCH_LGCORLR)],
-                [float(self.DATA.CG_PATCH_LTCORLL), float(self.DATA.CG_PATCH_LNGCOLL)]], dtype='float64')
+        pass
 

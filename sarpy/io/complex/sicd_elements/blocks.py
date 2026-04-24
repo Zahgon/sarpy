@@ -903,8 +903,7 @@ class Poly1DType(Serializable, Arrayable):
         int: The order1 attribute [READ ONLY]  - that is, the largest exponent
         presented in the monomial terms of coefs.
         """
-
-        return self.Coefs.size - 1
+        pass
 
     @property
     def Coefs(self) -> numpy.ndarray:
@@ -918,27 +917,11 @@ class Poly1DType(Serializable, Arrayable):
             method to get a copy of the coefficient array of specified data
             type.
         """
-
-        return self._coefs
+        pass
 
     @Coefs.setter
     def Coefs(self, value: Union[numpy.ndarray, list, tuple]):
-        if value is None:
-            raise ValueError('The coefficient array for a Poly1DType instance must be defined.')
-
-        if isinstance(value, (list, tuple)):
-            value = numpy.array(value, dtype=numpy.float64)
-
-        if not isinstance(value, numpy.ndarray):
-            raise ValueError(
-                'Coefs for class Poly1D must be a list or numpy.ndarray. Received type {}.'.format(type(value)))
-        elif len(value.shape) != 1:
-            raise ValueError(
-                'Coefs for class Poly1D must be one-dimensional. Received numpy.ndarray '
-                'of shape {}.'.format(value.shape))
-        elif not value.dtype.name == 'float64':
-            value = numpy.asarray(value, dtype=numpy.float64)
-        self._coefs = value
+        pass
 
     def __call__(self, x: Union[float, int, numpy.ndarray]) -> numpy.ndarray:
         """
@@ -1036,24 +1019,7 @@ class Poly1DType(Serializable, Arrayable):
         -------
         Poly1DType|numpy.ndarray
         """
-
-        # prepare array workspace
-        out = numpy.copy(self._coefs)
-        if t_0 != 0 and out.size > 1:
-            siz = out.size
-            # let's use horner's method, so iterate from top down
-            for i in range(siz):
-                index = siz-i-1
-                if i > 0:
-                    out[index:siz-1] -= t_0*out[index+1:siz]
-
-        if alpha != 1 and out.size > 1:
-            out *= numpy.power(alpha, numpy.arange(out.size))
-
-        if return_poly:
-            return Poly1DType(Coefs=out)
-        else:
-            return out
+        pass
 
     @classmethod
     def from_array(cls, array: Union[numpy.ndarray, list, tuple]):
@@ -1147,19 +1113,7 @@ class Poly1DType(Serializable, Arrayable):
         -------
         None
         """
-
-        boolc = (self.Coefs != 0)
-        if not numpy.any(boolc):
-            self.Coefs = numpy.zeros((1, ), dtype='float64')
-            return
-        last_ind = numpy.amax(numpy.arange(self.Coefs.size)[boolc])
-        if last_ind == self.Coefs.size-1:
-            return
-
-        if last_ind == 0:
-            self.Coefs = numpy.array([self.Coefs[0], ], dtype='float64')
-        else:
-            self.Coefs = self.Coefs[:last_ind+1]
+        pass
 
 
 class Poly2DType(Serializable, Arrayable):
@@ -1218,16 +1172,14 @@ class Poly2DType(Serializable, Arrayable):
         """
         int: The order1 attribute [READ ONLY]  - that is, largest exponent1 presented in the monomial terms of coefs.
         """
-
-        return self._coefs.shape[0] - 1
+        pass
 
     @property
     def order2(self) -> int:
         """
         int: The order1 attribute [READ ONLY]  - that is, largest exponent2 presented in the monomial terms of coefs.
         """
-
-        return self._coefs.shape[1] - 1
+        pass
 
     @property
     def Coefs(self) -> numpy.ndarray:
@@ -1238,27 +1190,11 @@ class Poly2DType(Serializable, Arrayable):
         .. Note:: this returns the direct coefficient array. Use the `get_array()` method to get a copy of the
             coefficient array of specified data type.
         """
-
-        return self._coefs
+        pass
 
     @Coefs.setter
     def Coefs(self, value: Union[numpy.ndarray, list, tuple]):
-        if value is None:
-            raise ValueError('The coefficient array for a Poly2DType instance must be defined.')
-
-        if isinstance(value, (list, tuple)):
-            value = numpy.array(value, dtype=numpy.float64)
-
-        if not isinstance(value, numpy.ndarray):
-            raise ValueError(
-                'Coefs for class Poly2D must be a list or numpy.ndarray. Received type {}.'.format(type(value)))
-        elif len(value.shape) != 2:
-            raise ValueError(
-                'Coefs for class Poly2D must be two-dimensional. Received numpy.ndarray '
-                'of shape {}.'.format(value.shape))
-        elif not value.dtype.name == 'float64':
-            value = numpy.asarray(value, dtype=numpy.float64)
-        self._coefs = value
+        pass
 
     def __getitem__(self, item):
         return self._coefs[item]
@@ -1302,35 +1238,7 @@ class Poly2DType(Serializable, Arrayable):
         -------
         Poly2DType|numpy.ndarray
         """
-        # prepare our array workspace
-        out = numpy.copy(self._coefs)
-
-        # handle first axis - everything is commutative, so order doesn't matter
-        if t1_shift != 0 and self._coefs.shape[0] > 1:
-            siz = out.shape[0]
-            # let's use horner's method, so iterate from top down
-            for i in range(siz):
-                index = siz-i-1
-                if i > 0:
-                    out[index:siz-1, :] -= t1_shift*out[index+1:siz, :]
-        if t1_scale != 1 and out.shape[0] > 1:
-            out = numpy.power(t1_scale, numpy.arange(out.shape[0]))[:, numpy.newaxis]*out
-
-        # handle second axis
-        if t2_shift != 0 and out.shape[1] > 1:
-            siz = out.shape[1]
-            # let's use horner's method, so iterate from top down
-            for i in range(siz):
-                index = siz-i-1
-                if i > 0:
-                    out[:, index:siz-1] -= t2_shift*out[:, index+1:siz]
-        if t2_scale != 1 and out.shape[1] > 1:
-            out *= numpy.power(t2_scale, numpy.arange(out.shape[1]))
-
-        if return_poly:
-            return Poly2DType(Coefs=out)
-        else:
-            return out
+        pass
 
     @classmethod
     def from_array(cls, array: Union[numpy.ndarray, list, tuple]):
@@ -1422,27 +1330,7 @@ class Poly2DType(Serializable, Arrayable):
         -------
         None
         """
-
-        boolc = (self.Coefs != 0)
-        if not numpy.any(boolc):
-            self.Coefs = numpy.zeros((1, 1), dtype='float64')
-            return
-
-        col_inds, row_inds = numpy.meshgrid(
-            numpy.arange(self.Coefs.shape[1]), numpy.arange(self.Coefs.shape[0]))
-        last_row_ind = numpy.amax(row_inds[boolc])
-        last_col_ind = numpy.amax(col_inds[boolc])
-        if last_row_ind == self.Coefs.shape[0]-1 and last_col_ind == self.Coefs.shape[1]-1:
-            return
-
-        if last_row_ind == 0 and last_col_ind == 0:
-            self.Coefs = numpy.array([[self.Coefs[0, 0], ], ], dtype='float64')
-        elif last_row_ind == 0:
-            self.Coefs = numpy.reshape(self.Coefs[0, :last_col_ind+1], (1, -1))
-        elif last_col_ind == 0:
-            self.Coefs = numpy.reshape(self.Coefs[:last_row_ind+1, 0], (-1, 1))
-        else:
-            self.Coefs = self.Coefs[:last_row_ind+1, :last_col_ind+1]
+        pass
 
 
 class XYZPolyType(Serializable, Arrayable):
@@ -1645,13 +1533,7 @@ class XYZPolyType(Serializable, Arrayable):
         -------
         XYZPolyType|list
         """
-
-        coefs = [
-            getattr(self, attrib).shift(t_0, alpha=alpha, return_poly=False) for attrib in ['X', 'Y', 'Z']]
-
-        if return_poly:
-            return XYZPolyType(X=coefs[0], Y=coefs[1], Z=coefs[2])
-        return coefs
+        pass
 
     def minimize_order(self):
         """
@@ -1662,10 +1544,7 @@ class XYZPolyType(Serializable, Arrayable):
         -------
         None
         """
-
-        self.X.minimize_order()
-        self.Y.minimize_order()
-        self.Z.minimize_order()
+        pass
 
 
 class XYZPolyAttributeType(XYZPolyType):
@@ -1803,9 +1682,7 @@ class GainPhasePolyType(Serializable):
         -------
         None
         """
-
-        self.GainPoly.minimize_order()
-        self.PhasePoly.minimize_order()
+        pass
 
 
 #############

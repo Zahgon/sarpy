@@ -45,16 +45,14 @@ class PerVectorParameterI8(Serializable):
         """
         int: The size of the vector, constant value 1 here.
         """
-
-        return 1
+        pass
 
     @property
     def Format(self):
         """
         str: The format of the vector data, constant value 'I8' here.
         """
-
-        return 'I8'
+        pass
 
 
 class PerVectorParameterF8(Serializable):
@@ -86,16 +84,14 @@ class PerVectorParameterF8(Serializable):
         """
         int: The size of the vector, constant value 1 here.
         """
-
-        return 1
+        pass
 
     @property
     def Format(self):
         """
         str: The format of the vector data, constant value 'F8' here.
         """
-
-        return 'F8'
+        pass
 
 
 class PerVectorParameterXYZ(Serializable):
@@ -127,16 +123,14 @@ class PerVectorParameterXYZ(Serializable):
         """
         int: The size of the vector, constant value 3 here.
         """
-
-        return 3
+        pass
 
     @property
     def Format(self):
         """
         str: The format of the vector data, constant value 'X=F8;Y=F8;Z=F8;' here.
         """
-
-        return 'X=F8;Y=F8;Z=F8;'
+        pass
 
 
 class PerVectorParameterEB(Serializable):
@@ -168,16 +162,14 @@ class PerVectorParameterEB(Serializable):
         """
         int: The size of the vector, constant value 2 here.
         """
-
-        return 2
+        pass
 
     @property
     def Format(self):
         """
         str: The format of the vector data, constant value 'DCX=F8;DCY=F8;' here.
         """
-
-        return 'DCX=F8;DCY=F8;'
+        pass
 
 
 class UserDefinedPVPType(Serializable):
@@ -498,21 +490,7 @@ class PVPType(Serializable):
         -------
         int
         """
-
-        out = 0
-        for fld in self._fields[:-3]:
-            val = getattr(self, fld)
-            if val is not None:
-                out += val.Size*8
-        for fld in ['TxAntenna', 'RcvAntenna']:
-            val = getattr(self, fld)
-            if val is not None:
-                assert isinstance(val, (TxAntennaType, RcvAntennaType))
-                out += (3 + 3 + 2)*8
-        if self.AddedPVP is not None:
-            for entry in self.AddedPVP:
-                out += entry.Size*8
-        return out
+        pass
 
     def get_offset_size_format(self, field):
         """
@@ -528,31 +506,7 @@ class PVPType(Serializable):
         -------
         None|Tuple[int, int, str]
         """
-
-        def get_return(the_val) -> Union[None, Tuple[int, int, str]]:
-            if the_val is None:
-                return None
-            return the_val.Offset*8, the_val.Size*8, homogeneous_dtype(the_val.Format).char
-
-        if field in self._fields[:-3]:
-            return get_return(getattr(self, field))
-        elif field in ['TxACX', 'TxACY', 'TxEB']:
-            if self.TxAntenna is None:
-                return None
-            else:
-                return get_return(getattr(self.TxAntenna, field))
-        elif field in ['RcvACX', 'RcvACY', 'RcvEB']:
-            if self.RcvAntenna is None:
-                return None
-            else:
-                return get_return(getattr(self.RcvAntenna, field))
-        else:
-            if self.AddedPVP is None:
-                return None
-            for val in self.AddedPVP:
-                if field == val.Name:
-                    return get_return(val)
-            return None
+        pass
 
     def get_vector_dtype(self):
         """
@@ -564,42 +518,7 @@ class PVPType(Serializable):
         numpy.dtype
             This will be a compound dtype for a structured array.
         """
-
-        bytes_per_word = 8
-        names = []
-        formats = []
-        offsets = []
-
-        for fld in self._fields:
-            val = getattr(self, fld)
-            if val is None:
-                continue
-            elif fld == 'TxAntenna':
-                for t_fld in ['TxACX', 'TxACY', 'TxEB']:
-                    t_val = getattr(val, t_fld)
-                    names.append(t_fld)
-                    formats.append(binary_format_string_to_dtype(t_val.Format))
-                    offsets.append(t_val.Offset*bytes_per_word)
-            elif fld == 'RcvAntenna':
-                for t_fld in ['RcvACX', 'RcvACY', 'RcvEB']:
-                    t_val = getattr(val, t_fld)
-                    names.append(t_fld)
-                    formats.append(binary_format_string_to_dtype(t_val.Format))
-                    offsets.append(t_val.Offset*bytes_per_word)
-            elif fld == 'AddedPVP':
-                for entry in val:
-                    assert isinstance(entry, UserDefinedPVPType)
-                    names.append(entry.Name)
-                    formats.append(binary_format_string_to_dtype(entry.Format))
-                    offsets.append(entry.Offset*bytes_per_word)
-            else:
-                names.append(fld)
-                formats.append(binary_format_string_to_dtype(val.Format))
-                offsets.append(val.Offset*bytes_per_word)
-        return numpy.dtype({'names': names, 'formats': formats, 'offsets': offsets})
+        pass
 
     def version_required(self) -> Tuple[int, int, int]:
-        required = (1, 0, 1)
-        if self.TxAntenna is not None or self.RcvAntenna is not None:
-            required = max(required, (1, 1, 0))
-        return required
+        pass

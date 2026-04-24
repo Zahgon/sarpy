@@ -445,11 +445,7 @@ class AnnotationObjectType(Serializable):
         ('Point', 'Line', 'LinearRing', 'Polygon', 'MultiPoint',
         'MultiLineString', 'MultiPolygon')
         """
-
-        for attribute in self._choice[0]['collection']:
-            if getattr(self, attribute) is not None:
-                return attribute
-        return None
+        pass
 
     @property
     def Point(self):
@@ -477,21 +473,11 @@ class AnnotationObjectType(Serializable):
         """
         None|sarpy.geometry.geometry_elements.LineString: The line.
         """
-
-        return self._Line
+        pass
 
     @Line.setter
     def Line(self, value):
-        if value is None:
-            self._Line = None
-        elif isinstance(value, (numpy.ndarray, list, tuple)):
-            self._Line = LineStringType(coordinates=value)
-        elif isinstance(value, LineStringType):
-            self._Line = value
-        else:
-            raise TypeError(
-                'Line requires and instance of sarpy.geometry.geometry_elements.LineString, '
-                'got {}'.format(type(value)))
+        pass
 
     @property
     def LinearRing(self):

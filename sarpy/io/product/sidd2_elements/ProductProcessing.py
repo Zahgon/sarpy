@@ -73,7 +73,7 @@ class ProcessingModuleType(Serializable):
     @property
     def ProcessingModules(self):
         """List[ProcessingModuleType]: list of ProcessingModules."""
-        return self._ProcessingModules
+        pass
 
     def getProcessingModule(self, key):
         """
@@ -87,8 +87,7 @@ class ProcessingModuleType(Serializable):
         -------
         List[ProcessingModuleType]
         """
-
-        return [entry for entry in self._ProcessingModules if entry.name == key]
+        pass
 
     def addProcessingModule(self, value):
         """
@@ -102,17 +101,7 @@ class ProcessingModuleType(Serializable):
         -------
         None
         """
-
-        if isinstance(value, ElementTree.Element):
-            pm_key = self._child_xml_ns_key.get('ProcessingModules', self._xml_ns_key)
-            value = ProcessingModuleType.from_node(value, self._xml_ns, ns_key=pm_key)
-        elif isinstance(value, dict):
-            value = ProcessingModuleType.from_dict(value)
-
-        if isinstance(value, ProcessingModuleType):
-            self._ProcessingModules.append(value)
-        else:
-            raise TypeError('Trying to set ProcessingModule with unexpected type {}'.format(type(value)))
+        pass
 
     @classmethod
     def from_node(cls, node, xml_ns, ns_key=None, kwargs=None):
@@ -193,7 +182,7 @@ class ProductProcessingType(Serializable):
     @property
     def ProcessingModules(self):
         """List[ProcessingModuleType]: list of ProcessingModules."""
-        return self._ProcessingModules
+        pass
 
     def getProcessingModule(self, key):
         """
@@ -207,8 +196,7 @@ class ProductProcessingType(Serializable):
         -------
         List[ProcessingModuleType]
         """
-
-        return [entry for entry in self._ProcessingModules if entry.name == key]
+        pass
 
     def addProcessingModule(self, value):
         """
@@ -222,17 +210,7 @@ class ProductProcessingType(Serializable):
         -------
         None
         """
-
-        if isinstance(value, ElementTree.Element):
-            pm_key = self._child_xml_ns_key.get('ProcessingModules', self._xml_ns_key)
-            value = ProcessingModuleType.from_node(value, self._xml_ns, ns_key=pm_key)
-        elif isinstance(value, dict):
-            value = ProcessingModuleType.from_dict(value)
-
-        if isinstance(value, ProcessingModuleType):
-            self._ProcessingModules.append(value)
-        else:
-            raise TypeError('Trying to set ProcessingModule with unexpected type {}'.format(type(value)))
+        pass
 
     @classmethod
     def from_node(cls, node, xml_ns, ns_key=None, kwargs=None):

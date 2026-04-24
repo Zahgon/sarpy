@@ -61,22 +61,14 @@ if __name__ == '__main__':
     file_stem = 'View-' + os.path.splitext(os.path.split(args.input_file)[1])[0]
 
     def _cphd_kmz():
-        reader = sarpy.io.phase_history.open(args.input_file)
-        cphd_create_kmz_view(reader, args.output_directory, file_stem=file_stem)
+        pass
 
     @deprecated("sarpy's CRSD implementation is deprecated. Please use SARKit.")
     def _crsd_kmz():
-        reader = sarpy.io.received.converter.open_received(args.input_file)
-        crsd_create_kmz_view(reader, args.output_directory, file_stem=file_stem)
+        pass
 
     def _complex_image_kmz():
-        reader = open_complex(args.input_file)
-        pixel_limit = None if args.size == -1 else args.size
-        create_kmz_view(reader, args.output_directory, pixel_limit=pixel_limit, file_stem=file_stem,
-                        inc_image_corners=args.include_all,
-                        inc_valid_data=args.include_all,
-                        inc_collection_wedge=args.include_all,
-                        inc_antenna=args.include_all)
+        pass
 
     for func in (_cphd_kmz, _crsd_kmz, _complex_image_kmz):
         try:

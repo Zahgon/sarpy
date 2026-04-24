@@ -50,15 +50,11 @@ class ReservedExtensionHeader(NITFElement):
         """
         RESUserHeader: The RES user header.
         """
-
-        return self._UserHeader
+        pass
 
     @UserHeader.setter
     def UserHeader(self, value):
-        if not isinstance(value, BaseNITFElement):
-            value = _parse_nitf_element(value, RESUserHeader, {}, 'UserHeader', self)
-        self._UserHeader = value
-        self._load_header_data()
+        pass
 
     def _load_header_data(self):
         """
@@ -115,15 +111,11 @@ class ReservedExtensionHeader0(NITFElement):
         """
         RESUserHeader: The RES user header.
         """
-
-        return self._UserHeader
+        pass
 
     @UserHeader.setter
     def UserHeader(self, value):
-        if not isinstance(value, BaseNITFElement):
-            value = _parse_nitf_element(value, RESUserHeader, {}, 'UserHeader', self)
-        self._UserHeader = value
-        self._load_header_data()
+        pass
 
     def _load_header_data(self):
         """

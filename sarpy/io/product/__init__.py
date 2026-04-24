@@ -6,5 +6,4 @@ __classification__ = 'UNCLASSIFIED'
 
 
 def open(*args, **kwargs):
-    from .converter import open_product
-    return open_product(*args, **kwargs)
+    pass

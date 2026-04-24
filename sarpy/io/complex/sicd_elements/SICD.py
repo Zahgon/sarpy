@@ -218,8 +218,7 @@ class SICDType(Serializable):
         -------
         None|sarpy.geometry.point_projection.COAProjection
         """
-
-        return self._coa_projection
+        pass
 
     @property
     def NITF(self) -> Optional[Dict]:
@@ -231,18 +230,11 @@ class SICDType(Serializable):
         -------
         Dict
         """
-
-        return self._NITF
+        pass
 
     @NITF.setter
     def NITF(self, value: Optional[Dict]):
-        if value is None:
-            self._NITF = {}
-            return
-        if isinstance(value, dict):
-            self._NITF = value
-        if not isinstance(value, dict):
-            raise TypeError('data must be dictionary instance. Received {}'.format(type(value)))
+        pass
 
     @property
     def ImageFormType(self) -> str:
@@ -251,11 +243,7 @@ class SICDType(Serializable):
         returning the (first) attribute among `RgAzComp`, `PFA`, `RMA` which is populated. `OTHER` will be returned if
         none of them are populated.
         """
-
-        for attribute in self._choice[0]['collection']:
-            if getattr(self, attribute) is not None:
-                return attribute
-        return 'OTHER'
+        pass
 
     def update_scp(
             self,
@@ -274,20 +262,7 @@ class SICDType(Serializable):
         -------
         None
         """
-
-        if isinstance(point, (list, tuple)):
-            point = numpy.array(point, dtype='float64')
-        if not isinstance(point, numpy.ndarray):
-            raise TypeError('point must be an numpy.ndarray')
-        if point.shape != (3, ):
-            raise ValueError('point must be a one-dimensional, 3 element array')
-        if coord_system == 'LLH':
-            self.GeoData.SCP.LLH = point
-        else:
-            self.GeoData.SCP.ECF = point
-
-        if self.SCPCOA is not None:
-            self.SCPCOA.rederive(self.Grid, self.Position, self.GeoData)
+        pass
 
     def _basic_validity_check(self) -> bool:
         condition = super(SICDType, self)._basic_validity_check()
@@ -336,16 +311,7 @@ class SICDType(Serializable):
         -------
         None
         """
-
-        if self.GeoData is None or self.GeoData.ValidData is not None:
-            return  # nothing to be done
-
-        try:
-            valid_vertices = self.ImageData.get_valid_vertex_data(dtype=numpy.float64)
-            if valid_vertices is not None:
-                self.GeoData.ValidData = self.project_image_to_ground_geo(valid_vertices)
-        except AttributeError:
-            pass
+        pass
 
     def derive(self) -> None:
         """
@@ -356,85 +322,7 @@ class SICDType(Serializable):
         -------
         None
         """
-
-        # Note that there is dependency in calling order between steps - don't naively rearrange the following.
-        if self.SCPCOA is None:
-            self.SCPCOA = SCPCOAType()
-
-        # noinspection PyProtectedMember
-        self.SCPCOA._derive_scp_time(self.Grid)
-
-        if self.Grid is not None:
-            # noinspection PyProtectedMember
-            self.Grid._derive_time_coa_poly(self.CollectionInfo, self.SCPCOA)
-
-        # noinspection PyProtectedMember
-        self.SCPCOA._derive_position(self.Position)
-
-        if self.Position is None and self.SCPCOA.ARPPos is not None and \
-                self.SCPCOA.ARPVel is not None and self.SCPCOA.SCPTime is not None:
-            self.Position = PositionType()  # important parameter derived in the next step
-        if self.Position is not None:
-            # noinspection PyProtectedMember
-            self.Position._derive_arp_poly(self.SCPCOA)
-
-        if self.GeoData is not None:
-            self.GeoData.derive()  # ensures both coordinate systems are defined for SCP
-
-        if self.Grid is not None:
-            # noinspection PyProtectedMember
-            self.Grid.derive_direction_params(self.ImageData)
-
-        if self.RadarCollection is not None:
-            self.RadarCollection.derive()
-
-        if self.ImageFormation is not None:
-            # call after RadarCollection.derive(), and only if the entire transmitted bandwidth was used to process.
-            # noinspection PyProtectedMember
-            self.ImageFormation._derive_tx_frequency_proc(self.RadarCollection)
-
-        # noinspection PyProtectedMember
-        self.SCPCOA._derive_geometry_parameters(self.GeoData)
-
-        # verify ImageFormation things make sense
-        im_form_algo = None
-        if self.ImageFormation is not None and self.ImageFormation.ImageFormAlgo is not None:
-            im_form_algo = self.ImageFormation.ImageFormAlgo.upper()
-        if im_form_algo == 'RGAZCOMP':
-            # Check Grid settings
-            if self.Grid is None:
-                self.Grid = GridType()
-            # noinspection PyProtectedMember
-            self.Grid._derive_rg_az_comp(self.GeoData, self.SCPCOA, self.RadarCollection, self.ImageFormation)
-
-            # Check RgAzComp settings
-            if self.RgAzComp is None:
-                self.RgAzComp = RgAzCompType()
-            # noinspection PyProtectedMember
-            self.RgAzComp._derive_parameters(self.Grid, self.Timeline, self.SCPCOA)
-        elif im_form_algo == 'PFA':
-            if self.PFA is None:
-                self.PFA = PFAType()
-            # noinspection PyProtectedMember
-            self.PFA._derive_parameters(self.Grid, self.SCPCOA, self.GeoData, self.Position, self.Timeline)
-
-            if self.Grid is not None:
-                # noinspection PyProtectedMember
-                self.Grid._derive_pfa(
-                    self.GeoData, self.RadarCollection, self.ImageFormation, self.Position, self.PFA)
-        elif im_form_algo == 'RMA' or self.RMA is not None:
-            if self.RMA is not None:
-                # noinspection PyProtectedMember
-                self.RMA._derive_parameters(self.SCPCOA, self.Position, self.RadarCollection, self.ImageFormation)
-            if self.Grid is not None:
-                # noinspection PyProtectedMember
-                self.Grid._derive_rma(self.RMA, self.GeoData, self.RadarCollection, self.ImageFormation, self.Position)
-
-        self.define_geo_image_corners()
-        self.define_geo_valid_data()
-        if self.Radiometric is not None:
-            # noinspection PyProtectedMember
-            self.Radiometric._derive_parameters(self.Grid, self.SCPCOA)
+        pass
 
     def get_transmit_band_name(self) -> str:
         """
@@ -457,10 +345,7 @@ class SICDType(Serializable):
         -------
         str
         """
-
-        if self.ImageFormation is None:
-            return 'UN'
-        return self.ImageFormation.get_polarization_abbreviation()
+        pass
 
     def get_processed_polarization(self) -> str:
         """
@@ -488,24 +373,7 @@ class SICDType(Serializable):
         -------
         None
         """
-
-        if self.RadarCollection is None:
-            raise ValueError('RadarCollection is not defined. The reference frequency cannot be applied.')
-        elif not self.RadarCollection.RefFreqIndex:  # it's None or 0
-            raise ValueError(
-                'RadarCollection.RefFreqIndex is not defined. The reference frequency should not be applied.')
-
-        # noinspection PyProtectedMember
-        self.RadarCollection._apply_reference_frequency(reference_frequency)
-        if self.ImageFormation is not None:
-            # noinspection PyProtectedMember
-            self.ImageFormation._apply_reference_frequency(reference_frequency)
-        if self.Antenna is not None:
-            # noinspection PyProtectedMember
-            self.Antenna._apply_reference_frequency(reference_frequency)
-        if self.RMA is not None:
-            # noinspection PyProtectedMember
-            self.RMA._apply_reference_frequency(reference_frequency)
+        pass
 
     def get_ground_resolution(self) -> Tuple[float, float]:
         """
@@ -709,17 +577,7 @@ class SICDType(Serializable):
         -------
         None
         """
-
-        if not self.can_project_coordinates():
-            logger.error('The COAProjection object cannot be defined.')
-            return
-
-        if self._coa_projection is not None and not override:
-            return
-
-        self._coa_projection = point_projection.COAProjection.from_sicd(
-            self, delta_arp=delta_arp, delta_varp=delta_varp, range_bias=range_bias,
-            adj_params_frame=adj_params_frame)
+        pass
 
     def project_ground_to_image(
             self,
@@ -791,10 +649,7 @@ class SICDType(Serializable):
         --------
         sarpy.geometry.point_projection.ground_to_image_geo
         """
-
-        if 'use_structure_coa' not in kwargs:
-            kwargs['use_structure_coa'] = True
-        return point_projection.ground_to_image_geo(coords, self, ordering=ordering, **kwargs)
+        pass
 
     def project_image_to_ground(
             self,
@@ -918,13 +773,7 @@ class SICDType(Serializable):
         -------
         tuple
         """
-
-        required = (1, 1, 0)
-        for fld in self._fields:
-            val = getattr(self, fld)
-            if val is not None and hasattr(val, 'version_required'):
-                required = max(required, val.version_required())
-        return required
+        pass
 
     def get_des_details(
             self,
@@ -942,23 +791,7 @@ class SICDType(Serializable):
         -------
         dict
         """
-
-        required_version = self.version_required()
-        # noinspection PyTypeChecker
-        if required_version > _SICD_DEFAULT_TUPLE or check_older_version:
-            info = _SICD_SPEC_DETAILS['{}.{}.{}'.format(*required_version)]
-        else:
-            info = _SICD_SPEC_DETAILS[_SICD_VERSION_DEFAULT]
-        spec_ns = info['namespace']
-        details = info['details']
-        spec_version = details['version']
-        spec_date = details['date']
-
-        return OrderedDict([
-            ('DESSHSI', _SICD_SPECIFICATION_IDENTIFIER),
-            ('DESSHSV', spec_version),
-            ('DESSHSD', spec_date),
-            ('DESSHTN', spec_ns)])
+        pass
 
     def copy(self):
         """
@@ -979,7 +812,7 @@ class SICDType(Serializable):
         return super(SICDType, self).to_xml_bytes(urn=urn, tag=tag, check_validity=check_validity, strict=strict)
 
     def to_xml_string(self, urn=None, tag='SICD', check_validity=False, strict=DEFAULT_STRICT):
-        return self.to_xml_bytes(urn=urn, tag=tag, check_validity=check_validity, strict=strict).decode('utf-8')
+        pass
 
     def create_subset_structure(
             self,
@@ -1002,37 +835,7 @@ class SICDType(Serializable):
         column_bounds : tuple
             Vetted tuple of the form `(min column, max column)`.
         """
-
-        sicd = self.copy()
-        num_rows = self.ImageData.NumRows
-        num_cols = self.ImageData.NumCols
-        if row_bounds is not None:
-            start_row = int(row_bounds[0])
-            end_row = int(row_bounds[1])
-            if not (0 <= start_row < end_row <= num_rows):
-                raise ValueError(
-                    'row bounds ({}, {}) are not sensible for NumRows {}'.format(
-                        start_row, end_row, num_rows))
-            sicd.ImageData.FirstRow = sicd.ImageData.FirstRow + start_row
-            sicd.ImageData.NumRows = (end_row - start_row)
-            out_row_bounds = (start_row, end_row)
-        else:
-            out_row_bounds = (0, num_rows)
-
-        if column_bounds is not None:
-            start_col = int(column_bounds[0])
-            end_col = int(column_bounds[1])
-            if not (0 <= start_col < end_col <= num_cols):
-                raise ValueError(
-                    'column bounds ({}, {}) are not sensible for NumCols {}'.format(
-                        start_col, end_col, num_cols))
-            sicd.ImageData.FirstCol = sicd.ImageData.FirstCol + start_col
-            sicd.ImageData.NumCols = (end_col - start_col)
-            out_col_bounds = (start_col, end_col)
-        else:
-            out_col_bounds = (0, num_cols)
-        sicd.define_geo_image_corners(override=True)
-        return sicd, out_row_bounds, out_col_bounds
+        pass
 
     @classmethod
     def from_xml_file(cls, file_path):
@@ -1047,10 +850,7 @@ class SICDType(Serializable):
         -------
         SICDType
         """
-
-        root_node, xml_ns = parse_xml_from_file(file_path)
-        ns_key = 'default' if 'default' in xml_ns else None
-        return cls.from_node(root_node, xml_ns=xml_ns, ns_key=ns_key)
+        pass
 
     @classmethod
     def from_xml_string(cls, xml_string):
@@ -1065,7 +865,4 @@ class SICDType(Serializable):
         -------
         SICDType
         """
-
-        root_node, xml_ns = parse_xml_from_string(xml_string)
-        ns_key = 'default' if 'default' in xml_ns else None
-        return cls.from_node(root_node, xml_ns=xml_ns, ns_key=ns_key)
+        pass

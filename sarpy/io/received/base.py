@@ -56,8 +56,7 @@ class CRSDTypeReader(BaseReader):
         """
         None|CRSDType1_0: the crsd meta_data.
         """
-
-        return self._crsd_meta
+        pass
 
     def read_support_array(self,
                            index: Union[int, str],

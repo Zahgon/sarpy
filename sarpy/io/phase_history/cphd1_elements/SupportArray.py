@@ -89,28 +89,11 @@ class SupportArrayCore(Serializable):
         """
         None|str: The no data hex string value.
         """
-
-        return self._NODATA
+        pass
 
     @NODATA.setter
     def NODATA(self, value: Optional[str]):
-        if value is None:
-            self._NODATA = None
-            return
-
-        if isinstance(value, ElementTree.Element):
-            value = get_node_value(value)
-
-        if isinstance(value, str):
-            self._NODATA = value
-        elif isinstance(value, bytes):
-            self._NODATA = value.decode('utf-8')
-        elif isinstance(value, int):
-            raise NotImplementedError
-        elif isinstance(value, float):
-            raise NotImplementedError
-        else:
-            raise TypeError('Got unexpected type {}'.format(type(value)))
+        pass
 
     def get_nodata_as_int(self) -> Optional[int]:
         """
@@ -120,11 +103,7 @@ class SupportArrayCore(Serializable):
         -------
         None|int
         """
-
-        if self._NODATA is None:
-            return None
-
-        raise NotImplementedError
+        pass
 
     def get_nodata_as_float(self) -> Optional[float]:
         """
@@ -134,11 +113,7 @@ class SupportArrayCore(Serializable):
         -------
         None|float
         """
-
-        if self._NODATA is None:
-            return None
-
-        raise NotImplementedError
+        pass
 
     def get_numpy_format(self) -> Tuple[numpy.dtype, int]:
         """
@@ -149,8 +124,7 @@ class SupportArrayCore(Serializable):
         data: numpy.dtype
         depth: int
         """
-
-        return homogeneous_dtype(self.ElementFormat, return_length=True)
+        pass
 
 
 class IAZArrayType(SupportArrayCore):
@@ -417,31 +391,7 @@ class SupportArrayType(Serializable):
         -------
         IAZArrayType|AntGainPhaseType|DwellTimeArrayType|AddedSupportArrayType
         """
-
-        if self.IAZArray is not None:
-            for entry in self.IAZArray:
-                if entry.Identifier == identifier:
-                    return entry
-
-        if self.AntGainPhase is not None:
-            for entry in self.AntGainPhase:
-                if entry.Identifier == identifier:
-                    return entry
-
-        if self.DwellTimeArray is not None:
-            for entry in self.DwellTimeArray:
-                if entry.Identifier == identifier:
-                    return entry
-
-        if self.AddedSupportArray is not None:
-            for entry in self.AddedSupportArray:
-                if entry.Identifier == identifier:
-                    return entry
-
-        raise KeyError('Identifier {} not associated with a support array.'.format(identifier))
+        pass
 
     def version_required(self) -> Tuple[int, int, int]:
-        required = (1, 0, 1)
-        if self.DwellTimeArray is not None:
-            required = max(required, (1, 1, 0))
-        return required
+        pass

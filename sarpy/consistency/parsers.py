@@ -27,14 +27,7 @@ def parse_text(elem):
     val: int|float|bool|str
         Converted value.
     """
-
-    for converter in (int, float, parse_bool_text, str):
-        try:
-            val = converter(elem.text)
-            break
-        except ValueError:
-            continue
-    return val
+    pass
 
 
 def parse_bool_text(text):
@@ -101,8 +94,7 @@ def parse_sequence(node, keys, conversion=parse_text):
     List
         List of parsed values, one for each element of `keys`.
     """
-
-    return [conversion(node.find('./' + key)) for key in keys]
+    pass
 
 
 def parse_xyz(node):
@@ -119,8 +111,7 @@ def parse_xyz(node):
     List
         List [X, Y, Z]. Parsed values.
     """
-
-    return parse_sequence(node, ['X', 'Y', 'Z'], lambda x: float(x.text))
+    pass
 
 
 def parse_xy(node):
@@ -137,8 +128,7 @@ def parse_xy(node):
     List
         List [X, Y]. Parsed values.
     """
-
-    return parse_sequence(node, ['X', 'Y'], lambda x: float(x.text))
+    pass
 
 
 def parse_ll(node):
@@ -155,8 +145,7 @@ def parse_ll(node):
     List
         List [Lon, Lat]. Parsed values as radians.
     """
-
-    return np.radians(float(node.findtext('Lon'))), np.radians(float(node.findtext('Lat')))
+    pass
 
 
 def parse_llh(node):
@@ -171,9 +160,7 @@ def parse_llh(node):
     List
         List [Lon, Lat, HAE]. Parsed Lon, Lat values as radians, HAE value as meters.
     """
-    return np.radians(float(node.findtext('Lon'))),\
-        np.radians(float(node.findtext('Lat'))),\
-        float(node.findtext('HAE'))
+    pass
 
 
 def parse_poly2d(node):
@@ -191,12 +178,4 @@ def parse_poly2d(node):
         A list of coefficient values.
 
     """
-    coefs = node.findall('./Coef')
-    num_coefs1 = max([int(coef.get('exponent1')) for coef in coefs]) + 1
-    num_coefs2 = max([int(coef.get('exponent2')) for coef in coefs]) + 1
-    poly2d = np.zeros((num_coefs1, num_coefs2), np.float64)
-
-    for coef in coefs:
-        poly2d[int(coef.get('exponent1')), int(coef.get('exponent2'))] = float(coef.text)
-
-    return poly2d.tolist()
+    pass

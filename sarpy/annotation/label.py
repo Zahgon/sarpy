@@ -102,8 +102,7 @@ class LabelSchema(object):
         -------
         str
         """
-
-        return self._version
+        pass
 
     @property
     def version_date(self) -> str:
@@ -115,22 +114,17 @@ class LabelSchema(object):
         -------
         str
         """
-
-        return self._version_date
+        pass
 
     def update_version_date(self, value: Optional[str] = None):
-        if isinstance(value, str):
-            self._version_date = value
-        else:
-            self._version_date = datetime.utcnow().isoformat('T')+'Z'
+        pass
 
     @property
     def classification(self) -> str:
         """
         str: The classification for the contents of this schema.
         """
-
-        return self._classification
+        pass
 
     @property
     def suggested_next_id(self) -> Optional[int]:
@@ -138,8 +132,7 @@ class LabelSchema(object):
         None|int: If all ids are integer type, this returns max_id+1. Otherwise, this
         yields None.
         """
-
-        return None if self._maximum_id is None else self._maximum_id + 1
+        pass
 
     @property
     def labels(self) -> Dict[str, str]:
@@ -150,8 +143,7 @@ class LabelSchema(object):
         -------
         Dict[str, str]
         """
-
-        return self._labels
+        pass
 
     @property
     def subtypes(self) -> Dict[str, List[str]]:
@@ -162,8 +154,7 @@ class LabelSchema(object):
         -------
         Dict[str, List[str]]
         """
-
-        return self._subtypes
+        pass
 
     @property
     def parent_types(self) -> Dict[str, List[str]]:
@@ -177,8 +168,7 @@ class LabelSchema(object):
         -------
         Dict[str, List[str]]
         """
-
-        return self._parent_types
+        pass
 
     @property
     def confidence_values(self) -> List[Union[int, str]]:
@@ -190,18 +180,11 @@ class LabelSchema(object):
         List
             Each element should be a json type (most likely use cases are str or int).
         """
-
-        return self._confidence_values
+        pass
 
     @confidence_values.setter
     def confidence_values(self, conf_values):
-        if conf_values is None:
-            self._confidence_values = None
-            return
-
-        if not isinstance(conf_values, list):
-            raise TypeError('confidence_values must be a list. Got type {}'.format(type(conf_values)))
-        self._confidence_values = conf_values
+        pass
 
     @property
     def permitted_geometries(self) -> Optional[List[str]]:
@@ -213,33 +196,11 @@ class LabelSchema(object):
         -------
         None|List[str]
         """
-
-        return self._permitted_geometries
+        pass
 
     @permitted_geometries.setter
     def permitted_geometries(self, values):
-        if values is None:
-            self._permitted_geometries = None
-            return
-
-        if isinstance(values, str):
-            values = [values.lower().strip(), ]
-        else:
-            values = [entry.lower().strip() for entry in values]
-
-        if len(values) == 0:
-            self._permitted_geometries = None
-            return
-
-        temp_values = []
-        for entry in values:
-            if entry in temp_values:
-                continue
-            if entry not in POSSIBLE_GEOMETRIES:
-                raise ValueError('Got unknown geometry value `{}`'.format(entry))
-            temp_values.append(entry)
-
-        self._permitted_geometries = temp_values
+        pass
 
     def get_id_from_name(self, the_name: str) -> Optional[str]:
         """
@@ -253,13 +214,7 @@ class LabelSchema(object):
         -------
         None|str
         """
-
-        prospective = None
-        for key, value in self.labels.items():
-            if value == the_name:
-                prospective = key
-                break
-        return prospective
+        pass
 
     def get_parent(self, the_id: str) -> str:
         """
@@ -274,9 +229,7 @@ class LabelSchema(object):
         -------
         str
         """
-
-        parents = self.parent_types[the_id]
-        return parents[1] if len(parents) > 1 else ''
+        pass
 
     def __str__(self) -> str:
         return json.dumps(self.to_dict(), indent=1)
@@ -285,27 +238,10 @@ class LabelSchema(object):
         return json.dumps(self.to_dict())
 
     def _inspect_new_id_for_integer(self, the_id: Union[int, str]) -> None:
-        if not self._integer_ids:
-            return  # nothing to do
-        if isinstance(the_id, str):
-            # noinspection PyBroadException
-            try:
-                the_id = int(the_id)
-            except Exception:
-                self._integer_ids = False
-                self._maximum_id = None
-
-        if isinstance(the_id, int):
-            # noinspection PyTypeChecker
-            self._maximum_id = the_id if self._maximum_id is None else \
-                max(self._maximum_id, the_id)
-        else:
-            self._integer_ids = False
-            self._maximum_id = None
+        pass
 
     def _inspect_ids_for_integer(self) -> None:
-        for the_id in self._labels:
-            self._inspect_new_id_for_integer(the_id)
+        pass
 
     @staticmethod
     def _find_inverted_fork(
@@ -324,44 +260,7 @@ class LabelSchema(object):
         -------
         dict
         """
-
-        # we need to check the reference count for each key in labels
-        counts = OrderedDict((key, 0) for key in labels)
-
-        # ensure that every key of subtypes is a string and every value is a list,
-        # also that inclusion makes sense
-        for key, value in subtypes.items():
-            if not isinstance(key, str):
-                raise TypeError(
-                    'All keys of subtypes must be of type string. Got key `{}` of '
-                    'type {}.'.format(key, type(key)))
-            if key != '' and key not in labels:
-                raise KeyError(
-                    'All keys of subtypes must belong to labels. Got key `{}` '
-                    'which is missing from labels.'.format(key))
-
-            if not isinstance(value, list):
-                raise TypeError(
-                    'All values of subtypes must be of type `list`. Got value {} '
-                    'for key `{}` of type {}'.format(value, key, type(value)))
-            for entry in value:
-                if entry not in labels:
-                    raise KeyError(
-                        'All entries for each value of subtypes must belong to labels. '
-                        'Got entry `{}` in key `{}` which is missing from labels.'.format(entry, key))
-                counts[entry] += 1
-        # create the root entry for subtypes
-        if '' not in subtypes:
-            subtypes[''] = []
-        if isinstance(subtypes, OrderedDict):
-            subtypes.move_to_end('', last=False)
-        for key in counts:
-            value = counts[key]
-            if value > 1:
-                raise ValueError('key {} is referenced in more than one subtype. This is invalid.'.format(key))
-            if value == 0:
-                subtypes[''].append(key)
-        return subtypes
+        pass
 
     @staticmethod
     def _find_cycle(subtypes: Dict[str, List[str]]) -> None:
@@ -376,22 +275,7 @@ class LabelSchema(object):
         -------
         None
         """
-
-        found_cycles = []
-
-        def iterate(current_id, find_id):
-            for t_entry in subtypes.get(current_id, []):
-                if t_entry == find_id:
-                    found_cycles.append((find_id, current_id))
-                iterate(t_entry, find_id)
-
-        for the_id in subtypes['']:
-            iterate(the_id, the_id)
-        if len(found_cycles) > 0:
-            for entry in found_cycles:
-                logger.error(
-                    'Cycle found with ids {} and {}'.format(entry[0], entry[1]))
-            raise ValueError('cycles found in graph information')
+        pass
 
     def set_labels_and_subtypes(
             self,
@@ -409,57 +293,10 @@ class LabelSchema(object):
         -------
         None
         """
-
-        if labels is None:
-            labels = OrderedDict()
-        if not isinstance(labels, dict):
-            raise TypeError('labels is required to be a dict. Got type {}'.format(type(labels)))
-
-        if subtypes is None:
-            subtypes = OrderedDict()
-        elif not isinstance(subtypes, dict):
-            raise TypeError('subtypes is required to be None or a dict. Got type {}'.format(type(subtypes)))
-
-        # ensure that every key and value of labels are strings
-        for key in labels:
-            if not isinstance(key, str):
-                raise TypeError(
-                    'All keys of labels must be of type string. Got key `{}` of '
-                    'type {}'.format(key, type(key)))
-            if key == '':
-                raise ValueError('The empty string is not a valid label id.')
-            value = labels[key]
-            if not isinstance(value, str):
-                raise TypeError(
-                    'All values of labels must be of type string. Got value {} '
-                    'for key `{}` of type {}'.format(value, key, type(value)))
-
-        # look for inverted fork - multiple parents claiming the same child
-        subtypes = self._find_inverted_fork(subtypes, labels)
-        # look for cycles
-        self._find_cycle(subtypes)
-
-        # set the values
-        self._labels = labels
-        self._subtypes = subtypes
-        self._construct_parent_types()
-        self._inspect_ids_for_integer()
+        pass
 
     def _construct_parent_types(self) -> None:
-        def iterate(t_key, parents):
-            entry = [t_key, ]
-            # noinspection PyUnresolvedReferences
-            entry.extend(parents)
-            self._parent_types[t_key] = entry
-            if t_key not in self._subtypes:
-                return
-
-            for child_key in self._subtypes[t_key]:
-                iterate(child_key, entry)
-
-        self._parent_types = {}
-        for key in self._subtypes['']:
-            iterate(key, [])
+        pass
 
     def _validate_entry(
             self,
@@ -481,32 +318,7 @@ class LabelSchema(object):
         the_name: str
         the_parent: str
         """
-
-        # validate inputs
-        if not (isinstance(the_id, str) and isinstance(the_name, str) and isinstance(the_parent, str)):
-            raise TypeError(
-                'the_id, the_name, and the_parent must all be string type, got '
-                'types {}, {}, {}'.format(type(the_id), type(the_name), type(the_parent)))
-        the_id = the_id.strip()
-        the_name = the_name.strip()
-        the_parent = the_parent.strip()
-
-        # verify that values are permitted and sensible
-        if the_id == '':
-            raise ValueError('the_id value `` is reserved.')
-        if the_name == '':
-            raise ValueError('the_name value `` is not permitted.')
-        if the_id == the_parent:
-            raise ValueError('the_id cannot be the same as the_parent.')
-
-        # try to determine parent from name if not a valid id
-        if the_parent != '' and the_parent not in self.labels:
-            prospective_parent = self.get_id_from_name(the_parent)
-            if prospective_parent is None:
-                raise ValueError('the_parent {} matches neither an existing id or name.'.format(the_parent))
-            the_parent = prospective_parent
-
-        return the_id, the_name, the_parent
+        pass
 
     def add_entry(
             self,
@@ -530,37 +342,7 @@ class LabelSchema(object):
         -------
         None
         """
-
-        # validate inputs
-        the_id, the_name, the_parent = self._validate_entry(the_id, the_name, the_parent)
-
-        # verify that the_id doesn't already exist
-        if the_id in self.labels:
-            raise KeyError('the_id = {} already exists'.format(the_id))
-
-        # check if name is already being used, and warn if so
-        for key, value in self.labels.items():
-            if value == the_name:
-                logger.warning(
-                    'Note that id {} is already using name {}. Having repeated names is '
-                    'permitted, but may lead to confusion.'.format(key, value))
-
-        # add the entry into the labels and subtypes dicts and reset the values
-        # perform copy in case of failure
-        labels = self.labels.copy()
-        subtypes = self.subtypes.copy()
-        labels[the_id] = the_name
-        if the_parent in subtypes:
-            subtypes[the_parent].append(the_id)
-        else:
-            subtypes[the_parent] = [the_id, ]
-
-        try:
-            self.set_labels_and_subtypes(labels, subtypes)
-        except (ValueError, KeyError) as e:
-            logger.error(
-                'Setting new entry id {}, name {}, and parent {} failed with '
-                'exception {}'.format(the_id, the_name, the_parent, e))
+        pass
 
     def change_entry(
             self,
@@ -581,53 +363,7 @@ class LabelSchema(object):
         bool
             True if anything was actually changed. False otherwise.
         """
-
-        # validate inputs
-        the_id, the_name, the_parent = self._validate_entry(the_id, the_name, the_parent)
-
-        # verify that the_id does already exist
-        if the_id not in self.labels:
-            raise KeyError('the_id = {} does not exist'.format(the_id))
-
-        # check current values
-        current_name = self.labels[the_id]
-        current_parents = self.parent_types[the_id]
-        current_parent = current_parents[1] if len(current_parents) > 1 else ''
-
-        if current_name == the_name and current_parent == the_parent:
-            # nothing is changing
-            return False
-
-        # check if name is already being used by a different element, and warn if so
-        if current_name != the_name:
-            for key, value in self.labels.items():
-                if value == the_name and key != the_id:
-                    logger.warning(
-                        'Note that id {} is already using name {}. Having repeated names is '
-                        'permitted, but may lead to confusion.'.format(key, value))
-
-        if current_parent != the_parent:
-            labels = self.labels.copy()
-            labels[the_id] = the_name
-            subtypes = self.subtypes.copy()
-            # remove the_id from it's current subtype
-            subtypes[current_parent].remove(the_id)
-            # add it to the new one
-            if the_parent in subtypes:
-                subtypes[the_parent].append(the_id)
-            else:
-                subtypes[the_parent] = [the_id, ]
-            try:
-                self.set_labels_and_subtypes(labels, subtypes)
-            except (ValueError, KeyError) as e:
-                logger.error(
-                    'Modifying entry id {}, name {}, and parent {} failed with '
-                    'exception {}.'.format(the_id, the_name, the_parent, e))
-                raise e
-        else:
-            # just changing the name
-            self.labels[the_id] = the_name
-        return True
+        pass
 
     def delete_entry(
             self,
@@ -645,26 +381,7 @@ class LabelSchema(object):
         the_id : str
         recursive : bool
         """
-
-        if the_id in self._subtypes:
-            # handle all the children
-            children = self.subtypes[the_id]
-            if children is not None and len(children) > 0:
-                if not recursive:
-                    raise ValueError(
-                        'LabelSchema entry for id {} has children. Either move children to a '
-                        'different parent, or make recursive=True to delete all children.'.format(the_id))
-                the_children = children.copy()  # unsafe to loop over a changing list
-                for entry in the_children:
-                    self.delete_entry(entry, recursive=True)
-            # now, all the children have been deleted.
-            del self._subtypes[the_id]
-        # remove the entry from the parent's subtypes list
-        parent_id = self.get_parent(the_id)
-        self.subtypes[parent_id].remove(parent_id)
-        # remove entry from labels
-        del self._labels[the_id]
-        del self._parent_types[the_id]
+        pass
 
     def reorder_child_element(
             self,
@@ -686,26 +403,7 @@ class LabelSchema(object):
         bool
             True of something actually changed, False otherwise.
         """
-
-        if the_id not in self._labels:
-            raise KeyError('No id {}'.format(the_id))
-        parent_id = self.get_parent(the_id)
-        children = self.subtypes[parent_id]
-        # get the current location
-        current_index = children.index(the_id)
-        # determine the feasible new location
-        if spaces < 0:
-            new_index = max(0, current_index + spaces)
-        else:
-            new_index = min(len(children) - 1, current_index + spaces)
-        if current_index == new_index:
-            return False  # nothing to be done
-
-        # pop our entry out of its current location
-        children.pop(current_index)
-        # insert it in its new location
-        children.insert(new_index, the_id)
-        return True
+        pass
 
     @classmethod
     def from_file(cls, file_name: str):
@@ -783,9 +481,7 @@ class LabelSchema(object):
         -------
         None
         """
-
-        with open(file_name, 'w') as fi:
-            json.dump(self.to_dict(), fi, indent=1)
+        pass
 
     def is_valid_confidence(self, value: List) -> bool:
         """
@@ -800,11 +496,7 @@ class LabelSchema(object):
         -------
         bool
         """
-
-        if self._confidence_values is None or value is None:
-            return True
-        else:
-            return value in self._confidence_values
+        pass
 
     def is_valid_geometry(self, value: List) -> bool:
         """
@@ -819,39 +511,7 @@ class LabelSchema(object):
         -------
         bool
         """
-
-        def check_geom(geom):
-            if isinstance(geom, (Point, MultiPoint)):
-                out = 'point' in self._permitted_geometries
-                if not out:
-                    logger.error('Not allowed point type geometry components')
-                return out
-            elif isinstance(geom, (LineString, MultiLineString)):
-                out = 'line' in self._permitted_geometries
-                if not out:
-                    logger.error('Not allowed line type geometry components')
-                return out
-            elif isinstance(geom, (Polygon, MultiPolygon)):
-                out = 'polygon' in self._permitted_geometries
-                if not out:
-                    logger.error('Not allowed polygon type geometry components')
-                return out
-            elif isinstance(geom, GeometryCollection):
-                out = True
-                for entry in geom.geometries:
-                    out &= check_geom(entry)
-                return out
-            else:
-                raise TypeError('Got unexpected geometry type `{}`'.format(type(geom)))
-
-        if self._permitted_geometries is None or value is None:
-            return True
-
-        if isinstance(value, str):
-            return value.lower().strip() in self._permitted_geometries
-        if not isinstance(value, Geometry):
-            raise TypeError('Got unexpected geometry type `{}`'.format(type(value)))
-        return check_geom(value)
+        pass
 
 
 ##########
@@ -921,12 +581,7 @@ class LabelMetadata(Jsonable):
         return parent_dict
 
     def replicate(self):
-        kwargs = {}
-        for attr in self.__slots__:
-            if attr not in ['user_id', 'timestamp']:
-                kwargs[attr] = getattr(self, attr)
-        the_type = self.__class__
-        return the_type(**kwargs)
+        pass
 
 
 class LabelMetadataList(Jsonable):
@@ -969,18 +624,11 @@ class LabelMetadataList(Jsonable):
         -------
         None|List[LabelMetadata]
         """
-
-        return self._elements
+        pass
 
     @elements.setter
     def elements(self, elements):
-        if elements is None:
-            self._elements = None
-        if not isinstance(elements, list):
-            raise TypeError('elements must be a list of LabelMetadata elements')
-        self._elements = []
-        for element in elements:
-            self.insert_new_element(element)
+        pass
 
     def insert_new_element(self, element: LabelMetadata) -> None:
         """
@@ -994,21 +642,7 @@ class LabelMetadataList(Jsonable):
         -------
         None
         """
-
-        if isinstance(element, dict):
-            element = LabelMetadata.from_dict(element)
-        if not isinstance(element, LabelMetadata):
-            raise TypeError('element must be an LabelMetadata instance, got type {}'.format(type(element)))
-
-        if self._elements is None:
-            self._elements = [element, ]
-        elif len(self._elements) == 0:
-            self._elements.append(element)
-        else:
-            for i, entry in enumerate(self._elements):
-                if element.timestamp > entry.timestamp:
-                    self._elements.insert(i, element)
-                    break
+        pass
 
     @classmethod
     def from_dict(cls, the_json):
@@ -1029,12 +663,7 @@ class LabelMetadataList(Jsonable):
         return parent_dict
 
     def replicate(self):  # type: () ->  LabelMetadataList
-        kwargs = {}
-        elements = self.elements
-        if elements is not None:
-            kwargs['elements'] = [elements[0].replicate()]
-        the_type = self.__class__
-        return the_type(**kwargs)
+        pass
 
     def get_label_id(self) -> Optional[str]:
         """
@@ -1044,8 +673,7 @@ class LabelMetadataList(Jsonable):
         -------
         None|str
         """
-
-        return None if (self.elements is None or len(self.elements) == 0) else self.elements[0].label_id
+        pass
 
 
 class LabelProperties(AnnotationProperties):
@@ -1056,21 +684,11 @@ class LabelProperties(AnnotationProperties):
         """
         LabelMetadataList: The parameters
         """
-
-        return self._parameters
+        pass
 
     @parameters.setter
     def parameters(self, value):
-        if value is None:
-            self._parameters = LabelMetadataList()
-            return
-        if isinstance(value, dict):
-            self._parameters = LabelMetadataList.from_dict(value)
-            return
-        if isinstance(value, LabelMetadataList):
-            self._parameters = value
-            return
-        raise TypeError('Got unexpected type for parameters `{}`'.format(type(value)))
+        pass
 
     def get_label_id(self):
         """
@@ -1080,8 +698,7 @@ class LabelProperties(AnnotationProperties):
         -------
         None|str
         """
-
-        return None if self.parameters is None else self.parameters.get_label_id()
+        pass
 
 
 ############
@@ -1102,21 +719,11 @@ class LabelFeature(AnnotationFeature):
         -------
         None|LabelProperties
         """
-
-        return self._properties
+        pass
 
     @properties.setter
     def properties(self, properties):
-        if properties is None:
-            self._properties = LabelProperties()
-            return
-        if isinstance(properties, dict):
-            self._properties = LabelProperties.from_dict(properties)
-            return
-        if isinstance(properties, LabelProperties):
-            self._properties = properties
-            return
-        raise TypeError('properties must be an LabelProperties')
+        pass
 
     def add_annotation_metadata(self, value):
         """
@@ -1126,10 +733,7 @@ class LabelFeature(AnnotationFeature):
         ----------
         value : LabelMetadata
         """
-
-        if self._properties is None:
-            self._properties = LabelProperties()
-        self._properties.parameters.insert_new_element(value)
+        pass
 
     def get_label_id(self):
         """
@@ -1139,8 +743,7 @@ class LabelFeature(AnnotationFeature):
         -------
         None|str
         """
-
-        return None if self.properties is None else self.properties.get_label_id()
+        pass
 
 
 class LabelCollection(AnnotationCollection):
@@ -1158,23 +761,11 @@ class LabelCollection(AnnotationCollection):
         -------
         List[LabelFeature]
         """
-
-        return self._features
+        pass
 
     @features.setter
     def features(self, features):
-        if features is None:
-            self._features = None
-            self._feature_dict = None
-            return
-
-        if not isinstance(features, list):
-            raise TypeError(
-                'features must be a list of LabelFeatures. '
-                'Got {}'.format(type(features)))
-
-        for entry in features:
-            self.add_feature(entry)
+        pass
 
     def add_feature(self, feature):
         """
@@ -1184,18 +775,7 @@ class LabelCollection(AnnotationCollection):
         ----------
         feature : LabelFeature
         """
-
-        if isinstance(feature, dict):
-            feature = LabelFeature.from_dict(feature)
-        if not isinstance(feature, LabelFeature):
-            raise TypeError('This requires an LabelFeature instance, got {}'.format(type(feature)))
-
-        if self._features is None:
-            self._feature_dict = {feature.uid: 0}
-            self._features = [feature, ]
-        else:
-            self._feature_dict[feature.uid] = len(self._features)
-            self._features.append(feature)
+        pass
 
     def __getitem__(self, item):
         # type: (Any) -> Union[LabelFeature, List[LabelFeature]]
@@ -1246,7 +826,7 @@ class FileLabelCollection(FileAnnotationCollection):
         -------
         LabelSchema
         """
-        return self._label_schema
+        pass
 
     @property
     def annotations(self):
@@ -1257,24 +837,12 @@ class FileLabelCollection(FileAnnotationCollection):
         -------
         LabelCollection
         """
-
-        return self._annotations
+        pass
 
     @annotations.setter
     def annotations(self, annotations):
         # type: (Union[None, LabelCollection, dict]) -> None
-        if annotations is None:
-            self._annotations = None
-            return
-
-        if isinstance(annotations, LabelCollection):
-            self._annotations = annotations
-        elif isinstance(annotations, dict):
-            self._annotations = LabelCollection.from_dict(annotations)
-        else:
-            raise TypeError(
-                'annotations must be an LabelCollection. Got type {}'.format(type(annotations)))
-        self.validate_annotations(strict=False)
+        pass
 
     def add_annotation(self, annotation, validate_confidence=True, validate_geometry=True):
         """
@@ -1293,21 +861,7 @@ class FileLabelCollection(FileAnnotationCollection):
         -------
         None
         """
-
-        if not isinstance(annotation, LabelFeature):
-            raise TypeError('This requires an LabelFeature instance. Got {}'.format(type(annotation)))
-
-        if self._annotations is None:
-            self._annotations = LabelCollection()
-
-        valid = True
-        if validate_confidence:
-            valid &= self._valid_confidences(annotation)
-        if validate_geometry:
-            valid &= self._valid_geometry(annotation)
-        if not valid:
-            raise ValueError('LabelFeature does not follow the schema.')
-        self._annotations.add_feature(annotation)
+        pass
 
     def is_annotation_valid(self, annotation):
         """
@@ -1321,48 +875,16 @@ class FileLabelCollection(FileAnnotationCollection):
         -------
         bool
         """
-
-        if not isinstance(annotation, LabelFeature):
-            return False
-
-        if self._label_schema is None:
-            return True
-        valid = self._valid_confidences(annotation)
-        valid &= self._valid_geometry(annotation)
-        return valid
+        pass
 
     def _valid_confidences(self, annotation):
-        if self._label_schema is None:
-            return True
-
-        if annotation.properties is None or annotation.properties.parameters is None:
-            return True
-
-        valid = True
-        for entry in annotation.properties.parameters:
-            if not self._label_schema.is_valid_confidence(entry.confidence):
-                valid = False
-                logger.error('Invalid confidence value {}'.format(entry.confidence))
-        return valid
+        pass
 
     def _valid_geometry(self, annotation):
-        if self._label_schema is None:
-            return True
-        if not self._label_schema.is_valid_geometry(annotation.geometry):
-            logger.error('Invalid geometry type {}'.format(type(annotation.geometry)))
-            return False
-        return True
+        pass
 
     def validate_annotations(self, strict=True):
-        if self._annotations is None:
-            return True
-
-        valid = True
-        for entry in self._annotations:
-            valid &= self.is_annotation_valid(entry)
-        if strict and not valid:
-            raise ValueError('Some annotation does not follow the schema.')
-        return valid
+        pass
 
     @classmethod
     def from_file(cls, file_name):

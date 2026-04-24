@@ -92,7 +92,4 @@ class DataType(Serializable):
         """
         int: The number of CPHD channels.
         """
-
-        if self.ArraySize is None:
-            return 0
-        return len(self.ArraySize)
+        pass

@@ -79,17 +79,11 @@ class MeasurementType(Serializable):
     @property
     def ProjectionType(self):
         """str: *READ ONLY* Identifies the specific image projection type supplied."""
-        for attribute in self._choice[0]['collection']:
-            if getattr(self, attribute) is not None:
-                return attribute
-        return None
+        pass
 
     @property
     def ReferencePoint(self):
         """
         None|ReferencePointType: *READ ONLY* Gets the reference point.
         """
-        
-        if self.ProjectionType:
-            return getattr(self, self.ProjectionType).ReferencePoint
-        return None
+        pass

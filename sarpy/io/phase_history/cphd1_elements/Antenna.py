@@ -70,10 +70,7 @@ class AntCoordFrameType(Serializable):
         super(AntCoordFrameType, self).__init__(**kwargs)
 
     def version_required(self) -> Tuple[int, int, int]:
-        required = (1, 0, 1)
-        if self.UseACFPVP is not None:
-            required = max(required, (1, 1, 0))
-        return required
+        pass
 
 
 class AntPhaseCenterType(Serializable):
@@ -363,10 +360,7 @@ class EBType(Serializable):
         return numpy.array([self.DCXPoly(t), self.DCYPoly(t)])
 
     def version_required(self) -> Tuple[int, int, int]:
-        required = (1, 0, 1)
-        if self.UseEBPVP is not None:
-            required = max(required, (1, 1, 0))
-        return required
+        pass
 
 
 class GainPhasePolyType(Serializable):
@@ -439,15 +433,10 @@ class GainPhasePolyType(Serializable):
         -------
         None
         """
-
-        self.GainPoly.minimize_order()
-        self.PhasePoly.minimize_order()
+        pass
 
     def version_required(self) -> Tuple[int, int, int]:
-        required = (1, 0, 1)
-        if self.AntGPId is not None:
-            required = max(required, (1, 1, 0))
-        return required
+        pass
 
 
 class AntPatternType(Serializable):
@@ -573,16 +562,7 @@ class AntPatternType(Serializable):
         super(AntPatternType, self).__init__(**kwargs)
 
     def version_required(self) -> Tuple[int, int, int]:
-        required = (1, 0, 1)
-        for fld in ['EB', 'Array', 'Element']:
-            val = getattr(self, fld)
-            if val is not None:
-                required = max(required, val.version_required())
-        if self.EBFreqShiftSF is not None or \
-                self.MLFreqDilationSF is not None or \
-                self.AntPolRef is not None:
-            required = max(required, (1, 1, 0))
-        return required
+        pass
 
 
 class AntennaType(Serializable):
@@ -638,38 +618,21 @@ class AntennaType(Serializable):
         """
         int: The number of antenna coordinate frame elements.
         """
-
-        if self.AntCoordFrame is None:
-            return 0
-        return len(self.AntCoordFrame)
+        pass
 
     @property
     def NumAPCs(self):
         """
         int: The number of antenna phase center elements.
         """
-
-        if self.AntPhaseCenter is None:
-            return 0
-        return len(self.AntPhaseCenter)
+        pass
 
     @property
     def NumAntPats(self):
         """
         int: The number of antenna pattern elements.
         """
-
-        if self.AntPattern is None:
-            return 0
-        return len(self.AntPattern)
+        pass
 
     def version_required(self) -> Tuple[int, int, int]:
-        required = (1, 0, 1)
-        if self.AntCoordFrame is not None:
-            for entry in self.AntCoordFrame:
-                required = max(required, entry.version_required())
-        if self.AntPattern is not None:
-            for entry in self.AntPattern:
-                required = max(required, entry.version_required())
-
-        return required
+        pass

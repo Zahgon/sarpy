@@ -134,7 +134,7 @@ class SupportArraySizeType(Serializable):
         """
         Calculates the size of the support array in bytes as described by the contained fields.
         """
-        return self.BytesPerElement * self.NumRows * self.NumCols
+        pass
 
 
 class DataType(Serializable):
@@ -207,50 +207,29 @@ class DataType(Serializable):
         """
         int: The number of support arrays.
         """
-
-        if self.SupportArrays is None:
-            return 0
-        else:
-            return len(self.SupportArrays)
+        pass
 
     @property
     def NumCPHDChannels(self):
         """
         int: The number of CPHD channels.
         """
-
-        if self.Channels is None:
-            return 0
-        else:
-            return len(self.Channels)
+        pass
 
     def calculate_support_block_size(self):
         """
         Calculates the size of the support block in bytes as described by the SupportArray fields.
         """
-        if self.SupportArrays is None:
-            return 0
-        else:
-            return sum([s.calculate_size() for s in self.SupportArrays])
+        pass
 
     def calculate_pvp_block_size(self):
         """
         Calculates the size of the PVP block in bytes as described by the Data fields.
         """
-        if self.Channels is None:
-            return 0
-        else:
-            return self.NumBytesPVP * sum([c.NumVectors for c in self.Channels])
+        pass
 
     def calculate_signal_block_size(self):
         """
         Calculates the size of the signal block in bytes as described by the Data fields.
         """
-        if self.Channels is None:
-            return 0
-
-        if self.SignalCompressionID is not None:
-            return sum([c.CompressedSignalSize for c in self.Channels])
-        else:
-            num_bytes_per_sample = binary_format_string_to_dtype(self.SignalArrayFormat).itemsize
-            return num_bytes_per_sample * sum([c.NumVectors * c.NumSamples for c in self.Channels])
+        pass

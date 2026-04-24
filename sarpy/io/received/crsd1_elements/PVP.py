@@ -50,16 +50,14 @@ class PerVectorParameterDCXY(Serializable):
         """
         int: The size of the vector
         """
-
-        return 2
+        pass
 
     @property
     def Format(self):
         """
         str: The format of the vector data, constant value 'DCX=F8;DCY=F8;' here.
         """
-
-        return 'DCX=F8;DCY=F8;'
+        pass
 
 
 class PerVectorParameterTxLFM(Serializable):
@@ -91,16 +89,14 @@ class PerVectorParameterTxLFM(Serializable):
         """
         int: The size of the vector, constant value 3 here.
         """
-
-        return 3
+        pass
 
     @property
     def Format(self):
         """
         str: The format of the vector data, constant value 'PhiXC=F8;FxC=F8;FxRate=F8;' here.
         """
-
-        return 'PhiXC=F8;FxC=F8;FxRate=F8;'
+        pass
 
 
 class TxAntennaType(Serializable):
@@ -344,25 +340,7 @@ class PVPType(Serializable):
         -------
         int
         """
-
-        def get_num_words(obj):
-            sz = getattr(obj, 'Size')
-            if sz is not None:
-                return sz
-            sz = 0
-
-            # noinspection PyProtectedMember
-            for fld in obj._fields:
-                fld_val = getattr(obj, fld)
-                if fld_val is not None:
-                    if fld_val.array:
-                        for arr_val in fld_val:
-                            sz += get_num_words(arr_val)
-                    else:
-                        sz += get_num_words(fld_val)
-            return sz
-
-        return get_num_words(self) * BYTES_PER_WORD
+        pass
 
     def get_offset_size_format(self, field):
         """
@@ -378,38 +356,7 @@ class PVPType(Serializable):
         -------
         None|(int, int, str)
         """
-
-        def osf_tuple(val_in):
-            return val_in.Offset*BYTES_PER_WORD, val_in.Size*BYTES_PER_WORD, homogeneous_dtype(val_in.Format).char
-
-        # noinspection PyProtectedMember
-        if field in self._fields[:-1]:
-            val = getattr(self, field)
-            if val is None:
-                return None
-            return osf_tuple(val)
-        elif self.RcvAntenna and field in self.RcvAntenna._fields:
-            val = getattr(self.RcvAntenna, field)
-            if val is None:
-                return None
-            return osf_tuple(val)
-        elif self.TxPulse and field in self.TxPulse._fields:
-            val = getattr(self.TxPulse, field)
-            if val is None:
-                return None
-            return osf_tuple(val)
-        elif self.TxPulse and self.TxPulse.TxAntenna and field in self.TxPulse.TxAntenna._fields:
-            val = getattr(self.TxPulse.TxAntenna, field)
-            if val is None:
-                return None
-            return osf_tuple(val)
-        else:
-            if self.AddedPVP is None:
-                return None
-            for val in self.AddedPVP:
-                if field == val.Name:
-                    return osf_tuple(val)
-        return None
+        pass
 
     def get_vector_dtype(self):
         """
@@ -420,59 +367,4 @@ class PVPType(Serializable):
         numpy.dtype
             This will be a compound dtype for a structured array.
         """
-
-        names = []
-        formats = []
-        offsets = []
-
-        for field in self._fields:
-            val = getattr(self, field)
-            if val is None:
-                continue
-            elif field == "AddedPVP":
-                for entry in val:
-                    names.append(entry.Name)
-                    formats.append(binary_format_string_to_dtype(entry.Format))
-                    offsets.append(entry.Offset*BYTES_PER_WORD)
-            elif field == 'RcvAntenna' or field == 'TxPulse':
-                continue
-            else:
-                names.append(field)
-                formats.append(binary_format_string_to_dtype(val.Format))
-                offsets.append(val.Offset*BYTES_PER_WORD)
-
-        if self.RcvAntenna is not None:
-            # noinspection PyProtectedMember
-            for field in self.RcvAntenna._fields:
-                val = getattr(self.RcvAntenna, field)
-                if val is None:
-                    continue
-                else:
-                    names.append(field)
-                    formats.append(binary_format_string_to_dtype(val.Format))
-                    offsets.append(val.Offset*BYTES_PER_WORD)
-
-        if self.TxPulse is not None:
-            # noinspection PyProtectedMember
-            for field in self.TxPulse._fields:
-                val = getattr(self.TxPulse, field)
-                if val is None:
-                    continue
-                elif field == 'TxAntenna':
-                    continue
-                else:
-                    names.append(field)
-                    formats.append(binary_format_string_to_dtype(val.Format))
-                    offsets.append(val.Offset*BYTES_PER_WORD)
-            if self.TxPulse.TxAntenna is not None:
-                # noinspection PyProtectedMember
-                for field in self.TxPulse.TxAntenna._fields:
-                    val = getattr(self.TxPulse.TxAntenna, field)
-                    if val is None:
-                        continue
-                    else:
-                        names.append(field)
-                        formats.append(binary_format_string_to_dtype(val.Format))
-                        offsets.append(val.Offset*BYTES_PER_WORD)
-
-        return numpy.dtype({'names': names, 'formats': formats, 'offsets': offsets})
+        pass

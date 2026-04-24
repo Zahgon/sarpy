@@ -168,8 +168,7 @@ class GeographicCoverageType(Serializable):
         """
         List[GeographicCoverageType]: list of sub-regions.
         """
-
-        return self._SubRegions
+        pass
 
     def addSubRegion(self, value):
         """
@@ -183,16 +182,7 @@ class GeographicCoverageType(Serializable):
         -------
         None
         """
-
-        if isinstance(value, ElementTree.Element):
-            value = GeographicCoverageType.from_node(value, self._xml_ns, ns_key=self._xml_ns_key)
-        elif isinstance(value, dict):
-            value = GeographicCoverageType.from_dict(value)
-
-        if isinstance(value, GeographicCoverageType):
-            self._SubRegions.append(value)
-        else:
-            raise TypeError('Trying to set SubRegion element with unexpected type {}'.format(type(value)))
+        pass
 
     @classmethod
     def from_node(cls, node, xml_ns, ns_key=None, kwargs=None):

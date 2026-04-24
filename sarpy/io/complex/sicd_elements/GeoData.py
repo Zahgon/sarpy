@@ -107,19 +107,14 @@ class GeoInfoType(Serializable):
         returning the (first) attribute among `Point`, `Line`, `Polygon` which is populated.
         `None` will be returned if none of them are populated.
         """
-
-        for attribute in self._choice[0]['collection']:
-            if getattr(self, attribute) is not None:
-                return attribute
-        return None
+        pass
 
     @property
     def GeoInfos(self):
         """
         List[GeoInfoType]: list of GeoInfos.
         """
-
-        return self._GeoInfos
+        pass
 
     def getGeoInfo(self, key: str):
         """
@@ -133,8 +128,7 @@ class GeoInfoType(Serializable):
         -------
         List[GeoInfoType]
         """
-
-        return [entry for entry in self._GeoInfos if entry.name == key]
+        pass
 
     def addGeoInfo(self, value):
         """
@@ -148,17 +142,7 @@ class GeoInfoType(Serializable):
         -------
         None
         """
-
-        if isinstance(value, ElementTree.Element):
-            gi_key = self._child_xml_ns_key.get('GeoInfos', self._xml_ns_key)
-            value = self.from_node(value, self._xml_ns, ns_key=gi_key)
-        elif isinstance(value, dict):
-            value = self.from_dict(value)
-
-        if isinstance(value, GeoInfoType):
-            self._GeoInfos.append(value)
-        else:
-            raise TypeError('Trying to set GeoInfo element with unexpected type {}'.format(type(value)))
+        pass
 
     def _validate_features(self) -> bool:
         if self.Line is not None and self.Line.size < 2:
@@ -240,28 +224,22 @@ class SCPType(Serializable):
         """
         XYZType: The ECF coordinates.
         """
-
-        return self._ECF
+        pass
 
     @ECF.setter
     def ECF(self, value):
-        if value is not None:
-            self._ECF = parse_serializable(value, 'ECF', self, XYZType)
-            self._LLH = LatLonHAERestrictionType.from_array(ecf_to_geodetic(self._ECF.get_array()))
+        pass
 
     @property
     def LLH(self) -> LatLonHAERestrictionType:
         """
         LatLonHAERestrictionType: The WGS-84 coordinates.
         """
-
-        return self._LLH
+        pass
 
     @LLH.setter
     def LLH(self, value):
-        if value is not None:
-            self._LLH = parse_serializable(value, 'LLH', self, LatLonHAERestrictionType)
-            self._ECF = XYZType.from_array(geodetic_to_ecf(self._LLH.get_array(order='LAT')))
+        pass
 
     def get_image_center_abbreviation(self) -> str:
         """
@@ -367,8 +345,7 @@ class GeoDataType(Serializable):
         """
         List[GeoInfoType]: list of GeoInfos.
         """
-
-        return self._GeoInfos
+        pass
 
     def getGeoInfo(self, key: str) -> List[GeoInfoType]:
         """
@@ -382,8 +359,7 @@ class GeoDataType(Serializable):
         -------
         List[GeoInfoType]
         """
-
-        return [entry for entry in self._GeoInfos if entry.name == key]
+        pass
 
     def setGeoInfo(self, value: Union[GeoInfoType, Dict]):
         """
@@ -397,17 +373,7 @@ class GeoDataType(Serializable):
         -------
         None
         """
-
-        if isinstance(value, ElementTree.Element):
-            gi_key = self._child_xml_ns_key.get('GeoInfos', self._xml_ns_key)
-            value = GeoInfoType.from_node(value, self._xml_ns, ns_key=gi_key)
-        elif isinstance(value, dict):
-            value = GeoInfoType.from_dict(value)
-
-        if isinstance(value, GeoInfoType):
-            self._GeoInfos.append(value)
-        else:
-            raise TypeError('Trying to set GeoInfo element with unexpected type {}'.format(type(value)))
+        pass
 
     @classmethod
     def from_node(cls, node, xml_ns, ns_key=None, kwargs=None):

@@ -158,11 +158,11 @@ class NITFSecurityTags0(NITFElement):
 
     @property
     def DEVT(self):
-        return self._DEVT
+        pass
 
     @DEVT.setter
     def DEVT(self, value):
-        self._DEVT = _parse_str(value, 40, None, 'DEVT', self)
+        pass
 
     def _get_attribute_length(self, fld):
         if fld == 'DEVT':
@@ -173,7 +173,7 @@ class NITFSecurityTags0(NITFElement):
     @classmethod
     def minimum_length(cls):
         # DEVT may not be there
-        return super(NITFSecurityTags0, cls).minimum_length() - 40
+        pass
 
     @classmethod
     def _parse_attribute(cls, fields, attribute, value, start):

@@ -554,5 +554,4 @@ class ErrorStatisticsType(Serializable):
         -------
         Tuple[int, int, int]
         """
-
-        return (1, 1, 0) if self.Unmodeled is None else (1, 3, 0)
+        pass

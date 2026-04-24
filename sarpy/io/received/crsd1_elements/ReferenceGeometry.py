@@ -55,28 +55,22 @@ class CRPType(Serializable):
         """
         XYZType: The CRP Position ECF coordinates.
         """
-
-        return self._ECF
+        pass
 
     @ECF.setter
     def ECF(self, value):
-        if value is not None:
-            self._ECF = parse_serializable(value, 'ECF', self, XYZType)
-            self._LLH = LatLonHAEType.from_array(ecf_to_geodetic(self._ECF.get_array()))
+        pass
 
     @property
     def LLH(self):  # type: () -> LatLonHAEType
         """
         LatLonHAEType: The CRP Position in WGS-84 coordinates.
         """
-
-        return self._LLH
+        pass
 
     @LLH.setter
     def LLH(self, value):
-        if value is not None:
-            self._LLH = parse_serializable(value, 'LLH', self, LatLonHAEType)
-            self._ECF = XYZType.from_array(geodetic_to_ecf(self._LLH.get_array(order='LAT')))
+        pass
 
 
 class RcvParametersType(Serializable):
@@ -159,10 +153,7 @@ class RcvParametersType(Serializable):
 
             * 1 if SideOftrack == 'L'
         """
-
-        if self.SideOfTrack is None:
-            return None
-        return -1 if self.SideOfTrack == 'R' else 1
+        pass
 
 
 class ReferenceGeometryType(Serializable):

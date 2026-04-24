@@ -65,26 +65,7 @@ class ImageLocationType(Serializable):
         -------
         None|ImageLocationType
         """
-
-        if geo_location is None or geo_location.CenterPixel is None:
-            return None
-
-        if not the_structure.can_project_coordinates():
-            logger.warning(_no_projection_text)
-            return None
-
-        if isinstance(the_structure, SICDType):
-            image_shift = numpy.array(
-                [the_structure.ImageData.FirstRow, the_structure.ImageData.FirstCol], dtype='float64')
-        else:
-            image_shift = numpy.zeros((2, ), dtype='float64')
-
-        absolute_pixel_location, _, _ = the_structure.project_ground_to_image_geo(
-            geo_location.CenterPixel.get_array(dtype='float64'), ordering='latlong')
-        if numpy.any(numpy.isnan(absolute_pixel_location)):
-            return None
-
-        return ImageLocationType(CenterPixel=absolute_pixel_location - image_shift)
+        pass
 
 
 class GeoLocationType(Serializable):
@@ -139,29 +120,7 @@ class GeoLocationType(Serializable):
         None|GeoLocationType
             Coordinates may be populated as `NaN` if projection fails.
         """
-
-        if image_location is None or image_location.CenterPixel is None:
-            return None
-
-        if not the_structure.can_project_coordinates():
-            logger.warning(_no_projection_text)
-            return None
-
-        # make sure this is defined, for the sake of efficiency
-        the_structure.define_coa_projection(override=False)
-
-        if isinstance(the_structure, SICDType):
-            image_shift = numpy.array(
-                [the_structure.ImageData.FirstRow, the_structure.ImageData.FirstCol], dtype='float64')
-        else:
-            image_shift = numpy.zeros((2, ), dtype='float64')
-
-        coords = image_location.CenterPixel.get_array(dtype='float64') + image_shift
-        geo_coords = the_structure.project_image_to_ground_geo(
-            coords, ordering='latlong', projection_type=projection_type, **proj_kwargs)
-
-        out = GeoLocationType(CenterPixel=geo_coords)
-        return out
+        pass
 
 
 class PhysicalLocationType(Serializable):
@@ -319,40 +278,7 @@ class TheFiducialType(Serializable):
             2 - object in image periphery, not populating
             3 - object not in image field
         """
-
-        if self.ImageLocation is not None or self.SlantPlane is not None:
-            # no need to infer anything, it's already populated
-            return 0
-
-        if self.GeoLocation is None:
-            logger.warning(
-                'GeoLocation is not populated,\n\t'
-                'so the image location can not be inferred')
-            return -1
-
-        if not sicd.can_project_coordinates():
-            logger.warning(_no_projection_text)
-            return -1
-
-        image_location = ImageLocationType.from_geolocation(self.GeoLocation, sicd)
-        # check bounding information
-        rows = sicd.ImageData.NumRows
-        cols = sicd.ImageData.NumCols
-        center_pixel = image_location.CenterPixel.get_array(dtype='float64')
-
-        if (0 < center_pixel[0] < rows - 1) and (0 < center_pixel[1] < cols - 1):
-            placement = 1
-        elif (-3 < center_pixel[0] < rows + 2) and (-3 < center_pixel[1] < cols + 2):
-            placement = 2
-        else:
-            placement = 3
-
-        if placement == 3 or (placement == 2 and not populate_in_periphery):
-            return placement
-
-        self.ImageLocation = image_location
-        self.SlantPlane = PhysicalLocationType(Physical=image_location)
-        return placement
+        pass
 
     def set_geo_location_from_sicd(self, sicd, projection_type='HAE', **proj_kwargs):
         """
@@ -374,23 +300,7 @@ class TheFiducialType(Serializable):
         proj_kwargs
             The keyword arguments for the :func:`SICDType.project_image_to_ground_geo` method.
         """
-
-        if self.GeoLocation is not None:
-            # no need to infer anything, it's already populated
-            return
-
-        if self.ImageLocation is None:
-            logger.warning(
-                'ImageLocation is not populated,\n\t'
-                'so the geographical location can not be inferred')
-            return
-
-        if not sicd.can_project_coordinates():
-            logger.warning(_no_projection_text)
-            return
-
-        self.GeoLocation = GeoLocationType.from_image_location(
-            self.ImageLocation, sicd, projection_type=projection_type, **proj_kwargs)
+        pass
 
 
 class FiducialInfoType(Serializable):
@@ -451,28 +361,4 @@ class FiducialInfoType(Serializable):
         include_out_of_range : bool
             Include the objects which are out of range (with no image location information)?
         """
-
-        def update_fiducial(temp_fid, in_image_count):
-            status = temp_fid.set_image_location_from_sicd(sicd, populate_in_periphery=populate_in_periphery)
-            use_fid = False
-            if status == 0:
-                raise ValueError('Fiducial already has image details set')
-            if status == 1 or (status == 2 and populate_in_periphery):
-                use_fid = True
-                in_image_count += 1
-            return use_fid, in_image_count
-
-        fid_in_image = 0
-        if include_out_of_range:
-            # the fiducials list is just modified in place
-            for the_fid in self.Fiducials:
-                _, fid_in_image = update_fiducial(the_fid, fid_in_image)
-        else:
-            # the fiducials list is just modified in place
-            fiducials = []
-            for the_fid in self.Fiducials:
-                use_this_fid, fid_in_image = update_fiducial(the_fid, fid_in_image)
-                if use_this_fid:
-                    fiducials.append(the_fid)
-            self.Fiducials = fiducials
-        self.NumberOfFiducialsInImage = fid_in_image
+        pass

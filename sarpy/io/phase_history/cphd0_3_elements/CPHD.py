@@ -158,7 +158,7 @@ class CPHDType(Serializable):
         return super(CPHDType, self).to_xml_bytes(urn=urn, tag=tag, check_validity=check_validity, strict=strict)
 
     def to_xml_string(self, urn=None, tag='CPHD', check_validity=False, strict=DEFAULT_STRICT):
-        return self.to_xml_bytes(urn=urn, tag=tag, check_validity=check_validity, strict=strict).decode('utf-8')
+        pass
 
     def get_pvp_dtype(self):
         """
@@ -170,10 +170,7 @@ class CPHDType(Serializable):
         numpy.dtype
             This will be a compound dtype for a structured array.
         """
-
-        if self.VectorParameters is None:
-            raise ValueError('No VectorParameters defined.')
-        return self.VectorParameters.get_vector_dtype()
+        pass
 
     @classmethod
     def from_xml_file(cls, file_path):
@@ -188,10 +185,7 @@ class CPHDType(Serializable):
         -------
         CPHDType
         """
-
-        root_node, xml_ns = parse_xml_from_file(file_path)
-        ns_key = 'default' if 'default' in xml_ns else None
-        return cls.from_node(root_node, xml_ns=xml_ns, ns_key=ns_key)
+        pass
 
     @classmethod
     def from_xml_string(cls, xml_string):
@@ -206,7 +200,4 @@ class CPHDType(Serializable):
         -------
         CPHDType
         """
-
-        root_node, xml_ns = parse_xml_from_string(xml_string)
-        ns_key = 'default' if 'default' in xml_ns else None
-        return cls.from_node(root_node, xml_ns=xml_ns, ns_key=ns_key)
+        pass

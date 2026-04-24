@@ -167,11 +167,7 @@ class TimelineType(Serializable):
         None|numpy.datetime64: The collection end time, inferred from `CollectEnd` and `CollectDuration`,
         provided that both are populated.
         """
-
-        if self.CollectStart is None or self.CollectDuration is None:
-            return None
-
-        return self.CollectStart + numpy.timedelta64(int(self.CollectDuration*1e6), 'us')
+        pass
 
     def _check_ipp_consecutive(self) -> bool:
         if self.IPP is None or len(self.IPP) < 2:

@@ -37,69 +37,23 @@ def _define_print_function(destination):
     ----------
     destination : TextIO
     """
-
-    global print_func
-    print_func = functools.partial(print, file=destination)
+    pass
 
 
 def _print_header(input_file):
     # type: (Union[str, BinaryIO]) -> None
 
-    def _finalize():
-        if close_after:
-            file_object.close()
-        if initial_location is not None:
-            file_object.seek(initial_location)
-
-    if isinstance(input_file, str):
-        file_object = open(input_file, 'rb')
-        initial_location = None
-        close_after = True
-    elif hasattr(input_file, 'readline'):
-        file_object = input_file
-        initial_location = file_object.tell()
-        file_object.seek(0)
-        close_after = False
-    else:
-        raise TypeError(
-            'Input requires a file path or a binary mode file-like object')
-
-    while True:
-        lin = file_object.readline().strip()
-        if not isinstance(lin, bytes):
-            _finalize()
-            raise ValueError('Requires an input opened in binary mode')
-
-        if lin:
-            print_func(lin.decode())
-        else:
-            break
-    _finalize()
+    pass
 
 
 def _create_default_output_file(input_file):
     # type: (Union[str, BinaryIO]) -> str
-    if isinstance(input_file, str):
-        return os.path.splitext(input_file)[0] + '.meta_dump.txt'
-    else:
-        return os.path.expanduser('~/Desktop/phase_history.meta_dump.txt')
+    pass
 
 
 def _print_structure(input_file):
     # type: (Union[str, BinaryIO]) -> None
-    details = CPHDDetails(input_file)
-    data = details.get_cphd_bytes()
-    xml_str = minidom.parseString(data.decode()).toprettyxml(indent='    ', newl='\n')
-    # NB: this may or not exhibit platform dependent choices in which codec (i.e. latin-1 versus utf-8)
-    for i, entry in enumerate(xml_str.splitlines()):
-        if i == 0:
-            # Remove xml that gets inserted by minidom, if it's not actually there
-            if (not data.startswith(b'<?xml version')) and entry.startswith('<?xml version'):
-                continue
-            print_func(entry)
-        elif entry.strip() != '':
-            # Remove extra new lines if XML is already formatted
-            print_func(entry)
+    pass
 
 
 def print_cphd_metadata(input_file, destination=sys.stdout):
@@ -112,20 +66,7 @@ def print_cphd_metadata(input_file, destination=sys.stdout):
     input_file : str|BinaryIO
     destination : TextIO
     """
-
-    _define_print_function(destination)
-
-    if isinstance(input_file, str):
-        print_func('Details for CPHD file {}'.format(input_file))
-
-    print_func('---- CPHD Header Information ----')
-    _print_header(input_file)
-    print_func('')
-    print_func('')
-
-    print_func('---- CPHD Structure ----')
-    _print_structure(input_file)
-    print_func('')
+    pass
 
 
 def print_cphd_header(input_file, destination=sys.stdout):
@@ -137,9 +78,7 @@ def print_cphd_header(input_file, destination=sys.stdout):
     input_file : str|BinaryIO
     destination : TextIO
     """
-
-    _define_print_function(destination)
-    _print_header(input_file)
+    pass
 
 
 def print_cphd_xml(input_file, destination=sys.stdout):
@@ -151,25 +90,12 @@ def print_cphd_xml(input_file, destination=sys.stdout):
     input_file : str|BinaryIO
     destination : TextIO
     """
-
-    _define_print_function(destination)
-    _print_structure(input_file)
+    pass
 
 
 def _dump_pattern(input_file, destination, call_method):
     # type: (Union[str, BinaryIO], str, Callable) -> Union[None, str]
-    if destination == 'stdout':
-        call_method(input_file, destination=sys.stdout)
-    elif destination == 'string':
-        out = StringIO()
-        call_method(input_file, destination=out)
-        value = out.getvalue()
-        out.close()  # free the buffer
-        return value
-    else:
-        the_out_file = _create_default_output_file(input_file) if destination == 'default' else destination
-        with open(the_out_file, 'w') as fi:
-            call_method(input_file, destination=fi)
+    pass
 
 
 def dump_cphd_metadata(input_file, destination):
@@ -190,8 +116,7 @@ def dump_cphd_metadata(input_file, destination):
     None|str
         There is only a return value if `destination=='string'`.
     """
-
-    _dump_pattern(input_file, destination, print_cphd_metadata)
+    pass
 
 
 def dump_cphd_header(input_file, destination):
@@ -211,8 +136,7 @@ def dump_cphd_header(input_file, destination):
     None|str
         There is only a return value if `destination=='string'`.
     """
-
-    _dump_pattern(input_file, destination, print_cphd_header)
+    pass
 
 
 def dump_cphd_xml(input_file, destination):
@@ -232,8 +156,7 @@ def dump_cphd_xml(input_file, destination):
     None|str
         There is only a return value if `destination=='string'`.
     """
-
-    _dump_pattern(input_file, destination, print_cphd_xml)
+    pass
 
 
 if __name__ == '__main__':

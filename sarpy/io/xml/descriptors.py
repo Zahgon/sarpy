@@ -42,50 +42,13 @@ class BasicDescriptor(object):
         self._format_docstring()
 
     def _format_docstring(self):
-        docstring = self.__doc__
-        if docstring is None:
-            docstring = ''
-        if (self._typ_string is not None) and (not docstring.startswith(self._typ_string)):
-            docstring = '{} {}'.format(self._typ_string, docstring)
-
-        suff = self._docstring_suffix()
-        if suff is not None:
-            docstring = '{} {}'.format(docstring, suff)
-
-        lenstr = self._len_string()
-        if lenstr is not None:
-            docstring = '{} {}'.format(docstring, lenstr)
-
-        if self.required:
-            docstring = '{} {}'.format(docstring, ' **Required.**')
-        else:
-            docstring = '{} {}'.format(docstring, ' **Optional.**')
-        self.__doc__ = docstring
+        pass
 
     def _len_string(self):
-        minl = getattr(self, 'minimum_length', None)
-        maxl = getattr(self, 'minimum_length', None)
-        def_minl = getattr(self, '_DEFAULT_MIN_LENGTH', None)
-        def_maxl = getattr(self, '_DEFAULT_MAX_LENGTH', None)
-        if minl is not None and maxl is not None:
-            if minl == def_minl and maxl == def_maxl:
-                return None
-
-            lenstr = ' Must have length '
-            if minl == def_minl:
-                lenstr += '<= {0:d}.'.format(maxl)
-            elif maxl == def_maxl:
-                lenstr += '>= {0:d}.'.format(minl)
-            elif minl == maxl:
-                lenstr += ' exactly {0:d}.'.format(minl)
-            else:
-                lenstr += 'in the range [{0:d}, {1:d}].'.format(minl, maxl)
-            return lenstr
-        else:
-            return None
+        pass
 
     def _docstring_suffix(self):
-        return None
+        pass
 
     def __get__(self, instance, owner):
         """The getter.
@@ -189,23 +152,7 @@ class StringListDescriptor(BasicDescriptor):
 
     def __set__(self, instance, value):
         def set_value(new_value):
-            if len(new_value) < self.minimum_length:
-                msg = 'Attribute {} of class {} is a string list of size {},\n\t' \
-                      'and must have length at least {}.'.format(
-                        self.name, instance.__class__.__name__, value.size, self.minimum_length)
-                if self.strict:
-                    raise ValueError(msg)
-                else:
-                    logger.error(msg)
-            if len(new_value) > self.maximum_length:
-                msg = 'Attribute {} of class {} is a string list of size {},\n\t' \
-                      'and must have length no greater than {}.'.format(
-                        self.name, instance.__class__.__name__, value.size, self.maximum_length)
-                if self.strict:
-                    raise ValueError(msg)
-                else:
-                    logger.error(msg)
-            self.data[instance] = new_value
+            pass
 
         if super(StringListDescriptor, self).__set__(instance, value):  # the None handler...kinda hacky
             return
@@ -236,10 +183,7 @@ class StringEnumDescriptor(BasicDescriptor):
             self.default_value = None
 
     def _docstring_suffix(self):
-        suff = ' Takes values in :code:`{}`.'.format(self.values)
-        if self.default_value is not None:
-            suff += ' Default value is :code:`{}`.'.format(self.default_value)
-        return suff
+        pass
 
     def __set__(self, instance, value):
         if value is None:
@@ -277,10 +221,7 @@ class StringRegexDescriptor(BasicDescriptor):
             self.default_value = None
 
     def _docstring_suffix(self):
-        suff = ' Takes values matching :code:`{}`.'.format(self.pattern)
-        if self.default_value is not None:
-            suff += ' Default value is :code:`{}`.'.format(self.default_value)
-        return suff
+        pass
 
     def __set__(self, instance, value):
         if value is None:
@@ -339,15 +280,10 @@ class IntegerDescriptor(BasicDescriptor):
             self.default_value = None
 
     def _docstring_suffix(self):
-        if self.bounds is not None:
-            return 'Must be in the range [{}, {}]'.format(*self.bounds)
-        return ''
+        pass
 
     def _in_bounds(self, value):
-        if self.bounds is None:
-            return True
-        return (self.bounds[0] is None or self.bounds[0] <= value) and \
-            (self.bounds[1] is None or value <= self.bounds[1])
+        pass
 
     def __set__(self, instance, value):
         if super(IntegerDescriptor, self).__set__(instance, value):  # the None handler...kinda hacky
@@ -389,7 +325,7 @@ class IntegerEnumDescriptor(BasicDescriptor):
             self.default_value = None
 
     def _docstring_suffix(self):
-        return 'Must take one of the values in {}.'.format(self.values)
+        pass
 
     def __set__(self, instance, value):
         if super(IntegerEnumDescriptor, self).__set__(instance, value):  # the None handler...kinda hacky
@@ -436,23 +372,7 @@ class IntegerListDescriptor(BasicDescriptor):
 
     def __set__(self, instance, value):
         def set_value(new_value):
-            if len(new_value) < self.minimum_length:
-                msg = 'Attribute {} of class {} is an integer list of size {},\n\t' \
-                      'and must have size at least {}.'.format(
-                        self.name, instance.__class__.__name__, value.size, self.minimum_length)
-                if self.strict:
-                    raise ValueError(msg)
-                else:
-                    logger.info(msg)
-            if len(new_value) > self.maximum_length:
-                msg = 'Attribute {} of class {} is an integer list of size {},\n\t' \
-                      'and must have size no larger than {}.'.format(
-                        self.name, instance.__class__.__name__, value.size, self.maximum_length)
-                if self.strict:
-                    raise ValueError(msg)
-                else:
-                    logger.info(msg)
-            self.data[instance] = new_value
+            pass
 
         if super(IntegerListDescriptor, self).__set__(instance, value):  # the None handler...kinda hacky
             return
@@ -482,16 +402,10 @@ class FloatDescriptor(BasicDescriptor):
             self.default_value = None
 
     def _docstring_suffix(self):
-        if self.bounds is not None:
-            return 'Must be in the range [{}, {}]'.format(*self.bounds)
-        return ''
+        pass
 
     def _in_bounds(self, value):
-        if self.bounds is None:
-            return True
-
-        return (self.bounds[0] is None or self.bounds[0] <= value) and \
-            (self.bounds[1] is None or value <= self.bounds[1])
+        pass
 
     def __set__(self, instance, value):
         if super(FloatDescriptor, self).__set__(instance, value):  # the None handler...kinda hacky
@@ -538,23 +452,7 @@ class FloatListDescriptor(BasicDescriptor):
 
     def __set__(self, instance, value):
         def set_value(new_value):
-            if len(new_value) < self.minimum_length:
-                msg = 'Attribute {} of class {} is an float list of size {},\n\t' \
-                      'and must have size at least {}.'.format(
-                        self.name, instance.__class__.__name__, value.size, self.minimum_length)
-                if self.strict:
-                    raise ValueError(msg)
-                else:
-                    logger.info(msg)
-            if len(new_value) > self.maximum_length:
-                msg = 'Attribute {} of class {} is a float list of size {},\n\t' \
-                      'and must have size no larger than {}.'.format(
-                        self.name, instance.__class__.__name__, value.size, self.maximum_length)
-                if self.strict:
-                    raise ValueError(msg)
-                else:
-                    logger.info(msg)
-            self.data[instance] = new_value
+            pass
 
         if super(FloatListDescriptor, self).__set__(instance, value):  # the None handler...kinda hacky
             return
@@ -613,23 +511,7 @@ class FloatArrayDescriptor(BasicDescriptor):
 
     def __set__(self, instance, value):
         def set_value(new_val):
-            if len(new_val) < self.minimum_length:
-                msg = 'Attribute {} of class {} is a double array of size {},\n\t' \
-                      'and must have size at least {}.'.format(
-                        self.name, instance.__class__.__name__, value.size, self.minimum_length)
-                if self.strict:
-                    raise ValueError(msg)
-                else:
-                    logger.error(msg)
-            if len(new_val) > self.maximum_length:
-                msg = 'Attribute {} of class {} is a double array of size {},\n\t' \
-                      'and must have size no larger than {}.'.format(
-                        self.name, instance.__class__.__name__, value.size, self.maximum_length)
-                if self.strict:
-                    raise ValueError(msg)
-                else:
-                    logger.error(msg)
-            self.data[instance] = new_val
+            pass
 
         if super(FloatArrayDescriptor, self).__set__(instance, value):  # the None handler...kinda hacky
             return

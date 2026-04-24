@@ -60,26 +60,14 @@ class SICDTypeReader(BaseReader):
             self, data_segment, reader_type='SICD', close_segments=close_segments, delete_files=delete_files)
 
     def _check_sizes(self) -> None:
-        data_sizes = self.get_data_size_as_tuple()
-        sicds = self.get_sicds_as_tuple()
-        agree = True
-        msg = ''
-        for i, (data_size, sicd) in enumerate(zip(data_sizes, sicds)):
-            expected_size = (sicd.ImageData.NumRows, sicd.ImageData.NumCols)
-            if data_size != expected_size:
-                agree = False
-                msg += 'data segment at index {} has data size {}\n\t' \
-                       'and expected size (from the sicd) {}\n'.format(i, data_size, expected_size)
-        if not agree:
-            raise ValueError(msg)
+        pass
 
     @property
     def sicd_meta(self) -> Union[None, SICDType, Tuple[SICDType, ...]]:
         """
         None|SICDType|Tuple[SICDType, ...]: the sicd meta_data or meta_data collection.
         """
-
-        return self._sicd_meta
+        pass
 
     def get_sicds_as_tuple(self) -> Union[None, Tuple[SICDType, ...]]:
         """
@@ -210,16 +198,7 @@ class FlatSICDReader(FlatReader, SICDTypeReader):
         check_existence : bool
             Should we check if the given file already exists, and raise an exception if so?
         """
-
-        if not isinstance(output_file, str):
-            raise TypeError(
-                'output_file is expected to a be a string, got type {}'.format(type(output_file)))
-
-        from sarpy.io.complex.sicd import SICDWriter
-        with SICDWriter(
-                output_file, self.sicd_meta,
-                check_older_version=check_older_version, check_existence=check_existence) as writer:
-            writer.write_chip(self[:, :], start_indices=(0, 0))
+        pass
 
 
 class SubsetSICDReader(SICDTypeReader):
@@ -256,4 +235,4 @@ class SubsetSICDReader(SICDTypeReader):
 
     @property
     def file_name(self) -> None:
-        return None
+        pass

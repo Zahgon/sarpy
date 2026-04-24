@@ -11,24 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_ref_type_length(typ_val):
-    typ_val = typ_val.lower()
-    if typ_val in ['06a', '06c']:
-        return 11
-    elif typ_val == '06b':
-        return 12
-    elif typ_val in ['06d', '06e', '06f']:
-        return 8
-    elif typ_val in [
-            '07b', '07d', '07h', '08a', '08b', '08c', '08d', '08e', '08f', '08g',
-            '08h', '08i', '09a', '09b', '09c', '09d']:
-        return 10
-    elif typ_val in ['07c', '07f', '07g', '10a', '10b', '10c']:
-        return 9
-    else:
-        logger.error(
-            'An unknown type value {} was found when deserializing a SENSRB TRE object.\n\t'
-            'Something may fail in this deserialization.')
-        return None
+    pass
 
 
 class POINT(TREElement):

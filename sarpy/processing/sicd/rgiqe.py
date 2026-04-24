@@ -215,30 +215,7 @@ def get_information_density_for_rniirs(
     -------
     float|numpy.ndarray
     """
-
-    a = RNIIRS_FIT_PARAMETERS
-    iim_transition = numpy.exp(1 - numpy.log(2) * a[0] / a[1])
-    slope = a[1] / (iim_transition * numpy.log(2))
-    rniirs_transition = slope*iim_transition
-
-    if not isinstance(rniirs, numpy.ndarray):
-        rniirs = numpy.array(rniirs, dtype='float64')
-    orig_ndim = rniirs.ndim
-    if orig_ndim == 0:
-        rniirs = numpy.reshape(rniirs, (1, ))
-
-    out = numpy.empty(rniirs.shape, dtype='float64')
-    mask = (rniirs > rniirs_transition)
-    mask_other = ~mask
-
-    if numpy.any(mask):
-        out[mask] = numpy.exp2((rniirs[mask] - a[0])/a[1])
-    if numpy.any(mask_other):
-        out[mask_other] = rniirs[mask_other]/slope
-
-    if orig_ndim == 0:
-        return float(out[0])
-    return out
+    pass
 
 
 def snr_to_rniirs(
@@ -287,11 +264,7 @@ def rgiqe(sicd: SICDType) -> Tuple[float, float]:
     information_density : float
     rniirs : float
     """
-
-    bandwidth_area = get_bandwidth_area(sicd)
-    signal = get_default_signal_estimate(sicd)
-    noise = get_sigma0_noise(sicd)
-    return snr_to_rniirs(bandwidth_area, signal, noise)
+    pass
 
 
 def populate_rniirs_for_sicd(
@@ -420,73 +393,7 @@ def get_bandwidth_noise_distribution(
         The noise multiplier, indicating how much noise to add before the
         subaperture processing.
     """
-
-    # validate the desired information density/rniirs
-    if (desired_information_density is None and desired_rniirs is None) or \
-            (desired_information_density is not None and desired_rniirs is not None):
-        raise ValueError('Exactly one of desired_information_density and desired_rniirs must be provided')
-
-    if not isinstance(alpha, numpy.ndarray):
-        alpha = numpy.array(alpha, dtype='float64')
-    orig_ndim = alpha.ndim
-    if orig_ndim == 0:
-        alpha = numpy.reshape(alpha, (1, ))
-
-    if not numpy.all((alpha >= 0) & (alpha <= 1)):
-        raise ValueError('values for alpha must be in the interval [0, 1]')
-
-    # get the current information density
-    bandwidth_area = get_bandwidth_area(sicd)
-    signal = get_default_signal_estimate(sicd)  # NB: this is just 1 or 0.25, no scaling issues
-    current_nesz = get_sigma0_noise(sicd)
-    snr = signal/current_nesz
-    current_inf_density = get_information_density(bandwidth_area, signal, current_nesz)
-
-    if desired_information_density is not None:
-        desired_information_density = float(desired_information_density)
-    elif desired_rniirs is not None:
-        desired_information_density = get_information_density_for_rniirs(float(desired_rniirs))
-
-    if desired_information_density > current_inf_density:
-        raise ValueError(
-            'The desired information density is {},\n\t'
-            'but the current deweighted information density is {}'.format(
-                desired_information_density, current_inf_density))
-
-    aperture_size, bw_multiplier = get_bidirectional_bandwidth_multiplier_possibilities(sicd)
-
-    # construct the whole list of bandwidth areas and resulting noises after
-    # subaperture degrading and deweighting
-    bw_areas = bandwidth_area*numpy.multiply.reduce(bw_multiplier, 1)
-    inf_densities = get_information_density(bw_areas, signal, current_nesz)
-
-    if desired_information_density < inf_densities[-1]:
-        raise ValueError(
-            'The desired information density is {},\n\t'
-            'but the minimum possible with pure subaperture degradation is {}'.format(
-                desired_information_density, inf_densities[-1]))
-
-    best_index = numpy.argmin((desired_information_density - inf_densities)**2)
-
-    indices = numpy.asarray(best_index - alpha*best_index, dtype=numpy.int32)
-    indices = numpy.clip(indices, 0, best_index)
-
-    this_bw_areas = bw_areas[indices]
-
-    # NB: inf_dens = bw_area*log2(1 + snr/mult))
-    #   snr/mult = 2^(inf_dens/bw_area) - 1
-    #   mult = snr/(2^(inf_dens/bw_area) - 1))
-
-    required_noise_multiplier = snr/(numpy.exp2(desired_information_density/this_bw_areas) - 1)
-    required_noise_multiplier[required_noise_multiplier < 1] = 1
-
-    bw_mult_out = numpy.empty(required_noise_multiplier.shape + (2, ), dtype='float64')
-    bw_mult_out[:, 0] = bw_multiplier[indices, 0]
-    bw_mult_out[:, 1] = bw_multiplier[indices, 1]
-
-    if orig_ndim == 0:
-        return (float(bw_mult_out[0, 0]), float(bw_mult_out[0, 1])), float(required_noise_multiplier[0])
-    return bw_mult_out, required_noise_multiplier
+    pass
 
 
 #########################
@@ -506,12 +413,7 @@ def _get_uniform_weight_dicts(
     row_weighting : None|dict
     column_weighting : None|dict
     """
-
-    row_weighting = None if is_uniform_weight(sicd, 0) else \
-        {'WindowName': 'UNIFORM', 'WgtFunct': numpy.ones((32,), dtype='float64')}
-    column_weighting = None if is_uniform_weight(sicd, 1) else \
-        {'WindowName': 'UNIFORM', 'WgtFunct': numpy.ones((32,), dtype='float64')}
-    return row_weighting, column_weighting
+    pass
 
 
 def _validate_reader(
@@ -531,16 +433,7 @@ def _validate_reader(
     reader: SICDTypeReader
     index: int
     """
-
-    if isinstance(reader, str):
-        reader = open_complex(reader)
-
-    if not isinstance(reader, SICDTypeReader):
-        raise TypeError('reader input must be a path to a complex file, or a sicd type reader instance')
-    index = int(index)
-    if not (0 <= index < reader.image_count):
-        raise ValueError('index must be between 0 and {}, got {}'.format(reader.image_count, index))
-    return reader, index
+    pass
 
 
 def _map_desired_resolution_to_aperture(
@@ -578,38 +471,7 @@ def _map_desired_resolution_to_aperture(
     indices: None|Tuple[int, int]
     bw_factor : float
     """
-
-    if desired_resolution is None and desired_bandwidth is None:
-        raise ValueError('One of desire_resolution or desired_bandwidth must be supplied.')
-
-    if desired_resolution is not None:
-        if broadening_factor is None:
-            broadening_factor = get_hamming_broadening_factor(1.0)
-        else:
-            broadening_factor = float(broadening_factor)
-        use_resolution = float(desired_resolution)
-
-        use_bandwidth = broadening_factor/use_resolution
-    else:
-        use_bandwidth = float(desired_bandwidth)
-
-    if use_bandwidth > current_imp_resp_bw:
-        if desired_resolution is not None:
-            raise ValueError(
-                'After mapping from Desired {} ImpRespWid considering uniform weighting,\n\t'
-                'the equivalent desired ImpRespBW is {},\n\t'
-                'but the current ImpRespBW is {}'.format(direction, use_bandwidth, current_imp_resp_bw))
-        else:
-            raise ValueError(
-                'Desired {} ImpRespBW is given as {},\n\t'
-                'but the current ImpRespBW is {}'.format(direction, use_bandwidth, current_imp_resp_bw))
-    elif use_bandwidth == current_imp_resp_bw:
-        return None, 1.0
-    else:
-        oversample = max(1., 1./(sample_size*use_bandwidth))
-        ap_size = round(direction_size/oversample)
-        start_ind = int(numpy.floor(0.5*(direction_size - ap_size)))
-        return (start_ind, start_ind+ap_size), use_bandwidth/current_imp_resp_bw
+    pass
 
 
 def _map_bandwidth_parameters(
@@ -634,28 +496,7 @@ def _map_bandwidth_parameters(
     column_aperture : Tuple[int, int]
     column_bw_factor : float
     """
-
-    if desired_resolution is not None:
-        # get the broadening factor for uniform weighting
-        broadening_factor = get_hamming_broadening_factor(1.0)
-        row_aperture, row_bw_factor = _map_desired_resolution_to_aperture(
-            sicd.Grid.Row.ImpRespBW, sicd.Grid.Row.SS, 'Row', sicd.ImageData.NumRows,
-            desired_resolution=desired_resolution[0], broadening_factor=broadening_factor)
-        column_aperture, column_bw_factor = _map_desired_resolution_to_aperture(
-            sicd.Grid.Col.ImpRespBW, sicd.Grid.Col.SS, 'Col', sicd.ImageData.NumCols,
-            desired_resolution=desired_resolution[1], broadening_factor=broadening_factor)
-    elif desired_bandwidth is not None:
-        row_aperture, row_bw_factor = _map_desired_resolution_to_aperture(
-            sicd.Grid.Row.ImpRespBW, sicd.Grid.Row.SS, 'Row', sicd.ImageData.NumRows,
-            desired_bandwidth=desired_bandwidth[0])
-        column_aperture, column_bw_factor = _map_desired_resolution_to_aperture(
-            sicd.Grid.Col.ImpRespBW, sicd.Grid.Col.SS, 'Col', sicd.ImageData.NumCols,
-            desired_bandwidth=desired_bandwidth[1])
-    else:
-        row_aperture, row_bw_factor = None, 1
-        column_aperture, column_bw_factor = None, 1
-
-    return row_aperture, row_bw_factor, column_aperture, column_bw_factor
+    pass
 
 
 def get_dimension_bandwidth_multiplier_possibilities(
@@ -680,16 +521,7 @@ def get_dimension_bandwidth_multiplier_possibilities(
     bandwidth_multiplier : numpy.ndarray
         Of shape `(N, )`
     """
-
-    if dimension == 0:
-        ap_size = round(sicd.ImageData.NumRows / sicd.Grid.Row.get_oversample_rate())
-    else:
-        ap_size = round(sicd.ImageData.NumCols / sicd.Grid.Col.get_oversample_rate())
-
-    aperture_size = numpy.arange(ap_size, 0, -1, dtype='int32')
-    bandwidth_multiplier = aperture_size/float(ap_size)
-
-    return aperture_size, bandwidth_multiplier
+    pass
 
 
 def get_bidirectional_bandwidth_multiplier_possibilities(
@@ -711,26 +543,7 @@ def get_bidirectional_bandwidth_multiplier_possibilities(
     bandwidth_multiplier : numpy.ndarray
         An array of shape `(N, 2)` for row/column separately.
     """
-
-    row_aperture_size, row_bw_multiplier = get_dimension_bandwidth_multiplier_possibilities(sicd, 0)
-    col_aperture_size, col_bw_multiplier = get_dimension_bandwidth_multiplier_possibilities(sicd, 1)
-
-    the_size = max(row_aperture_size.size, col_aperture_size.size)
-    aperture_size = numpy.empty((the_size, 2), dtype='int32')
-    bandwidth_multiplier = numpy.empty((the_size, 2), dtype='float64')
-
-    row_indexing = numpy.asarray(
-        numpy.ceil(float(row_aperture_size.size - 1)*numpy.arange(the_size)/float(the_size - 1)), dtype=numpy.int32)
-    col_indexing = numpy.asarray(
-        numpy.ceil(float(col_aperture_size.size - 1)*numpy.arange(the_size)/float(the_size - 1)), dtype=numpy.int32)
-
-    aperture_size[:, 0] = row_aperture_size[row_indexing]
-    aperture_size[:, 1] = col_aperture_size[col_indexing]
-
-    bandwidth_multiplier[:, 0] = row_bw_multiplier[row_indexing]
-    bandwidth_multiplier[:, 1] = col_bw_multiplier[col_indexing]
-
-    return aperture_size, bandwidth_multiplier
+    pass
 
 
 #########################
@@ -788,36 +601,7 @@ def quality_degrade(
         No return if `output_file` is provided, otherwise the returns the in-memory
         reader object.
     """
-
-    reader, index = _validate_reader(reader, index)
-    if desired_resolution is not None and desired_bandwidth is not None:
-        raise ValueError('Both desired_resolution and desired_bandwidth cannot be supplied.')
-
-    sicd = reader.get_sicds_as_tuple()[index]
-
-    if desired_nesz is None:
-        add_noise = None
-    else:
-        current_nesz = get_sigma0_noise(sicd)
-        add_noise_factor = (desired_nesz - current_nesz)/current_nesz
-        if abs(add_noise_factor) < 1e-5:
-            add_noise = None
-        elif add_noise_factor < 0:
-            raise ValueError(
-                'The current nesz value is {},\n\t'
-                'the desired nesz value of {} cannot be achieved.'.format(current_nesz, desired_nesz))
-        else:
-            add_noise = numpy.exp(numpy.log(10)*0.1*sicd.Radiometric.NoiseLevel.NoisePoly[0, 0])*add_noise_factor
-
-    row_aperture, row_bw_factor, column_aperture, column_bw_factor = _map_bandwidth_parameters(
-        sicd, desired_resolution=desired_resolution, desired_bandwidth=desired_bandwidth)
-
-    row_weighting, column_weighting = _get_uniform_weight_dicts(sicd)
-    return sicd_degrade_reweight(
-        reader, output_file=output_file, index=index,
-        row_aperture=row_aperture, row_weighting=row_weighting,
-        column_aperture=column_aperture, column_weighting=column_weighting,
-        add_noise=add_noise, **kwargs)
+    pass
 
 
 def quality_degrade_resolution(
@@ -858,11 +642,7 @@ def quality_degrade_resolution(
         No return if `output_file` is provided, otherwise the returns the in-memory
         reader object.
     """
-
-    return quality_degrade(
-        reader, index=index, output_file=output_file,
-        desired_resolution=desired_resolution, desired_bandwidth=desired_bandwidth,
-        **kwargs)
+    pass
 
 
 def quality_degrade_noise(
@@ -899,8 +679,7 @@ def quality_degrade_noise(
         No return if `output_file` is provided, otherwise the returns the in-memory
         reader object.
     """
-
-    return quality_degrade(reader, index=index, output_file=output_file, desired_nesz=desired_nesz, **kwargs)
+    pass
 
 
 def quality_degrade_rniirs(
@@ -956,30 +735,4 @@ def quality_degrade_rniirs(
         No return if `output_file` is provided, otherwise the returns the in-memory
         reader object.
     """
-
-    if desired_rniirs is None:
-        return quality_degrade(reader, index=index, output_file=output_file, **kwargs)
-
-    reader, index = _validate_reader(reader, index)
-    sicd = reader.get_sicds_as_tuple()[index]
-    current_noise = numpy.exp(numpy.log(10)*0.1*sicd.Radiometric.NoiseLevel.NoisePoly[0, 0])
-
-    bandwidth_multiplier, noise_multiplier = get_bandwidth_noise_distribution(
-        sicd, alpha, desired_rniirs=desired_rniirs)
-
-    desired_bandwidth = (
-        sicd.Grid.Row.ImpRespBW*bandwidth_multiplier[0],
-        sicd.Grid.Col.ImpRespBW*bandwidth_multiplier[1])
-    add_noise = (noise_multiplier - 1)*current_noise
-
-    if alpha == 0 or add_noise <= 0:
-        add_noise = None
-    row_aperture, row_bw_factor, column_aperture, column_bw_factor = _map_bandwidth_parameters(
-        sicd, desired_bandwidth=desired_bandwidth)
-    row_weighting, column_weighting = _get_uniform_weight_dicts(sicd)
-
-    return sicd_degrade_reweight(
-        reader, output_file=output_file, index=index,
-        row_aperture=row_aperture, row_weighting=row_weighting,
-        column_aperture=column_aperture, column_weighting=column_weighting,
-        add_noise=add_noise, **kwargs)
+    pass

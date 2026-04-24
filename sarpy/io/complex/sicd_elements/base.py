@@ -95,39 +95,22 @@ class SerializableCPArray(SerializableArray):
 
     @property
     def FRFC(self) -> Optional[numpy.ndarray]:
-        if self._array is None:
-            return None
-        return self._array[0].get_array()
+        pass
 
     @property
     def FRLC(self) -> Optional[numpy.ndarray]:
-        if self._array is None:
-            return None
-        return self._array[1].get_array()
+        pass
 
     @property
     def LRLC(self) -> Optional[numpy.ndarray]:
-        if self._array is None:
-            return None
-        return self._array[2].get_array()
+        pass
 
     @property
     def LRFC(self) -> Optional[numpy.ndarray]:
-        if self._array is None:
-            return None
-        return self._array[3].get_array()
+        pass
 
     def _check_indices(self):
-        if not self._index_as_string:
-            self._array[0].index = 1
-            self._array[1].index = 2
-            self._array[2].index = 3
-            self._array[3].index = 4
-        else:
-            self._array[0].index = '1:FRFC'
-            self._array[1].index = '2:FRLC'
-            self._array[2].index = '3:LRLC'
-            self._array[3].index = '4:LRFC'
+        pass
 
     def to_node(self, doc, tag, ns_key=None, parent=None, check_validity=False, strict=DEFAULT_STRICT):
         if self.size == 0:

@@ -55,7 +55,7 @@ class SymbolSegmentHeader(NITFElement):
 
     @classmethod
     def minimum_length(cls):
-        return 13
+        pass
 
     @property
     def DLUT(self):
@@ -66,26 +66,11 @@ class SymbolSegmentHeader(NITFElement):
         -------
         None|numpy.ndarray
         """
-
-        return self._DLUT
+        pass
 
     @DLUT.setter
     def DLUT(self, value):
-        if value is None:
-            self._DLUT = None
-            return
-
-        if not isinstance(value, numpy.ndarray):
-            raise TypeError('DLUT must be a numpy array')
-        if value.dtype.name != 'uint8':
-            raise ValueError('DLUT must be a numpy array of dtype uint8, got {}'.format(value.dtype.name))
-        if value.ndim != 2 or value.shape[1] != 3:
-            raise ValueError('DLUT must be a two-dimensional array of shape (N, 3).')
-        if value.size > 256:
-            raise ValueError(
-                'The number of DLUT elements must be 256 or fewer. '
-                'Got DLUT shape {}'.format(value.shape))
-        self._DLUT = value
+        pass
 
     @property
     def NELUT(self):
@@ -96,8 +81,7 @@ class SymbolSegmentHeader(NITFElement):
         -------
         int
         """
-
-        return 0 if self._DLUT is None else self._DLUT.size
+        pass
 
     def _get_attribute_bytes(self, attribute):
         if attribute == 'DLUT':

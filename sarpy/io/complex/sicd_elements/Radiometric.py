@@ -60,18 +60,7 @@ class NoiseLevelType_(Serializable):
         self._derive_noise_level()
 
     def _derive_noise_level(self):
-        if self.NoiseLevelType is not None:
-            return
-        if self.NoisePoly is None:
-            return  # nothing to be done
-
-        scp_val = self.NoisePoly.Coefs[0, 0]  # the value at SCP
-        if scp_val == 1:
-            # the relative noise levels should be 1 at SCP
-            self.NoiseLevelType = 'RELATIVE'
-        else:
-            # it seems safe that it's not absolute, in this case?
-            self.NoiseLevelType = 'ABSOLUTE'
+        pass
 
 
 class RadiometricType(Serializable):
@@ -158,34 +147,4 @@ class RadiometricType(Serializable):
         -------
         None
         """
-
-        if Grid is None or Grid.Row is None or Grid.Col is None:
-            return
-
-        area_sp = Grid.get_slant_plane_area()
-
-        # We can define any SF polynomial from any other SF polynomial by just
-        # scaling the coefficient array. If any are defined, use BetaZeroSFPolynomial
-        # as the root, and derive them all
-        if self.BetaZeroSFPoly is None:
-            if self.RCSSFPoly is not None:
-                self.BetaZeroSFPoly = Poly2DType(Coefs=self.RCSSFPoly.Coefs/area_sp)
-            elif self.SigmaZeroSFPoly is not None:
-                self.BetaZeroSFPoly = Poly2DType(
-                    Coefs=self.SigmaZeroSFPoly.Coefs/numpy.cos(numpy.deg2rad(SCPCOA.SlopeAng)))
-            elif self.GammaZeroSFPoly is not None:
-                self.BetaZeroSFPoly = Poly2DType(
-                    Coefs=self.GammaZeroSFPoly.Coefs*(numpy.sin(numpy.deg2rad(SCPCOA.GrazeAng)) /
-                                                      numpy.cos(numpy.deg2rad(SCPCOA.SlopeAng))))
-
-        if self.BetaZeroSFPoly is not None:
-            # In other words, none of the SF polynomials are populated.
-            if self.RCSSFPoly is None:
-                self.RCSSFPoly = Poly2DType(Coefs=self.BetaZeroSFPoly.Coefs*area_sp)
-            if self.SigmaZeroSFPoly is None:
-                self.SigmaZeroSFPoly = Poly2DType(
-                    Coefs=self.BetaZeroSFPoly.Coefs*numpy.cos(numpy.deg2rad(SCPCOA.SlopeAng)))
-            if self.GammaZeroSFPoly is None:
-                self.GammaZeroSFPoly = Poly2DType(
-                    Coefs=self.BetaZeroSFPoly.Coefs*(numpy.cos(numpy.deg2rad(SCPCOA.SlopeAng)) /
-                                                     numpy.sin(numpy.deg2rad(SCPCOA.GrazeAng))))
+        pass

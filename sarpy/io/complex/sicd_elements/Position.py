@@ -87,25 +87,7 @@ class PositionType(Serializable):
         -------
         None
         """
-
-        if self.ARPPoly is not None:
-            return  # nothing to be done
-
-        if SCPCOA is None or SCPCOA.ARPPos is None or SCPCOA.ARPVel is None or SCPCOA.SCPTime is None:
-            return  # not enough information to derive
-
-        if SCPCOA.ARPAcc is None:
-            SCPCOA.ARPAcc = XYZType.from_array((0, 0, 0))
-        # define the polynomial
-        coefs = numpy.zeros((3, 3), dtype=numpy.float64)
-        scptime = SCPCOA.SCPTime
-        pos = SCPCOA.ARPPos.get_array()
-        vel = SCPCOA.ARPVel.get_array()
-        acc = SCPCOA.ARPAcc.get_array()
-        coefs[:, 0] = pos - vel*scptime + 0.5*acc*scptime*scptime
-        coefs[:, 1] = vel - acc*scptime
-        coefs[:, 2] = acc
-        self.ARPPoly = XYZPolyType(X=coefs[0, :], Y=coefs[1, :], Z=coefs[2, :])
+        pass
 
     def _basic_validity_check(self) -> bool:
         condition = super(PositionType, self)._basic_validity_check()

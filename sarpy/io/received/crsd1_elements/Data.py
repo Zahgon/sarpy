@@ -130,11 +130,7 @@ class DataType(Serializable):
         """
         int: The number of support arrays.
         """
-
-        if self.SupportArrays is None:
-            return 0
-        else:
-            return len(self.SupportArrays)
+        pass
 
     @property
     @deprecated("sarpy's CRSD implementation is deprecated. Please use SARKit.")
@@ -142,27 +138,22 @@ class DataType(Serializable):
         """
         int: The number of CRSD channels.
         """
-
-        if self.Channels is None:
-            return 0
-        else:
-            return len(self.Channels)
+        pass
 
     def calculate_support_block_size(self):
         """
         Calculates the size of the support block in bytes as described by the SupportArray fields.
         """
-        return sum([s.calculate_size() for s in self.SupportArrays])
+        pass
 
     def calculate_pvp_block_size(self):
         """
         Calculates the size of the PVP block in bytes as described by the Data fields.
         """
-        return self.NumBytesPVP * sum([c.NumVectors for c in self.Channels])
+        pass
 
     def calculate_signal_block_size(self):
         """
         Calculates the size of the signal block in bytes as described by the Data fields.
         """
-        num_bytes_per_sample = binary_format_string_to_dtype(self.SignalArrayFormat).itemsize
-        return num_bytes_per_sample * sum([c.NumVectors * c.NumSamples for c in self.Channels])
+        pass

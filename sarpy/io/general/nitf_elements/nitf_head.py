@@ -166,8 +166,7 @@ class NITFHeader(NITFElement):
         str: File Profile Name. This field shall contain the character string uniquely denoting
         that the file is formatted using NITF. Always `NITF`.
         """
-
-        return self._FHDR
+        pass
 
     @FHDR.setter
     def FHDR(self, value):
@@ -180,8 +179,7 @@ class NITFHeader(NITFElement):
         str: File Version. This field shall contain a BCS-A character string uniquely
         denoting the version. Always `02.10`.
         """
-
-        return self._FVER
+        pass
 
     @FVER.setter
     def FVER(self, value):
@@ -193,8 +191,7 @@ class NITFHeader(NITFElement):
         """
         int: Reserved for future use. Always :code:`0`.
         """
-
-        return self._NUMX
+        pass
 
     @NUMX.setter
     def NUMX(self, value):
@@ -206,8 +203,7 @@ class NITFHeader(NITFElement):
         """
         int: The length of this header object in bytes.
         """
-
-        return self.get_bytes_length()
+        pass
 
     @HL.setter
     def HL(self, value):
@@ -333,8 +329,7 @@ class NITFHeader0(NITFElement):
         str: File Profile Name. This field shall contain the character string uniquely denoting
         that the file is formatted using NITF. Always `NITF`.
         """
-
-        return self._FHDR
+        pass
 
     @FHDR.setter
     def FHDR(self, value):
@@ -347,28 +342,18 @@ class NITFHeader0(NITFElement):
         str: File Version. This field shall contain a BCS-A character string uniquely
         denoting the version, should generally be `02.00` or `01.10`.
         """
-
-        return self._FVER
+        pass
 
     @FVER.setter
     def FVER(self, value):
-        if isinstance(value, bytes) and not isinstance(value, str):
-            value = value.decode('utf-8')
-        if not isinstance(value, str):
-            raise TypeError('FVER is required to be a string')
-        if len(value) != 5:
-            raise ValueError('FVER must have length 5')
-        if value not in ['02.00', '01.10']:
-            logger.warning('Got unexpected version {}, and NITF parsing is likely to fail.'.format(value))
-        self._FVER = value
+        pass
 
     @property
     def HL(self):
         """
         int: The length of this header object in bytes.
         """
-
-        return self.get_bytes_length()
+        pass
 
     @HL.setter
     def HL(self, value):

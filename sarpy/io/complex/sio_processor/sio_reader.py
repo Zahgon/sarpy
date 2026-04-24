@@ -115,19 +115,4 @@ class SIOReader(object):
         Private function: Given the data type code from the header, set the 
         numpy data type and size.
         """
-        match self._data_type_code:
-            case 1:
-                self._data_type_str = 'u1'
-            case 2:
-                self._data_type_str = 'i2'
-                if self._data_size == 4:
-                    self._data_type_str = 'c4'
-            case 3:
-                self._data_type_str = 'f4'
-            case 12:
-                self._data_type_str = 'c4'
-            case 13:
-                self._data_type_str = 'c8'
-            case _ : #Default if other cases don't match
-                raise TypeError('Reader only recognizes floats, complex and ' + \
-                                'signed or unsigned integers')        
+        pass

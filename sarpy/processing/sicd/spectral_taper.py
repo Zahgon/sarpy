@@ -80,34 +80,7 @@ class Taper:
 
     def _make_sym_1d_window(self, window_size=None):
         """Make the sample values of a 1-D symmetric window"""
-        window_size = self.default_size if window_size is None else window_size
-
-        if self.window_type == 'UNIFORM':
-            wgts = np.ones(window_size)
-
-        elif self.window_type in ['HAMMING']:
-            wgts = windows.hamming(window_size, sym=True)
-
-        elif self.window_type in ['HANNING', 'HANN']:
-            wgts = windows.hanning(window_size, sym=True)
-
-        elif self.window_type in ['GENERAL_HAMMING']:
-            alpha = float(self.window_pars['ALPHA'])
-            wgts = windows.general_hamming(window_size, alpha=alpha, sym=True)
-
-        elif self.window_type == 'TAYLOR':
-            nbar = int(self.window_pars['NBAR'])
-            sll = float(self.window_pars['SLL'])
-            wgts = windows.taylor(window_size, nbar=nbar, sll=-np.abs(sll), sym=True)
-
-        elif self.window_type == 'KAISER':
-            beta = float(self.window_pars['BETA'])
-            wgts = windows.kaiser(window_size, beta=beta, sym=True)
-
-        else:
-            raise ValueError(f'Window type "{self.window_type}" is not supported.')
-
-        return wgts
+        pass
 
     def get_vals(self, size, sym=True):
         """
@@ -125,7 +98,7 @@ class Taper:
         vals: numpy.ndarray
             1-D array of sampled taper values.
         """
-        return _fit_1d_window(self.window_vals, size) if sym else _fit_1d_window(self.window_vals, size+1)[:-1]
+        pass
 
 
 def apply_spectral_taper(sicd_reader, taper):

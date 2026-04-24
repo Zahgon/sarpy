@@ -193,27 +193,7 @@ def _get_sicd_type_specific_projection(sicd) -> Callable:
             -------
             Tuple[numpy.ndarray, numpy.ndarray]
             """
-
-            ARP_minus_SCP = arp_coa - SCP
-            rSCPTgtCoa = numpy.linalg.norm(ARP_minus_SCP, axis=-1)
-            rDotSCPTgtCoa = numpy.sum(varp_coa * ARP_minus_SCP, axis=-1) / rSCPTgtCoa
-
-            thetaTgtCoa = polar_ang_poly(time_coa)
-            dThetaDtTgtCoa = polar_ang_poly_der(time_coa)
-            # Compute polar aperture scale factor (KSF) and derivative wrt polar angle
-            ksfTgtCoa = spatial_freq_sf_poly(thetaTgtCoa)
-            dKsfDThetaTgtCoa = spatial_freq_sf_poly_der(thetaTgtCoa)
-            # Compute spatial frequency domain phase slopes in Ka and Kc directions
-            # NB: sign for the phase may be ignored as it is cancelled in a subsequent computation.
-            dPhiDKaTgtCoa = row_transform * numpy.cos(thetaTgtCoa) + col_transform * numpy.sin(thetaTgtCoa)
-            dPhiDKcTgtCoa = -row_transform * numpy.sin(thetaTgtCoa) + col_transform * numpy.cos(thetaTgtCoa)
-            # Compute range relative to SCP
-            deltaRTgtCoa = ksfTgtCoa * dPhiDKaTgtCoa
-            # Compute derivative of range relative to SCP wrt polar angle.
-            # Scale by derivative of polar angle wrt time.
-            dDeltaRDThetaTgtCoa = dKsfDThetaTgtCoa * dPhiDKaTgtCoa + ksfTgtCoa * dPhiDKcTgtCoa
-            deltaRDotTgtCoa = dDeltaRDThetaTgtCoa * dThetaDtTgtCoa
-            return rSCPTgtCoa + deltaRTgtCoa, rDotSCPTgtCoa + deltaRDotTgtCoa
+            pass
 
         return method_projection
 
@@ -238,13 +218,7 @@ def _get_sicd_type_specific_projection(sicd) -> Callable:
             -------
             Tuple[numpy.ndarray, numpy.ndarray]
             """
-
-            ARP_minus_SCP = arp_coa - SCP
-            rSCPTgtCoa = numpy.linalg.norm(ARP_minus_SCP, axis=-1)
-            rDotSCPTgtCoa = numpy.sum(varp_coa*ARP_minus_SCP, axis=-1)/rSCPTgtCoa
-            deltaRTgtCoa = row_transform
-            deltaRDotTgtCoa = -numpy.linalg.norm(varp_coa, axis=-1)*az_sf*col_transform
-            return rSCPTgtCoa + deltaRTgtCoa, rDotSCPTgtCoa + deltaRDotTgtCoa
+            pass
 
         return method_projection
 
@@ -271,20 +245,7 @@ def _get_sicd_type_specific_projection(sicd) -> Callable:
             -------
             Tuple[numpy.ndarray, numpy.ndarray]
             """
-
-            # compute range/time of the closest approach
-            R_CA_TGT = r_ca_scp + row_transform  # Range at closest approach
-            t_CA_TGT = time_ca_poly(col_transform)  # Time of the closest approach
-            # Compute ARP velocity magnitude (actually squared, since that's how it's used) at t_CA_TGT
-            # noinspection PyProtectedMember
-            VEL2_CA_TGT = numpy.sum(instance._varp_poly(t_CA_TGT)**2, axis=-1)
-            # Compute the Doppler Rate Scale Factor for image Grid location
-            DRSF_TGT = drate_sf_poly(row_transform, col_transform)
-            # Difference between COA time and CA time
-            dt_COA_TGT = time_coa - t_CA_TGT
-            r_tgt_coa = numpy.sqrt(R_CA_TGT*R_CA_TGT + DRSF_TGT*VEL2_CA_TGT*dt_COA_TGT*dt_COA_TGT)
-            r_dot_tgt_coa = (DRSF_TGT/r_tgt_coa)*VEL2_CA_TGT*dt_COA_TGT
-            return r_tgt_coa, r_dot_tgt_coa
+            pass
 
         return method_projection
 
@@ -310,11 +271,7 @@ def _get_sicd_type_specific_projection(sicd) -> Callable:
             -------
             Tuple[numpy.ndarray, numpy.ndarray]
             """
-
-            ARP_minus_IPP = arp_coa - (SCP + numpy.outer(row_transform, uRow) + numpy.outer(col_transform, uCol))
-            r_tgt_coa = numpy.linalg.norm(ARP_minus_IPP, axis=-1)
-            r_dot_tgt_coa = numpy.sum(varp_coa * ARP_minus_IPP, axis=-1)/r_tgt_coa
-            return r_tgt_coa, r_dot_tgt_coa
+            pass
         return method_projection
 
     # NB: sicd.can_project_coordinates() has been called, so all required attributes
@@ -420,13 +377,7 @@ def _get_sidd_type_projection(sidd) -> Union[Poly2DType, Callable]:
             -------
             Tuple[numpy.ndarray, numpy.ndarray]
             """
-
-            ARP_minus_IPP = arp_coa - \
-                            (SRP + numpy.outer(row_transform - SRP_row, row_vector) +
-                             numpy.outer(col_transform - SRP_col, col_vector))
-            r_tgt_coa = numpy.linalg.norm(ARP_minus_IPP, axis=-1)
-            r_dot_tgt_coa = numpy.sum(varp_coa * ARP_minus_IPP, axis=-1)/r_tgt_coa
-            return r_tgt_coa, r_dot_tgt_coa
+            pass
         return plane_proj.TimeCOAPoly, method_projection
 
     if sidd.Measurement.PlaneProjection is not None:
@@ -562,32 +513,28 @@ class COAProjection(object):
         """
         numpy.ndarray: The delta arp adjustable parameter
         """
-
-        return self._delta_arp
+        pass
 
     @property
     def delta_varp(self) -> numpy.ndarray:
         """
         numpy.ndarray: The delta varp adjustable parameter
         """
-
-        return self._delta_varp
+        pass
 
     @property
     def range_bias(self) -> float:
         """
         float: The range bias adjustable parameter
         """
-
-        return self._range_bias
+        pass
 
     @property
     def delta_range(self) -> float:
         """
         float: Alias to the range bias adjustable parameter
         """
-
-        return self._range_bias
+        pass
 
     @classmethod
     def from_sicd(
@@ -1139,8 +1086,7 @@ def ground_to_image_geo(
     iterations: numpy.ndarray|int
         The number of iterations performed.
     """
-
-    return ground_to_image(geodetic_to_ecf(coords, ordering=ordering), structure, **kwargs)
+    pass
 
 
 ############

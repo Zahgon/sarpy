@@ -73,16 +73,14 @@ class ProjectionHelper(abc.ABC):
         """
         SICDType: The sicd structure.
         """
-
-        return self._sicd
+        pass
 
     @property
     def row_spacing(self):
         """
         float: The row pixel spacing
         """
-
-        return self._row_spacing
+        pass
 
     @row_spacing.setter
     def row_spacing(self, value):
@@ -98,25 +96,14 @@ class ProjectionHelper(abc.ABC):
         -------
         None
         """
-
-        if value is None:
-            if (self.sicd.RadarCollection.Area is None or self.sicd.RadarCollection.Area.Plane is None):
-                self._row_spacing = self._get_sicd_ground_pixel()
-            else:
-                self._row_spacing = self.sicd.RadarCollection.Area.Plane.XDir.LineSpacing
-        else:
-            value = float(value)
-            if value <= 0:
-                raise ValueError('row pixel spacing must be positive.')
-            self._row_spacing = float(value)
+        pass
 
     @property
     def col_spacing(self):
         """
         float: The column pixel spacing
         """
-
-        return self._col_spacing
+        pass
 
     @col_spacing.setter
     def col_spacing(self, value):
@@ -132,17 +119,7 @@ class ProjectionHelper(abc.ABC):
         -------
         None
         """
-
-        if value is None:
-            if (self.sicd.RadarCollection.Area is None or self.sicd.RadarCollection.Area.Plane is None):
-                self._col_spacing = self._get_sicd_ground_pixel()
-            else:
-                self._col_spacing = self.sicd.RadarCollection.Area.Plane.YDir.SampleSpacing
-        else:
-            value = float(value)
-            if value <= 0:
-                raise ValueError('column pixel spacing must be positive.')
-            self._col_spacing = float(value)
+        pass
 
     def _get_sicd_ground_pixel(self):
         """
@@ -152,18 +129,7 @@ class ProjectionHelper(abc.ABC):
         -------
         float
         """
-
-        ground_row_ss, ground_col_ss = self.sicd.get_ground_resolution()
-        if self._default_pixel_method == 'MIN':
-            return min(ground_row_ss, ground_col_ss)
-        elif self._default_pixel_method == 'MAX':
-            return max(ground_row_ss, ground_col_ss)
-        elif self._default_pixel_method == 'MEAN':
-            return 0.5*(ground_row_ss + ground_col_ss)
-        elif self._default_pixel_method == 'GEOM_MEAN':
-            return float(numpy.sqrt(ground_row_ss*ground_row_ss + ground_col_ss*ground_col_ss))
-        else:
-            raise ValueError('Got unhandled default_pixel_method {}'.format(self._default_pixel_method))
+        pass
 
     @staticmethod
     def _reshape(array, final_dimension):
@@ -440,8 +406,7 @@ class PGProjection(ProjectionHelper):
         """
         numpy.ndarray: The grid reference point.
         """
-
-        return self._reference_point
+        pass
 
     @property
     def reference_pixels(self):
@@ -449,8 +414,7 @@ class PGProjection(ProjectionHelper):
         """
         numpy.ndarray: The ortho-rectified pixel coordinates of the grid reference point.
         """
-
-        return self._reference_pixels
+        pass
 
     @property
     def normal_vector(self):
@@ -458,8 +422,7 @@ class PGProjection(ProjectionHelper):
         """
         numpy.ndarray: The normal vector.
         """
-
-        return self._normal_vector
+        pass
 
     def set_reference_point(self, reference_point=None):
         """
@@ -475,20 +438,7 @@ class PGProjection(ProjectionHelper):
         -------
         None
         """
-
-        if reference_point is None:
-            if (self.sicd.RadarCollection.Area is None or self.sicd.RadarCollection.Area.Plane is None):
-                reference_point = self.sicd.GeoData.SCP.ECF.get_array()
-            else:
-                reference_point = self.sicd.RadarCollection.Area.Plane.RefPt.ECF.get_array()
-
-        if not (isinstance(reference_point, numpy.ndarray) and reference_point.ndim == 1
-                and reference_point.size == 3):
-            raise ValueError('reference_point must be a vector of size 3.')
-        self._reference_point = reference_point
-        # set the reference hae
-        ref_llh = ecf_to_geodetic(reference_point)
-        self._reference_hae = ref_llh[2]
+        pass
 
     def set_reference_pixels(self, reference_pixels=None):
         """
@@ -504,44 +454,28 @@ class PGProjection(ProjectionHelper):
         -------
         None
         """
-
-        if reference_pixels is None:
-            if (self.sicd.RadarCollection.Area is None or self.sicd.RadarCollection.Area.Plane is None):
-                reference_pixels = numpy.zeros((2, ), dtype='float64')
-            else:
-                reference_pixels = numpy.array([
-                    self.sicd.RadarCollection.Area.Plane.RefPt.Line,
-                    self.sicd.RadarCollection.Area.Plane.RefPt.Sample],
-                    dtype='float64')
-
-        if not (isinstance(reference_pixels, numpy.ndarray) and reference_pixels.ndim == 1
-                and reference_pixels.size == 2):
-            raise ValueError('reference_pixels must be a vector of size 2.')
-        self._reference_pixels = reference_pixels
+        pass
 
     @property
     def row_vector(self):
         """
         numpy.ndarray: The grid increasing row direction (ECF) unit vector.
         """
-
-        return self._row_vector
+        pass
 
     @property
     def col_vector(self):
         """
         numpy.ndarray: The grid increasing column direction (ECF) unit vector.
         """
-
-        return self._col_vector
+        pass
 
     @property
     def reference_hae(self):
         """
         float: The height above the ellipsoid of the reference point.
         """
-
-        return self._reference_hae
+        pass
 
     def set_plane_frame(self, normal_vector=None, row_vector=None, col_vector=None):
         """
@@ -577,93 +511,7 @@ class PGProjection(ProjectionHelper):
         -------
         None
         """
-
-        def normalize(vec, name, perp=None):
-            if not isinstance(vec, numpy.ndarray):
-                vec = numpy.array(vec, dtype=numpy.float64)
-            if not (isinstance(vec, numpy.ndarray) and vec.ndim == 1 and vec.size == 3):
-                raise ValueError('{} vector must be a numpy.ndarray of dimension 1 and size 3.'.format(name))
-            vec = numpy.copy(vec)
-            if perp is None:
-                pass
-            elif isinstance(perp, numpy.ndarray):
-                vec = vec - perp*(perp.dot(vec))
-            else:
-                for entry in perp:
-                    vec = vec - entry*(entry.dot(vec))
-
-            norm = numpy.linalg.norm(vec)
-            if norm == 0:
-                raise ValueError('{} vector cannot be the zero vector.'.format(name))
-            elif norm != 1:
-                vec = vec/norm  # avoid modifying row_vector def exterior to this class
-            return vec
-
-        def check_perp(vec1, vec2, name1, name2, tolerance=1e-6):
-            if abs(vec1.dot(vec2)) > tolerance:
-                raise ValueError('{} vector and {} vector are not perpendicular'.format(name1, name2))
-
-        if self._reference_point is None:
-            raise ValueError('This requires that reference point is previously set.')
-
-        if normal_vector is None and row_vector is None and col_vector is None:
-            if (self.sicd.RadarCollection.Area is None or self.sicd.RadarCollection.Area.Plane is None):
-                self._normal_vector = wgs_84_norm(self.reference_point)
-                self._row_vector = normalize(
-                    self.sicd.Grid.Row.UVectECF.get_array(), 'row', perp=self.normal_vector)
-                self._col_vector = normalize(
-                    self.sicd.Grid.Col.UVectECF.get_array(), 'column', perp=(self.normal_vector, self.row_vector))
-            else:
-                self._row_vector = self.sicd.RadarCollection.Area.Plane.XDir.UVectECF.get_array()
-                self._col_vector = normalize(
-                    self.sicd.RadarCollection.Area.Plane.YDir.UVectECF.get_array(), 'col', perp=self._row_vector)
-                self._normal_vector = numpy.cross(self._row_vector, self._col_vector)
-        elif normal_vector is not None and row_vector is None and col_vector is None:
-            self._normal_vector = normalize(normal_vector, 'normal')
-            self._row_vector = normalize(
-                self.sicd.Grid.Row.UVectECF.get_array(), 'row', perp=self.normal_vector)
-            self._col_vector = normalize(
-                self.sicd.Grid.Col.UVectECF.get_array(), 'column', perp=(self.normal_vector, self.row_vector))
-        elif normal_vector is None:
-            if row_vector is None or col_vector is None:
-                raise ValueError('normal_vector is not defined, so both row_vector and col_vector must be.')
-            row_vector = normalize(row_vector, 'row')
-            col_vector = normalize(col_vector, 'col')
-            check_perp(row_vector, col_vector, 'row', 'col')
-            self._row_vector = row_vector
-            self._col_vector = col_vector
-            self._normal_vector = numpy.cross(row_vector, col_vector)
-        elif col_vector is None:
-            if row_vector is None:
-                raise ValueError('col_vector is not defined, so both normal_vector and row_vector must be.')
-            normal_vector = normalize(normal_vector, 'normal')
-            row_vector = normalize(row_vector, 'row')
-            check_perp(normal_vector, row_vector, 'normal', 'row')
-            self._normal_vector = normal_vector
-            self._row_vector = row_vector
-            self._col_vector = numpy.cross(self.normal_vector, self.row_vector)
-        elif row_vector is None:
-            normal_vector = normalize(normal_vector, 'normal')
-            col_vector = normalize(col_vector, 'col')
-            check_perp(normal_vector, col_vector, 'normal', 'col')
-            self._normal_vector = normal_vector
-            self._col_vector = col_vector
-            self._row_vector = numpy.cross(self.col_vector, self.normal_vector)
-        else:
-            normal_vector = normalize(normal_vector, 'normal')
-            row_vector = normalize(row_vector, 'row')
-            col_vector = normalize(col_vector, 'col')
-            check_perp(normal_vector, row_vector, 'normal', 'row')
-            check_perp(normal_vector, col_vector, 'normal', 'col')
-            check_perp(row_vector, col_vector, 'row', 'col')
-            self._normal_vector = normal_vector
-            self._row_vector = row_vector
-            self._col_vector = col_vector
-        # check for outward unit norm
-        if numpy.dot(self.normal_vector, self.reference_point) < 0:
-            logger.warning(
-                'The normal vector appears to be outward pointing, so reversing.')
-            self._normal_vector *= -1
+        pass
 
     def plane_ecf_to_ortho(self, coords):
         """
@@ -713,18 +561,10 @@ class PGProjection(ProjectionHelper):
         -------
         numpy.ndarray
         """
-
-        ll_coords, o_shape = self._reshape(ll_coords, 2)
-        llh_temp = numpy.zeros((ll_coords.shape[0], 3), dtype=numpy.float64)
-        llh_temp[:, :2] = ll_coords
-        llh_temp[:, 2] = self.reference_hae
-        llh_temp = numpy.reshape(llh_temp, o_shape[:-1] + (3, ))
-        return self.llh_to_ortho(llh_temp)
+        pass
 
     def llh_to_ortho(self, llh_coords):
-        llh_coords, o_shape = self._reshape(llh_coords, 3)
-        ground = geodetic_to_ecf(llh_coords)
-        return self.ecf_to_ortho(numpy.reshape(ground, o_shape))
+        pass
 
     def ortho_to_ecf(self, ortho_coords):
         ortho_coords, o_shape = self._reshape(ortho_coords, 2)

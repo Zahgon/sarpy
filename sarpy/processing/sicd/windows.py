@@ -96,8 +96,7 @@ def hamming(
     -------
     numpy.ndarray
     """
-
-    return general_hamming(M, 0.54, sym=sym)
+    pass
 
 
 def hanning(
@@ -118,8 +117,7 @@ def hanning(
     -------
     numpy.ndarray
     """
-
-    return general_hamming(M, 0.5, sym=sym)
+    pass
 
 
 def taylor(

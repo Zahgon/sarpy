@@ -308,9 +308,7 @@ def get_physical_coordinates(
     row_coords : float|numpy.ndarray
     col_coords : float|numpy.ndarray
     """
-
-    return get_im_physical_coords(row_value, the_sicd.Grid, the_sicd.ImageData, 'row'), \
-        get_im_physical_coords(col_value, the_sicd.Grid, the_sicd.ImageData, 'col')
+    pass
 
 
 ###################
